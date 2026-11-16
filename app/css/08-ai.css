@@ -1,0 +1,68 @@
+/* ============================================================
+   Mobin Studio 8.5.0 — پنل دستیار
+   عمداً «شناور» است تا چیدمان بوم را به‌هم نزند؛ با بستن، کاملاً
+   ناپدید می‌شود و هیچ اثری از خودش نمی‌گذارد.
+   ============================================================ */
+
+#aiPanel{position:fixed;top:calc(var(--tb) + 8px);bottom:calc(var(--foot) + 8px);inset-inline-start:8px;width:390px;
+  max-width:calc(100vw - 16px);z-index:78;display:none;flex-direction:column;min-height:0;
+  background:var(--menu);border:1px solid var(--bd2);border-radius:var(--r2);box-shadow:var(--sh2);overflow:hidden}
+#aiPanel.on{display:flex;animation:aiIn .16s cubic-bezier(.2,.8,.2,1)}
+@keyframes aiIn{from{opacity:0;transform:translateY(-8px) scale(.99)}}
+
+.aiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;flex:none;border-bottom:1px solid var(--bd)}
+.aiHead b{font:700 13px/1.3 var(--ui)}
+.aiHead .hint{font-size:10.5px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
+
+.aiMsgs{flex:1;min-height:0;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.aiEmpty{display:flex;flex-direction:column;gap:8px;color:var(--tx3);font-size:12px;line-height:2;padding:8px 2px}
+.aiEmpty b{color:var(--tx2);font-size:12.5px}
+.aiEmpty span{white-space:pre-wrap}
+.aiMsg{display:flex;flex-direction:column;gap:5px;max-width:100%}
+.aiWho{font-size:10px;font-weight:700;color:var(--tx3)}
+.aiBody{font-size:13px;line-height:1.95;white-space:pre-wrap;word-break:break-word;
+  padding:9px 11px;border-radius:12px;background:var(--surface2);border:1px solid var(--bd)}
+.aiMsg.me .aiBody{background:var(--acs);border-color:var(--acb);color:var(--tx)}
+.aiMsg.sys .aiBody{background:transparent;border-style:dashed;color:var(--tx3);font-size:12px}
+.aiMsg.err .aiBody{border-color:var(--dgb);color:var(--dg);background:var(--dgs)}
+.aiNote{margin-top:3px;font-size:11px;line-height:1.8;color:var(--wn);background:var(--wns);
+  border:1px solid var(--wnb);border-radius:9px;padding:6px 9px}
+
+/* کارت پیشنهادهای دستیار */
+.aiActs{margin-top:4px;border:1px solid var(--bd2);border-radius:12px;padding:9px;background:var(--surface)}
+.aiActsHead{font-size:11px;font-weight:700;color:var(--ac2);margin-bottom:7px}
+.aiActList{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.aiAct{padding:7px 9px;border:1px solid var(--bd);border-radius:9px;background:var(--surface2);cursor:pointer;
+  transition:border-color var(--fast),background-color var(--fast)}
+.aiAct:hover{border-color:var(--bd3)}
+.aiAct.on{border-color:#FF9F1A;background:var(--wns);box-shadow:inset 3px 0 0 #FF9F1A}
+.aiActT{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.aiActT b{font:600 11.5px/1 var(--ui);color:var(--tx2)}
+.aiActT .pill{height:17px;font-size:9.5px}
+.aiActX{font-size:12.5px;line-height:1.85;color:var(--tx);word-break:break-word}
+.aiActBar{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+
+/* نوار تأیید پیش‌نمایش */
+#aiPrev{display:none;flex:none;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:9px 12px;border-top:1px solid #FF9F1A;background:var(--wns)}
+#aiPrev.on{display:flex}
+.aiPrevT{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:11.5px;line-height:1.7;color:var(--tx2)}
+.aiPrevT b{color:#FF9F1A;font-size:12px}
+.aiPrevSkip{color:var(--tx3);font-size:10.5px}
+
+/* پیش‌نویس‌ها: نوار پایین پنل */
+.aiFoot{flex:none;border-top:1px solid var(--bd);padding:7px 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.aiFoot .hint{font-size:10.5px;color:var(--tx3)}
+.aiForm{flex:none;display:flex;gap:7px;align-items:flex-end;padding:9px 10px;border-top:1px solid var(--bd)}
+.aiForm textarea{flex:1;min-height:42px;max-height:140px;resize:none;font-size:13.5px;line-height:1.8;margin:0}
+#aiPanel.busy .aiForm textarea{opacity:.6}
+#aiState{font-size:10.5px;color:var(--ac2);padding:0 12px 6px;min-height:14px}
+
+.cst.ai{color:#FF9F1A}
+.cst.ai::before{content:'';width:6px;height:6px;border-radius:50%;background:#FF9F1A;flex:none}
+
+/* گوشی */
+body.mob #aiPanel{top:calc(var(--tb) + env(safe-area-inset-top,0px));bottom:0;inset-inline-start:0;width:100%;max-width:100%;
+  border-radius:16px 16px 0 0;border-bottom:0}
+body.mob .aiForm textarea{font-size:15px}
+body.mob .aiActList{max-height:200px}

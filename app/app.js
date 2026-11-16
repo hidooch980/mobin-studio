@@ -741,6 +741,12 @@ function drawLayer(c, L, selected, forExport) {
     c.strokeStyle = 'rgba(255,255,255,.9)'; c.lineWidth = 1 * k;
     for (const hx of [-hw, hw]) { c.strokeRect(hx - s, -s, s * 2, s * 2); }
   }
+  if (L.draft) {                       /* 8.5.0 — پیش‌نویس دستیار: کادر خط‌چین نارنجی */
+    const hw = L.w / 2 + 6, hh = m.h / 2 + 6, k = 1 / (S.zoom || 1);
+    c.lineWidth = 1.8 * k; c.setLineDash([7 * k, 5 * k]);
+    c.strokeStyle = 'rgba(255,159,26,.95)';
+    c.strokeRect(-hw, -hh, hw * 2, hh * 2);
+  }
   c.restore();
   return m;
 }
@@ -778,6 +784,7 @@ function render(i = S.cur) {
   const sel = i === S.cur ? S.sel : null;
   for (const L of p.layers) drawLayer(c, L, L === sel);
   if (i === S.cur && S.guides && S.drag) drawGuidesExtras(c, i);
+  if (i === S.cur && S.aiPreview) drawAiPreviewExtras(c, i);
   if (i === S.cur) drawTarget(c, i);
   if (i === S.cur && S.drag && S.drag.mode === 'drawbox' && S.drag.moved) {
     const k = 1 / (S.zoom || 1), x0 = Math.min(S.drag.o.x, S.drag.cur.x), y0 = Math.min(S.drag.o.y, S.drag.cur.y);
@@ -1781,6 +1788,8 @@ function placeBubble(b, x, y, g) {
     try { addClean(S.cur, s.x, s.y); render(S.cur); } catch (e) { }
   }
   p.layers.push(L);
+  /* 8.5.0 — متن واقعی جای پیش‌نویس دستیار را می‌گیرد */
+  for (let k = p.layers.length - 2; k >= 0; k--) { const o = p.layers[k]; if (o.draft && o.bid === L.bid) p.layers.splice(k, 1); }
   return L;
 }
 function refit(L) {
@@ -1905,7 +1914,8 @@ const saveSettings = () => { LS.set('ms6.settings', JSON.stringify(S.settings));
 const bubbles = i => S.doc[i] || [];
 function placedSet(i) {
   const p = S.pages[i]; const s = new Set();
-  if (p) for (const L of p.layers) if (L.bid) s.add(L.bid);
+  /* پیش‌نویس‌های دستیار «گذاشته‌شده» حساب نمی‌شوند تا پیشرفت فصل درست بماند */
+  if (p) for (const L of p.layers) if (L.bid && !L.draft) s.add(L.bid);
   return s;
 }
 /* lines the user removed from the page ("I do not want this one") are skipped everywhere */
@@ -1952,6 +1962,8 @@ function syncCards() {
     row.append(tg);
     if (b.type) row.append(el('span', { class: 'ctype', text: b.type }));
     if (done) { const s = el('span', { class: 'cst' }); s.append(svg(CHECK), document.createTextNode('گذاشته شد')); row.append(s); }
+    if (S.pages[S.cur] && S.pages[S.cur].layers.some(l => l.draft && l.bid === b.id))
+      row.append(el('span', { class: 'cst ai', text: 'پیش‌نویس دستیار' }));
     if (b.skip) row.append(el('button', { class: 'btn sm gho cunskip', type: 'button', 'data-unskip': b.id, text: 'برگردان', title: 'این متن دوباره در فهرست بیاید' }));
     else if (!done) { const x = el('button', { class: 'cskip', type: 'button', 'data-skip': b.id, title: 'این متن را نمی‌خواهم — از فهرست کنار برود (Ctrl+Z برمی‌گرداند)', 'aria-label': 'کنار گذاشتن متن' }); x.append(svg(I.trash)); row.append(x); }
     const tx = el('div', { class: 'ctx', text: b.text });
@@ -4568,6 +4580,7 @@ async function appCmd(c) {
     case 'uiZoomOut': return showMenuState(await dcmd('uizoom', -1));
     case 'uiZoom0': return showMenuState(await dcmd('uizoom', 0));
     case 'theme': return toggleTheme();
+    case 'ai': closeMenus(); return aiOpen();
     case 'proof': closeMenus(); return openProof('issues');
     case 'typeMode': closeMenus(); return typeOpen(!S.typeMode);
     case 'fullscreen': closeMenus();

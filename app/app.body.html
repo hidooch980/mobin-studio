@@ -16,6 +16,7 @@
         <div class="mrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg><span>اندازهٔ متن برنامه</span>
           <span class="mz"><button type="button" class="btn sm ico" data-cmd="uiZoomOut" title="کوچک‌تر (Ctrl+Shift+−)" aria-label="کوچک‌تر">−</button><button type="button" class="btn sm" data-cmd="uiZoom0" title="اندازهٔ عادی (Ctrl+Shift+0)">عادی</button><button type="button" class="btn sm ico" data-cmd="uiZoomIn" title="بزرگ‌تر (Ctrl+Shift++)" aria-label="بزرگ‌تر">+</button></span></div>
         <button class="mi" type="button" data-cmd="theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span>حالت روشن / تیره</span></button>
+        <button class="mi" type="button" data-cmd="ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6 11.5 7l4.4 1.5-4.4 1.5L10 14.4 8.5 10 4.1 8.5 8.5 7 10 2.6Z"/><path d="M15.4 13.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg><span>دستیار<small>بررسی صفحه، ایرادهای چیدمان و جای خالی ترجمه</small></span><kbd>F6</kbd></button>
         <button class="mi" type="button" data-cmd="typeMode"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5h13M3.5 10h8.5M3.5 14.5h5.5"/><path d="m13.6 11.6 2.9 2.9-2.9 2.9" /></svg><span>حالت تایپ پشت‌سرهم<small>متن را یکی‌یکی بنویس، Enter = بعدی</small></span><kbd>F7</kbd></button>
         <button class="mi" type="button" data-cmd="proof"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.2h9.2L16 6v10.8H4V3.2Z"/><path d="M6.6 8h6.8M6.6 11h6.8M6.6 14h4.2"/></svg><span>بازبینی متن<small>نیم‌فاصله، خطای نگارشی و سند پشت‌سرهم</small></span><kbd>F8</kbd></button>
         <button class="mi" type="button" data-cmd="fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span>تمام‌صفحه</span><kbd>F11</kbd></button>
@@ -103,6 +104,7 @@
     <button type="button" class="rb" id="bFit" title="اندازهٔ پنجره (Ctrl+0)" aria-label="اندازهٔ پنجره"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V4.5A1.5 1.5 0 0 1 4.5 3H8M12 3h3.5A1.5 1.5 0 0 1 17 4.5V8M17 12v3.5a1.5 1.5 0 0 1-1.5 1.5H12M8 17H4.5A1.5 1.5 0 0 1 3 15.5V12"/><rect x="7" y="7" width="6" height="6" rx="1.3"/></svg><i>جا دادن</i></button>
     <span class="grow"></span>
     <button type="button" class="rb" id="bTheme" title="حالت روشن / تیره" aria-label="حالت روشن یا تیره"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="3.6"/><path d="M10 1.8v1.9M10 16.3v1.9M18.2 10h-1.9M3.7 10H1.8M15.8 4.2l-1.35 1.35M5.55 14.45 4.2 15.8M15.8 15.8l-1.35-1.35M5.55 5.55 4.2 4.2"/></svg><i>روشنایی</i></button>
+    <button type="button" class="rb" id="bAi" title="دستیار (F6) — فقط وقتی خودت صدا بزنی" aria-label="دستیار" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6 11.5 7l4.4 1.5-4.4 1.5L10 14.4 8.5 10 4.1 8.5 8.5 7 10 2.6Z"/><path d="M15.4 13.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg><i>دستیار</i></button>
     <button type="button" class="rb" id="bSettings" title="تنظیمات" aria-label="تنظیمات"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h7"/><circle cx="13.5" cy="14" r="2.1"/></svg><i>تنظیم</i></button>
     <button type="button" class="rb" id="bHelp" title="راهنما" aria-label="راهنما"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M8 7.8a2.1 2.1 0 1 1 2.6 2.05c-.4.12-.6.45-.6.85v.6"/><path d="M10 14.3v.05" stroke-width="2"/></svg><i>راهنما</i></button>
   </nav>
@@ -346,6 +348,7 @@
       <button role="tab" data-t="text" aria-selected="false">متن</button>
       <button role="tab" data-t="gen" aria-selected="false">عمومی</button>
       <button role="tab" data-t="proj" aria-selected="false">پروژه</button>
+      <button role="tab" data-t="ai" aria-selected="false">دستیار</button>
       <button role="tab" data-t="help" aria-selected="false">راهنما</button>
     </div>
     <div class="mb">
@@ -484,6 +487,46 @@
         <div class="row"><span class="lbl" style="flex:1;margin:0">دادهٔ ذخیره‌شده در مرورگر</span><span class="hint" id="lsInfo">—</span><button class="btn sm dgr" id="bWipe">پاک کردن همه</button></div>
       </div>
 
+      <div class="tp" id="tpAi">
+        <div class="fcard" style="border-color:var(--wnb);background:var(--wns)">
+          <div class="fh"><b>این بخش به اینترنت وصل می‌شود</b></div>
+          <div class="hint" style="line-height:2">با روشن‌کردن دستیار، <b>متن‌ها و تصویر صفحه</b> به سرویس هوش مصنوعی که خودت انتخاب می‌کنی فرستاده می‌شود. بقیهٔ برنامه آفلاین می‌ماند. کلید فقط روی همین دستگاه ذخیره می‌شود و هرگز داخل فایل پروژه (.mobin) نمی‌رود.</div>
+        </div>
+
+        <div class="fcard">
+          <div class="fh"><b>اتصال</b><span class="grow"></span><span class="hint" id="aiCfgState">تنظیم نشده</span></div>
+          <div class="fgrid">
+            <span>آدرس API</span>
+            <div class="cell"><input type="text" id="aiUrl" class="ltr" placeholder="https://openrouter.ai/api/v1"></div>
+            <span>نام مدل</span>
+            <div class="cell"><input type="text" id="aiModel" class="ltr" placeholder="openai/gpt-4o-mini"></div>
+            <span>کلید API</span>
+            <div class="cell"><input type="text" id="aiKey" class="ltr" placeholder="sk-...">
+              <button class="btn sm gho" type="button" id="aiKeyClear">پاک کردن کلید</button></div>
+          </div>
+          <div class="acts">
+            <button class="btn pri" type="button" id="aiSave">ذخیره</button>
+            <button class="btn" type="button" id="aiTest">تست اتصال</button>
+          </div>
+          <div class="hint" style="margin-top:10px;line-height:2">با هر سرویسی که با استاندارد OpenAI سازگار است کار می‌کند: OpenRouter، OpenAI، Groq، Together، Ollama، LM Studio و… . آدرس را با یا بدون <code>/v1</code> بده؛ خودش کاملش می‌کند.</div>
+        </div>
+
+        <div class="fcard">
+          <div class="fh"><b>رفتار</b></div>
+          <label class="chk"><input type="checkbox" id="aiImg" checked> تصویر صفحه هم فرستاده شود (دقت بیشتر، هزینهٔ بیشتر)</label><br>
+          <label class="chk"><input type="checkbox" id="aiAdult" checked> این پروژه محتوای بزرگسال (+۱۸) دارد — ترجمه وفادار و بدون تلطیف</label>
+          <div class="hint" style="margin-top:10px;line-height:2">دستیار هیچ‌وقت خودش کاری نمی‌کند: نه پیام می‌دهد، نه چیزی را عوض می‌کند. فقط وقتی تو بازش کنی و بپرسی جواب می‌دهد، و هر متنی که پیشنهاد بدهد اول به‌صورت <b>پیش‌نویس</b> (کادر خط‌چین نارنجی) می‌آید تا خودت تأیید کنی.</div>
+        </div>
+
+        <div class="fcard">
+          <div class="fh"><b>پیش‌نویس‌های فعلی</b></div>
+          <div class="hint" style="line-height:2">پیش‌نویس‌ها گذاشته‌شده حساب نمی‌شوند و در پیشرفت فصل اثر ندارند.</div>
+          <div class="acts">
+            <button class="btn" type="button" id="aiConfirmAll">تأیید همهٔ پیش‌نویس‌ها</button>
+            <button class="btn dgr" type="button" id="aiDiscardAll">دور ریختن همهٔ پیش‌نویس‌ها</button>
+          </div>
+        </div>
+      </div>
       <div class="tp" id="tpHelp">
         <div class="hero">
           <div><b>تازه‌کارید؟</b><span class="hint">آموزش گام‌به‌گام هر دکمه را سر جای خودش نشان می‌دهد.</span></div>
@@ -567,6 +610,29 @@
       <div id="proofDoc" style="display:none"></div>
     </div>
   </div>
+</div>
+<div id="aiPanel" role="dialog" aria-label="دستیار">
+  <div class="aiHead">
+    <b>دستیار</b>
+    <span class="hint" id="aiModelTag">بدون مدل</span>
+    <span class="grow"></span>
+    <button class="btn sm gho" type="button" id="aiClear" title="پاک کردن گفت‌وگو">پاک</button>
+    <button class="btn sm gho" type="button" id="aiCfgPick" title="تنظیمات دستیار">تنظیم</button>
+    <button class="btn ico gho" type="button" id="aiClose" aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+  </div>
+  <div class="aiMsgs" id="aiMsgs"></div>
+  <div id="aiPrev"></div>
+  <div class="aiFoot">
+    <button class="btn sm" type="button" id="aiConfirm">تأیید پیش‌نویس‌ها</button>
+    <button class="btn sm gho dgr" type="button" id="aiDiscard">دور ریختن</button>
+    <span class="grow"></span>
+    <span class="hint">هیچ‌چیز خودکار نیست</span>
+  </div>
+  <form class="aiForm" id="aiForm">
+    <textarea id="aiInput" rows="2" spellcheck="false" placeholder="مشکلت را بنویس… (Enter = فرستادن)"></textarea>
+    <button class="btn pri" type="submit" id="aiSend">بفرست</button>
+  </form>
+  <div id="aiState"></div>
 </div>
 <div class="ov" id="ovAsk" role="dialog" aria-modal="true" aria-labelledby="askTitle">
   <div class="mw sm">
