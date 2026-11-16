@@ -1,0 +1,26 @@
+# build output
+app/app.css
+app/build/
+android/build/
+dist/
+*.log
+windows/nsis/payload
+windows/winbuild/
+windows/win-unpacked/
+windows/payload/
+node_modules/
+windows/node_modules
+*.exe
+*.apk
+*.asar
+.env
+.env.*
+
+# binaries are stored as *.b64 and restored by tools/restore-binaries.sh
+*.woff2
+*.ico
+*.bmp
+*.keystore
+# Android signing material is private: never commit the keystore, password,
+# or encoded keystore backup. Keep backups outside the public repository.
+android/signing/

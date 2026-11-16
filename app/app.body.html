@@ -1,0 +1,555 @@
+
+<!-- ===================== TITLE BAR ===================== -->
+<header id="titlebar">
+  <div class="tb-s">
+    <div class="dd" id="ddApp">
+      <button class="appbtn" type="button" data-dd title="منوی برنامه" aria-label="منوی برنامه"><svg class="logo" viewBox="3.4 5 25.2 23.6" aria-hidden="true"><defs><linearGradient id="lgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA24A"/><stop offset=".55" stop-color="#FF7A3D"/><stop offset="1" stop-color="#FF4F6D"/></linearGradient></defs><path fill="url(#lgA)" d="M9.375 6.25h13.25c2.625 0 4.75 2.125 4.75 4.75v7.75c0 2.625-2.125 4.75-4.75 4.75h-4.375l-5.375 3.875c-.5625.375-1.25-.0625-1.125-.75l.5-3.125h-2.875c-2.625 0-4.75-2.125-4.75-4.75V11c0-2.625 2.125-4.75 4.75-4.75z"/><path fill="#fff" d="M13.81 12.73Q14.09 11.8 14.55 11.02Q15.01 10.24 15.66 9.77Q16.32 9.3 17.17 9.3Q18.14 9.3 18.87 9.74Q19.61 10.17 20.02 10.96Q20.43 11.75 20.43 12.8Q20.43 13.64 20.12 14.34Q19.81 15.05 19.21 15.46Q18.6 15.88 17.69 15.88Q17.24 15.88 16.75 15.73Q16.25 15.57 15.78 15.37Q15.31 15.18 14.92 15.02Q14.52 14.87 14.29 14.87Q13.87 14.87 13.74 15.64Q13.6 16.41 13.6 17.72Q13.6 18.72 13.66 19.59Q13.71 20.46 13.74 20.9H11.69Q11.64 20.05 11.61 19.26Q11.57 18.47 11.57 17.73Q11.57 16.35 11.72 15.29Q11.86 14.23 12.33 13.57Q12.81 12.91 13.81 12.73ZM18.51 12.79Q18.51 12.23 18.15 11.81Q17.79 11.39 17.2 11.39Q16.82 11.39 16.53 11.64Q16.24 11.89 16.04 12.28Q15.84 12.67 15.71 13.06Q16.32 13.33 16.85 13.54Q17.39 13.75 17.72 13.75Q18.15 13.75 18.33 13.46Q18.51 13.17 18.51 12.79Z"/></svg><b>Mobin Studio</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cv"><path d="m6 9 6 6 6-6"/></svg></button>
+      <div class="pop">
+        <div class="ph">پروژه</div>
+        <button class="mi" type="button" data-cmd="newProj"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.8h6.5L15 6.3v10a1.2 1.2 0 0 1-1.2 1.2H5a1.2 1.2 0 0 1-1.2-1.2V4A1.2 1.2 0 0 1 5 2.8Z"/><path d="M9.5 8.5v5M7 11h5"/></svg><span>پروژهٔ جدید</span><kbd>Ctrl+N</kbd></button>
+        <button class="mi" type="button" data-cmd="openProj"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6a2 2 0 0 1 2-2h3l1.6 2h6.4a2 2 0 0 1 2 2v6.5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2V6Z"/></svg><span>باز کردن پروژه…</span><kbd>Ctrl+O</kbd></button>
+        <button class="mi" type="button" data-cmd="saveProj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg><span>ذخیرهٔ پروژه<small>.mobin</small></span><kbd>Ctrl+S</kbd></button>
+        <button class="mi" type="button" data-cmd="saveAs"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16.5H5.5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h7.3L16.5 7v2"/><path d="M6.5 3.5v4h6"/><path d="m15.6 11.4 1.5 1.5-4.4 4.4-2 .5.5-2 4.4-4.4Z"/></svg><span>ذخیره با نام…</span><kbd>Ctrl+Shift+S</kbd></button>
+        <button class="mi" type="button" data-cmd="showLast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg><span>نمایش آخرین فایل ذخیره‌شده</span></button>
+        <hr>
+        <div class="ph">نمایش</div>
+        <div class="mrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg><span>اندازهٔ متن برنامه</span>
+          <span class="mz"><button type="button" class="btn sm ico" data-cmd="uiZoomOut" title="کوچک‌تر (Ctrl+Shift+−)" aria-label="کوچک‌تر">−</button><button type="button" class="btn sm" data-cmd="uiZoom0" title="اندازهٔ عادی (Ctrl+Shift+0)">عادی</button><button type="button" class="btn sm ico" data-cmd="uiZoomIn" title="بزرگ‌تر (Ctrl+Shift++)" aria-label="بزرگ‌تر">+</button></span></div>
+        <button class="mi" type="button" data-cmd="theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span>حالت روشن / تیره</span></button>
+        <button class="mi" type="button" data-cmd="fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span>تمام‌صفحه</span><kbd>F11</kbd></button>
+        <hr>
+        <div class="ph">برنامه</div>
+        <button class="mi" type="button" id="bCheckUpdate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7v5h-5"/><path d="M20 12a8 8 0 1 1-2.34-5.66L20 9"/></svg><span>بررسی به‌روزرسانی</span></button>
+        <button class="mi" type="button" data-cmd="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>تنظیمات</span></button>
+        <button class="mi" type="button" data-cmd="help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>راهنما</span><kbd>F1</kbd></button>
+        <button class="mi" type="button" data-cmd="safeGpu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg><span>حالت امن گرافیک<small>اگر تصویر سیاه یا خراب دیده می‌شود</small></span><i class="mchk" id="safeGpuChk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i></button>
+        <button class="mi" type="button" data-cmd="userData"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg><span>پوشهٔ تنظیمات برنامه</span></button>
+        <button class="mi" type="button" data-cmd="reload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg><span>بارگذاری دوبارهٔ برنامه</span><kbd>Ctrl+R</kbd></button>
+        <button class="mi" type="button" data-cmd="about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span>دربارهٔ Mobin Studio</span></button>
+        <hr>
+        <button class="mi dgr" type="button" data-cmd="quit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg><span>خروج</span><kbd>Ctrl+Q</kbd></button>
+      </div>
+    </div>
+    <span class="tbsep"></span>
+    <button class="btn gho ico" id="bUndo" title="واگرد (Ctrl+Z)" aria-label="واگرد"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7H4V4M4.3 7A6.5 6.5 0 1 1 4 11.3"/></svg></button>
+    <button class="btn gho ico" id="bRedo" title="ازنو (Ctrl+Y)" aria-label="ازنو"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 6.5h3v-3M16.2 6.8A6.5 6.5 0 1 0 16.5 11"/></svg></button>
+  </div>
+  <div class="tb-m"><div class="doc" id="tbDoc"><i class="ddot" id="tbDot"></i><b id="tbTitle">پروژهٔ تازه</b><span class="dsub" id="tbSub"></span></div></div>
+  <div class="tb-e">
+  <div class="dd" id="ddFile">
+    <button class="btn" data-dd><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v9m0-9L6.8 7.2M10 4l3.2 3.2M4 14.5v1A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5v-1"/></svg><span class="ht">بارگذاری</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cv"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="pop">
+      <div class="ph">شروع کار</div>
+      <label class="mi"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="2.2"/><circle cx="7" cy="8" r="1.4"/><path d="m3 13.5 4-3.6 4 3.3 3-2.4 3 2.7"/></svg><span>عکس‌های کلین<small>PNG / JPG / WEBP / ZIP</small></span><input type="file" id="fImgs" multiple accept="image/*,.zip,application/zip"></label>
+      <label class="mi"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><span>نسخهٔ خام (تشخیص جای متن)<small>اختیاری — برای مانهواهای بدون بالن (در خروجی نمی‌آید)</small></span><input type="file" id="fRawImgs" multiple accept="image/*,.zip,application/zip"></label>
+      <label class="mi"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h7l5 5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 17V4.5A1.5 1.5 0 0 1 5.5 3Z"/><path d="M11 3v5h5M7 12h6M7 15h4"/></svg><span>متن مترجم<small>TXT</small></span><input type="file" id="fTxt" accept=".txt,text/plain"></label>
+      <button class="mi" id="bPaste"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.3 3.6a1.8 1.8 0 0 1 2.6 2.6L7.4 14.7 4 15.9l1.2-3.4 8.1-8.9Z"/></svg><span>چسباندن متن…</span></button>
+      <button class="mi" id="bRemoteMenu" type="button"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 15.5h9a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 5.2 7.5 3.8 3.8 0 0 0 5.5 15.5Z"/></svg><span>ادامه در موبایل / لپ‌تاپ (Remote)<small>همگام‌سازی ابری بدون نیاز به روشن بودن لپ‌تاپ</small></span></button>
+      <hr>
+      <div class="ph">پروژه</div>
+      <button class="mi" id="bNewProj" type="button"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.8h6.5L15 6.3v10a1.2 1.2 0 0 1-1.2 1.2H5a1.2 1.2 0 0 1-1.2-1.2V4A1.2 1.2 0 0 1 5 2.8Z"/><path d="M9.5 8.5v5M7 11h5"/></svg><span>پروژهٔ جدید</span><kbd>Ctrl+N</kbd></button>
+      <button class="mi" id="bOpenProj" type="button"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6a2 2 0 0 1 2-2h3l1.6 2h6.4a2 2 0 0 1 2 2v6.5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2V6Z"/></svg><span>باز کردن پروژه…<small>.mobin — و فایل‌های قدیمی JSON / ZIP</small></span><kbd>Ctrl+O</kbd></button>
+      <input type="file" id="fProj" hidden accept=".mobin,.json,.zip,application/json,application/zip">
+      <button class="mi" id="bSaveProj" type="button"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5A2 2 0 0 1 5.5 3.5h7.3L16.5 7v7.5a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-9Z"/><path d="M6.5 3.5v4h6M6.5 16.5v-4h7"/></svg><span>ذخیره<small>یک فایل .mobin — عکس‌ها، متن‌ها، لایه‌ها و فونت‌ها</small></span><kbd>Ctrl+S</kbd></button>
+      <button class="mi" id="bSaveAs" type="button"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16.5H5.5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h7.3L16.5 7v2"/><path d="M6.5 3.5v4h6"/><path d="m15.6 11.4 1.5 1.5-4.4 4.4-2 .5.5-2 4.4-4.4Z"/></svg><span>ذخیره با نام…</span><kbd>Ctrl+Shift+S</kbd></button>
+      <div class="ph" id="recentHead" style="display:none">پروژه‌های اخیر</div>
+      <div id="recentList"></div>
+    </div>
+  </div>
+  <div class="dd end" id="ddExp">
+    <button class="btn pri" data-dd><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13V4m0 9-3.2-3.2M10 13l3.2-3.2M4 14.5v1A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5v-1"/></svg><span class="ht">خروجی</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cv"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="pop">
+      <div class="ph">قالب</div>
+      <div style="padding:2px 8px 8px"><div class="seg" id="segFmt" role="tablist" style="width:100%">
+        <button role="tab" data-f="png" aria-selected="true" style="flex:1">PNG</button>
+        <button role="tab" data-f="jpg" aria-selected="false" style="flex:1">JPG</button>
+        <button role="tab" data-f="webp" aria-selected="false" style="flex:1">WEBP</button>
+      </div></div>
+      <div id="qWrap" style="padding:0 8px 10px;display:none">
+        <span class="lbl">کیفیت <b id="qVal">۹۲</b>٪</span>
+        <input type="range" id="qRange" min="40" max="100" step="1" value="92">
+      </div>
+      <div class="ph">اندازهٔ خروجی</div>
+      <div style="padding:2px 8px 6px"><div class="seg" id="segScale" role="tablist" style="width:100%">
+        <button role="tab" data-k="1" aria-selected="true" style="flex:1">اصلی</button>
+        <button role="tab" data-k="2" aria-selected="false" style="flex:1">۲ برابر</button>
+        <button role="tab" data-k="3" aria-selected="false" style="flex:1">۳ برابر</button>
+      </div></div>
+      <div class="hint" id="scaleHint" style="padding:0 10px 8px;white-space:pre-line">اندازهٔ خود عکس</div>
+      <hr>
+      <button class="mi" id="bExpDirQuick" type="button"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 5.5A1.5 1.5 0 0 1 4 4h3.8l1.8 2H16a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 16 16H4a1.5 1.5 0 0 1-1.5-1.5v-9Z"/></svg><span>مسیر و درایو ذخیره…<small id="expDirSub" class="ltr">پیش‌فرض سیستم</small></span></button>
+      <hr>
+      <button class="mi" id="bExpOne"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="2.2"/><circle cx="7" cy="8" r="1.4"/><path d="m3 13.5 4-3.6 4 3.3 3-2.4 3 2.7"/></svg><span>همین صفحه</span></button>
+      <button class="mi" id="bExpAll"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.6 10 3l7 3.6v6.8L10 17l-7-3.6V6.6Z"/><path d="M3 6.6 10 10.2l7-3.6M10 10.2V17"/></svg><span>همهٔ صفحات<small>ZIP</small></span></button>
+      <button class="mi aOnly" id="bExpGal"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="12" height="11" rx="2"/><path d="M5.5 2.5h9.8a2.2 2.2 0 0 1 2.2 2.2v8.8"/><circle cx="6.4" cy="8.4" r="1.2"/><path d="m3 13.4 3.4-3 3 2.6 2.4-2 2.2 2"/></svg><span>همهٔ صفحات در گالری<small>Pictures/MobinStudio — هر صفحه یک عکس</small></span></button>
+    </div>
+  </div>
+  </div>
+</header>
+
+
+<main>
+  <!-- ======== TOOL RAIL (start side) ======== -->
+  <nav id="rail" aria-label="ابزارها">
+    <button type="button" class="rb" id="tScript" title="پنل متن (F9)" aria-label="پنل متن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3" width="15" height="14" rx="2.5"/><path d="M12.5 3v14"/></svg><i>متن</i></button>
+    <button type="button" class="rb" id="tInspect" title="پنل لایه (F10)" aria-label="پنل لایه"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3" width="15" height="14" rx="2.5"/><path d="M7.5 3v14"/></svg><i>لایه</i></button>
+    <button type="button" class="rb mOnly" id="bNextM" title="متن بعدی در بالن بعدی" aria-label="متن بعدی"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 10H4.8"/><path d="m9.3 5.2-4.8 4.8 4.8 4.8"/></svg><i>بعدی</i></button>
+    <div class="rsep"></div>
+    <button type="button" class="rb" id="tClean" title="پاک‌کردن داخل بالن (E)" aria-label="ابزار پاک‌کردن بالن" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.6 15.5 3.9 10.8a1.5 1.5 0 0 1 0-2.1l5.3-5.3a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-5.3 5.3H17"/><path d="m6.6 7.6 5.8 5.8"/></svg><i>پاک‌کن</i></button>
+    <button type="button" class="rb" id="bGhost" title="نمایش روح نسخهٔ خام برای پیدا کردن جای متن‌های بدون بالن (نگه‌داشتن Space یا کلید G)" aria-label="نسخهٔ خام" aria-pressed="false" style="display:none"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><i>روح خام</i></button>
+    <button type="button" class="rb" id="bRemoteRail" title="ادامه در موبایل / لپ‌تاپ (همگام‌سازی ابری)" aria-label="ادامه در موبایل"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 15.5h9a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 5.2 7.5 3.8 3.8 0 0 0 5.5 15.5Z"/></svg><i>ریموت</i></button>
+    <button type="button" class="rb" id="bFit" title="اندازهٔ پنجره (Ctrl+0)" aria-label="اندازهٔ پنجره"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V4.5A1.5 1.5 0 0 1 4.5 3H8M12 3h3.5A1.5 1.5 0 0 1 17 4.5V8M17 12v3.5a1.5 1.5 0 0 1-1.5 1.5H12M8 17H4.5A1.5 1.5 0 0 1 3 15.5V12"/><rect x="7" y="7" width="6" height="6" rx="1.3"/></svg><i>جا دادن</i></button>
+    <span class="grow"></span>
+    <button type="button" class="rb" id="bTheme" title="حالت روشن / تیره" aria-label="حالت روشن یا تیره"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="3.6"/><path d="M10 1.8v1.9M10 16.3v1.9M18.2 10h-1.9M3.7 10H1.8M15.8 4.2l-1.35 1.35M5.55 14.45 4.2 15.8M15.8 15.8l-1.35-1.35M5.55 5.55 4.2 4.2"/></svg><i>روشنایی</i></button>
+    <button type="button" class="rb" id="bSettings" title="تنظیمات" aria-label="تنظیمات"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h7"/><circle cx="13.5" cy="14" r="2.1"/></svg><i>تنظیم</i></button>
+    <button type="button" class="rb" id="bHelp" title="راهنما" aria-label="راهنما"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M8 7.8a2.1 2.1 0 1 1 2.6 2.05c-.4.12-.6.45-.6.85v.6"/><path d="M10 14.3v.05" stroke-width="2"/></svg><i>راهنما</i></button>
+  </nav>
+
+  <!-- ======== SCRIPT PANEL ======== -->
+  <aside class="side" id="script">
+    <div class="sh">
+      <div class="donut" id="donut"><svg viewBox="0 0 34 34"><circle class="bg" cx="17" cy="17" r="14.5"/><circle class="fg" cx="17" cy="17" r="14.5" stroke-dasharray="91.1" stroke-dashoffset="91.1"/></svg><b id="donutT">۰٪</b></div>
+      <div style="min-width:0">
+        <h2>متن این صفحه</h2>
+        <div class="hint" id="shSub">هنوز متنی بارگذاری نشده</div>
+      </div>
+      <span class="grow"></span>
+      <button class="btn sm ico gho" id="bAutoPage" title="چیدن خودکار همهٔ متن‌های این صفحه در بالن‌ها (Ctrl+Shift+A)" aria-label="چیدن خودکار متن‌های این صفحه"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.2c0-2.6 2.6-4.7 5.8-4.7s5.8 2.1 5.8 4.7-2.6 4.7-5.8 4.7c-.7 0-1.4-.1-2-.3L4.4 14l.6-2.6c-.9-.9-1.5-2-1.5-3.2Z"/><path d="M15.6 12.6v4.2M13.5 14.7h4.2"/></svg></button>
+      <button class="btn sm ico gho" id="bAlign" title="هم‌ترازی متن و تصویر" aria-label="هم‌ترازی متن و تصویر"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.8 17 6.4 10 10 3 6.4l7-3.6Z"/><path d="m3.6 10 6.4 3.3 6.4-3.3M3.6 13.4 10 16.7l6.4-3.3"/></svg></button>
+      <button class="btn sm ico gho" id="bFilter" title="فقط گذاشته‌نشده‌ها" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="5.3"/><path d="m13 13 3.5 3.5"/></svg></button>
+      <button class="btn sm ico gho closeBtn" data-closepanel="script" aria-label="بستن پنل"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+    </div>
+    <div class="strip" id="strip"></div>
+    <div class="sbody"><div class="cards" id="cards"></div></div>
+  </aside>
+
+  <!-- ======== STAGE ======== -->
+  <section class="stagewrap">
+    <div id="cleanBar">
+      <b>پاک‌کردن داخل بالن</b>
+      <span class="hint" id="cleanHint">روی فضای خالیِ داخل بالن بزنید.</span>
+      <span class="grow"></span>
+      <span class="cg"><label class="chk" title="رنگ از خود بالن برداشته شود"><input type="checkbox" id="ckAuto">رنگ خودکار</label>
+      <input type="color" id="ckColor" value="#FFFFFF" title="رنگ پرکردن"></span>
+      <span class="cg"><span class="mini">حساسیت</span><input type="range" id="ckTol" min="10" max="160" step="2" title="حساسیت رنگ"><b id="ckTolV" class="mini">۵۸</b></span>
+      <span class="cg"><span class="mini">حاشیه</span><input type="number" id="ckGrow" min="-5" max="5" step="1" value="0" style="width:52px" title="حاشیه — مثبت یعنی کمی روی خط دور بالن هم برود"></span>
+      <button class="btn sm" id="bCleanPage" type="button" title="همهٔ لکه‌های این صفحه را بردار">پاک‌کردن این صفحه</button>
+      <button class="btn sm gho ico" id="bCleanDone" type="button" title="بستن ابزار"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+    </div>
+    <div id="mobQuick" role="toolbar" aria-label="ابزار سریع لایه">
+      <button class="btn sm" type="button" id="mqSm" title="کوچک‌تر">A−</button>
+      <button class="btn sm" type="button" id="mqBg" title="بزرگ‌تر">A+</button>
+      <span class="mq-sep"></span>
+      <button class="btn sm" type="button" id="mqInv" title="تغییر رنگ سیاه/سفید و دورخط">◐ رنگ</button>
+      <button class="btn sm" type="button" id="mqShd" title="سایهٔ نرم زیر متن بدون بالن">✦ سایه</button>
+      <button class="btn sm" type="button" id="mqFit" title="جا دادن دوباره">⤢ جا</button>
+      <span class="mq-sep"></span>
+      <button class="btn sm dgr" type="button" id="mqDel" title="حذف لایه">✕</button>
+    </div>
+
+
+    <div id="stage">
+      <div id="pages"></div>
+      <div id="welcome"><div class="wc">
+        <div class="wmark"><svg class="big" viewBox="3.4 5 25.2 23.6" aria-hidden="true"><defs><linearGradient id="lgW" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA24A"/><stop offset=".55" stop-color="#FF7A3D"/><stop offset="1" stop-color="#FF4F6D"/></linearGradient></defs><path fill="url(#lgW)" d="M9.375 6.25h13.25c2.625 0 4.75 2.125 4.75 4.75v7.75c0 2.625-2.125 4.75-4.75 4.75h-4.375l-5.375 3.875c-.5625.375-1.25-.0625-1.125-.75l.5-3.125h-2.875c-2.625 0-4.75-2.125-4.75-4.75V11c0-2.625 2.125-4.75 4.75-4.75z"/><path fill="#fff" d="M13.81 12.73Q14.09 11.8 14.55 11.02Q15.01 10.24 15.66 9.77Q16.32 9.3 17.17 9.3Q18.14 9.3 18.87 9.74Q19.61 10.17 20.02 10.96Q20.43 11.75 20.43 12.8Q20.43 13.64 20.12 14.34Q19.81 15.05 19.21 15.46Q18.6 15.88 17.69 15.88Q17.24 15.88 16.75 15.73Q16.25 15.57 15.78 15.37Q15.31 15.18 14.92 15.02Q14.52 14.87 14.29 14.87Q13.87 14.87 13.74 15.64Q13.6 16.41 13.6 17.72Q13.6 18.72 13.66 19.59Q13.71 20.46 13.74 20.9H11.69Q11.64 20.05 11.61 19.26Q11.57 18.47 11.57 17.73Q11.57 16.35 11.72 15.29Q11.86 14.23 12.33 13.57Q12.81 12.91 13.81 12.73ZM18.51 12.79Q18.51 12.23 18.15 11.81Q17.79 11.39 17.2 11.39Q16.82 11.39 16.53 11.64Q16.24 11.89 16.04 12.28Q15.84 12.67 15.71 13.06Q16.32 13.33 16.85 13.54Q17.39 13.75 17.72 13.75Q18.15 13.75 18.33 13.46Q18.51 13.17 18.51 12.79Z"/></svg></div>
+        <h1>یک چپتر تازه شروع کنید</h1>
+        <p>عکس‌های کلین و متن مترجم را بدهید؛ پیدا کردن بالن‌ها و جا دادن متن با برنامه است.</p>
+        <label class="dropzone" title="انتخاب عکس یا ZIP">
+          <span class="dzi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg></span>
+          <b><span class="dsk">عکس‌ها یا فایل ZIP را اینجا رها کنید</span><span class="mbl">انتخاب عکس‌ها یا فایل ZIP</span></b>
+          <span class="dzh"><span class="dsk">یا کلیک کنید و انتخاب کنید</span><span class="mbl">از پوشهٔ فایل‌ها — به ترتیب نام</span> <span class="fmt">PNG · JPG · WEBP · ZIP</span></span>
+          <input type="file" id="fImgs2" multiple accept="image/*,.zip,application/zip">
+        </label>
+        <div class="steps">
+          <div class="step"><i>۱</i><div><b>عکس‌های کلین</b><span>همهٔ صفحه‌های فصل، یا یک فایل ZIP</span></div></div>
+          <div class="step"><i>۲</i><div><b>متن مترجم</b><span><label class="lnk">فایل TXT<input type="file" id="fTxt2" accept=".txt,text/plain"></label> یا <button class="lnk" type="button" id="bPaste2">چسباندن متن</button></span></div></div>
+          <div class="step"><i>۳</i><div><b>روی بالن بزنید</b><span>متن خودش داخل بالن جا می‌افتد</span></div></div>
+        </div>
+        <div class="learn">
+          <button class="btn gho hideMob" type="button" id="bTour2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/></svg>آموزش گام‌به‌گام</button>
+          <span class="vr hideMob"></span>
+          <button class="btn gho" type="button" id="bDemo2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L7.5 3.64A1 1 0 0 0 6 4.5Z"/></svg>نمونهٔ تمرینی</button>
+        </div>
+      </div></div>
+    </div>
+      <div id="sbar" class="dock">
+      <div class="pgnav">
+        <button class="btn gho ico sm" id="bPgPrev" title="صفحهٔ قبل" aria-label="صفحهٔ قبل"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4.5 13.5 10 8 15.5"/></svg></button>
+        <b id="sbPg">—</b>
+        <button class="btn gho ico sm" id="bPgNext" title="صفحهٔ بعد" aria-label="صفحهٔ بعد"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 6.5 10l5.5 5.5"/></svg></button>
+      </div>
+      <div class="vr"></div>
+      <div class="zoom">
+        <button id="zOut" title="کوچک‌نمایی" aria-label="کوچک‌نمایی">−</button>
+        <b id="zVal" title="کلیک = اندازهٔ واقعی">۱۰۰٪</b>
+        <button id="zIn" title="بزرگ‌نمایی" aria-label="بزرگ‌نمایی">+</button>
+      </div>
+      <div class="vr"></div>
+      <button class="btn gho ico sm" id="bFit2" type="button" title="اندازهٔ پنجره (Ctrl+0)" aria-label="اندازهٔ پنجره"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button>
+    </div>
+  </section>
+
+  <!-- ======== INSPECTOR ======== -->
+  <aside class="side" id="inspect">
+    <div class="ihead" style="display:flex;gap:8px;align-items:center">
+      <div class="seg" id="segInsp" role="tablist" style="flex:1">
+        <button role="tab" data-p="layer" aria-selected="true" style="flex:1">لایه</button>
+        <button role="tab" data-p="pages" aria-selected="false" style="flex:1">صفحات</button>
+      </div>
+      <button class="btn sm ico gho closeBtn" data-closepanel="inspect" aria-label="بستن پنل"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+    </div>
+
+    <div class="ipanel on" id="pLayer">
+      <div class="sbody">
+        <div id="noSel" class="empty-s">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 5.5A2.3 2.3 0 0 1 5.5 3.2h9A2.3 2.3 0 0 1 16.8 5.5v6A2.3 2.3 0 0 1 14.5 13.8H10l-4 3.2v-3.2h-.5A2.3 2.3 0 0 1 3.2 11.5v-6Z"/></svg>
+          <p>لایه‌ای انتخاب نشده.</p>
+        </div>
+
+        <div id="selBody" style="display:none">
+          <div class="grp">
+            <span class="lbl">متن</span>
+            <textarea id="iText" rows="3" spellcheck="false"></textarea>
+          </div>
+          <div class="grp">
+            <span class="lbl">فونت</span>
+            <select id="iFont"></select>
+            <div class="row" style="margin-top:8px">
+              <label class="chk"><input type="checkbox" id="iBold"> ضخیم</label>
+              <label class="chk"><input type="checkbox" id="iItalic"> کج</label>
+            </div>
+          </div>
+          <div class="grp g2">
+            <div class="field"><span class="lbl">اندازه</span><div class="sl"><input type="range" id="iSizeR" min="8" max="140" step="1"><input type="number" id="iSize" min="6" max="400"></div></div>
+            <div class="field"><span class="lbl">پهنای کادر</span><div class="sl"><input type="range" id="iWidthR" min="40" max="1400" step="5"><input type="number" id="iWidth" min="20" max="4000"></div></div>
+          </div>
+          <div class="grp g2">
+            <div class="field"><span class="lbl">فاصلهٔ خطوط</span><div class="sl"><input type="range" id="iLhR" min="90" max="220" step="5"><input type="number" id="iLh" min="0.8" max="3" step="0.05"></div></div>
+            <div class="field"><span class="lbl">چرخش</span><div class="sl"><input type="range" id="iRotR" min="-180" max="180" step="1"><input type="number" id="iRot" min="-180" max="180"></div></div>
+          </div>
+          <div class="grp">
+            <span class="lbl">رنگ متن</span>
+            <div class="row"><input type="color" id="iColor"><input type="text" id="iColorT" spellcheck="false" class="ltr"></div>
+            <div class="swatches" id="swText"></div>
+          </div>
+          <div class="grp">
+            <span class="lbl">دورخط</span>
+            <div class="row"><input type="color" id="iStrokeC"><div class="sl" style="flex:1"><input type="range" id="iStrokeR" min="0" max="20" step="0.5"><input type="number" id="iStroke" min="0" max="40" step="0.5"></div></div>
+            <div class="swatches" id="swStroke"></div>
+          </div>
+          <div class="grp">
+            <span class="lbl">سایهٔ نرم / درخشش (مخصوص متن بدون بالن)</span>
+            <div class="row"><input type="color" id="iShadowC" value="#000000"><div class="sl" style="flex:1"><input type="range" id="iShadowR" min="0" max="30" step="1" value="0"><input type="number" id="iShadow" min="0" max="60" step="1" value="0"></div></div>
+          </div>
+          <div id="invNote" class="note" style="display:none">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M8 7.8a2.1 2.1 0 1 1 2.6 2.05c-.4.12-.6.45-.6.85v.6"/><path d="M10 14.3v.05" stroke-width="2"/></svg>
+            <span>رنگ این لایه خودکار برای بالن تیره روشن شد.</span>
+          </div>
+          <div class="grp" style="margin-top:16px">
+            <div class="g2">
+              <button class="btn sm" id="bTagApply" title="اندازه، رنگ، فونت و دورخط این لایه را استایل پیش‌فرض این تگ کن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 2.8 2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L5.5 16.6l.9-5L2.8 8.1l5-.7L10 2.8Z"/></svg>استایل تگ</button>
+              <button class="btn sm" id="bDup" title="Ctrl+D"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg>کپی</button>
+            </div>
+            <div class="g2" style="margin-top:8px">
+              <button class="btn sm" id="bRefit" title="دوباره داخل بالن جا بده"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V4.5A1.5 1.5 0 0 1 4.5 3H8M12 3h3.5A1.5 1.5 0 0 1 17 4.5V8M17 12v3.5a1.5 1.5 0 0 1-1.5 1.5H12M8 17H4.5A1.5 1.5 0 0 1 3 15.5V12"/><rect x="7" y="7" width="6" height="6" rx="1.3"/></svg>جا دادن دوباره</button>
+              <button class="btn sm dgr" id="bDel" title="Delete"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4.5A1.5 1.5 0 0 1 9.5 3h1A1.5 1.5 0 0 1 12 4.5V6M6 6l.7 9.6A1.5 1.5 0 0 0 8.2 17h3.6a1.5 1.5 0 0 0 1.5-1.4L14 6"/></svg>حذف</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ipanel" id="pPages">
+      <div class="sbody">
+        <div class="stats">
+          <div class="stat"><b id="stPages">۰</b><span>صفحه</span></div>
+          <div class="stat"><b id="stBub">۰</b><span>بالن</span></div>
+          <div class="stat"><b id="stDone">۰</b><span>گذاشته</span></div>
+          <div class="stat"><b id="stLeft">۰</b><span>مانده</span></div>
+        </div>
+        <span class="lbl">صفحات</span>
+        <div class="pgrid" id="pgrid"></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <span>صفحه <b id="fPage">—</b></span><span class="dot"></span>
+  <span>بالن <b id="fBub">—</b></span><span class="dot"></span>
+  <span id="fSize" class="hideSm">—</span>
+  <span class="sv idle" id="fSave"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5A2 2 0 0 1 5.5 3.5h7.3L16.5 7v7.5a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-9Z"/><path d="M6.5 3.5v4h6M6.5 16.5v-4h7"/></svg><span id="fSaveT">ذخیرهٔ خودکار</span></span>
+</footer>
+
+<div id="scrim"></div>
+<div id="dropveil"><div>رها کنید تا بارگذاری شود</div></div>
+<div id="toasts" role="status" aria-live="polite"></div>
+<div id="busy"><div class="bx"><b id="busyT">در حال کار…</b><div class="track"><i id="busyI"></i></div><small id="busyS"></small></div></div>
+
+<aside id="updateNote" class="updateNote" hidden role="status" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+  <span id="updateText">—</span>
+  <button class="btn pri sm" id="bInstallUpdate" type="button">دانلود و نصب</button>
+  <button class="btn sm gho" id="bDismissUpdate" type="button">بعداً</button>
+</aside>
+
+<div id="tour" aria-hidden="true">
+  <div class="tmask" data-m="t"></div><div class="tmask" data-m="b"></div>
+  <div class="tmask" data-m="l"></div><div class="tmask" data-m="r"></div>
+  <div class="tring" id="tRing"></div>
+  <div class="tcard" id="tCard" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <div class="tdots" id="tDots"></div>
+    <b id="tTitle"></b>
+    <p id="tBody"></p>
+    <div class="tfoot">
+      <button class="btn sm gho" type="button" id="tSkip">رد کردن</button>
+      <span class="grow"></span>
+      <span class="tnum" id="tNum"></span>
+      <button class="btn sm" type="button" id="tPrev">قبلی</button>
+      <button class="btn sm pri" type="button" id="tNext">بعدی</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== settings ===== -->
+<div class="ov" id="ovSet" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="mw">
+    <div class="mh"><h2 id="setTitle">تنظیمات</h2><span class="grow"></span><button class="btn gho ico" data-close aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button></div>
+    <div class="tabs" id="setTabs" role="tablist">
+      <button role="tab" data-t="fonts" aria-selected="true">فونت‌ها</button>
+      <button role="tab" data-t="text" aria-selected="false">متن</button>
+      <button role="tab" data-t="gen" aria-selected="false">عمومی</button>
+      <button role="tab" data-t="proj" aria-selected="false">پروژه</button>
+      <button role="tab" data-t="help" aria-selected="false">راهنما</button>
+    </div>
+    <div class="mb">
+      <div class="tp on" id="tpFonts">
+        <div class="row" style="margin-bottom:14px">
+          <input type="search" id="fontSearch" placeholder="جست‌وجوی تگ…">
+          <button class="btn sm" id="bLocalFonts" title="خواندن فونت‌های نصب‌شده روی سیستم (کروم / اج)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="5.3"/><path d="m13 13 3.5 3.5"/></svg>فونت‌های سیستم</button>
+        </div>
+        <datalist id="dlLocal"></datalist>
+        <div id="fontList"></div>
+      </div>
+
+      <div class="tp" id="tpText">
+        <span class="lbl">متن مترجم</span>
+        <textarea id="rawText" rows="9" spellcheck="false" placeholder="متن را اینجا بچسبانید…&#10;&#10;صفحه ۱&#10;آرین (عادی): بالاخره رسیدیم.&#10;ناشناس (فریاد): تکون نخور!&#10;SFX: بــوم"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn pri" id="bParse"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2.5 4.8 11h4L9 17.5 15.2 9h-4L11 2.5Z"/></svg>پردازش متن</button>
+          <label class="btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h7l5 5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 17V4.5A1.5 1.5 0 0 1 5.5 3Z"/><path d="M11 3v5h5M7 12h6M7 15h4"/></svg>از فایل<input type="file" id="fTxt3" accept=".txt,text/plain"></label>
+          <span class="grow"></span>
+          <button class="btn sm gho" id="bClearRaw">پاک کردن</button>
+        </div>
+        <div id="parseReport" style="margin-top:14px"></div>
+        <hr class="sep2">
+        <span class="lbl">جست‌وجو و جایگزینی در همهٔ صفحات</span>
+        <div class="row"><input type="text" id="repA" placeholder="پیدا کن"><input type="text" id="repB" placeholder="جایگزین کن"></div>
+        <div class="row" style="margin-top:8px">
+          <label class="chk"><input type="checkbox" id="repWord"> فقط کلمهٔ کامل</label>
+          <span class="grow"></span>
+          <button class="btn" id="bReplace"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10l-2.4-2.4M16 13H6l2.4 2.4"/></svg>جایگزین کن</button>
+        </div>
+      </div>
+
+      <div class="tp" id="tpGen">
+        <span class="lbl">هنگام گذاشتن متن</span>
+        <label class="chk"><input type="checkbox" id="optAutoFit" checked> پیدا کردن خودکار بالن و جا دادن متن</label><br>
+        <label class="chk"><input type="checkbox" id="optGrow" title="اندازه‌ها ممکن است ناهماهنگ شوند"> اجازهٔ بزرگ‌تر شدن از اندازهٔ تگ</label><br>
+        <label class="chk"><input type="checkbox" id="optInvert" checked> سفید کردن خودکار متن در بالن تیره</label><br>
+        <label class="chk"><input type="checkbox" id="optNext" checked> رفتن خودکار به بالن بعدی</label><br>
+        <label class="chk"><input type="checkbox" id="optAutoPlace" checked> با زدن روی کارت متن، خودکار در بالن بعدی گذاشته شود</label><br>
+        <label class="chk"><input type="checkbox" id="optAutoGo" checked> صفحه خودکار به بالن بعدی برود</label><br>
+        <label class="chk"><input type="checkbox" id="optRtlOrder"> ترتیب بالن‌های کنار هم: راست به چپ (مانگا)</label><br>
+        <label class="chk"><input type="checkbox" id="optAutoClean"> پاک کردن متن اصلی بالن هنگام گذاشتن متن فارسی</label><br>
+        <label class="chk"><input type="checkbox" id="optDragBox" checked> کشیدن کادر با ماوس/انگشت در جاهای بدون بالن (Drag-to-Box)</label><br>
+        <label class="chk"><input type="checkbox" id="optOpenSpace" checked> تشخیص خودکار فضاهای خالی و نوارهای نریشنِ بدون بالن</label><br>
+        <label class="chk"><input type="checkbox" id="optSinglePageMob" checked> حالت فوق‌سبک موبایل (نمایش تک‌صفحه‌ای برای جلوگیری از هنگ و داغ شدن گوشی)</label>
+
+        <hr class="sep2">
+        <span class="lbl">مسیر و درایو ذخیرهٔ خروجی (ویندوز / سیستم)</span>
+        <div class="fcard" style="margin-bottom:12px">
+          <div class="row" style="gap:6px;flex-wrap:wrap">
+            <input type="text" id="inpSaveDir" class="ltr" placeholder="مثلاً D:\Manhwa\Ch04 یا E:\Projects\Output" style="flex:1;min-width:210px">
+            <button class="btn sm pri" type="button" id="bPickSaveDir" title="مرور و انتخاب پوشه از درایوهای سیستم">📂 انتخاب از درایوها…</button>
+            <button class="btn sm" type="button" id="bApplySaveDir" title="ثبت آدرس تایپ‌شده">ثبت آدرس</button>
+            <button class="btn sm gho" type="button" id="bOpenSaveDir" title="باز کردن این پوشه در ویندوز اکسپلورر">باز کردن پوشه ↗</button>
+          </div>
+          <div class="row" style="margin-top:8px;justify-content:space-between;flex-wrap:wrap">
+            <label class="chk"><input type="checkbox" id="optDirectSave"> ذخیرهٔ مستقیم و فوری در همین درایو/پوشه (بدون باز شدن پنجرهٔ Save As در هر بار خروجی)</label>
+            <button class="lnk" type="button" id="bResetSaveDir" style="font-size:11px">برگشت به پوشهٔ پیش‌فرض</button>
+          </div>
+        </div>
+
+        <hr class="sep2">
+        <span class="lbl">پاک‌کردن داخل بالن</span>
+        <div class="fgrid">
+          <span>رنگ وصله</span>
+          <div class="cell">
+            <label class="chk"><input type="checkbox" id="optCleanAuto" checked>از خود بالن برداشته شود</label>
+            <input type="color" id="setCleanColor" value="#FFFFFF">
+          </div>
+          <span>حساسیت رنگ</span>
+          <div class="cell"><input type="range" id="setCleanTol" min="10" max="160" step="2" style="width:150px"><b id="setCleanTolV" class="mini">۵۸</b></div>
+          <span>حاشیه</span>
+          <div class="cell"><input type="number" id="setCleanGrow" min="-5" max="5" step="1" value="0" title="مثبت = کمی روی خط دور بالن هم می‌رود"></div>
+        </div>
+        <div class="row" style="margin-top:12px;gap:8px"><button class="btn sm" id="bCleanAll">پاک‌کردن لکه‌های همهٔ صفحه‌ها</button><span class="hint" id="cleanInfo">—</span></div>
+
+        <hr class="sep2">
+        <span class="lbl">اصلاح خودکار متن فارسی</span>
+        <label class="chk"><input type="checkbox" id="optArabic" checked> اصلاح حروف عربی (ي ك) و حذف کشیده</label><br>
+        <label class="chk"><input type="checkbox" id="optZwnj" checked> نیم‌فاصله برای می/نمی و ها/های</label><br>
+        <label class="chk"><input type="checkbox" id="optZwnjTar" title="روی «لباس تر» اشتباه می‌کند"> نیم‌فاصله برای تر/ترین</label><br>
+        <label class="chk"><input type="checkbox" id="optPunct" checked> علائم فارسی (؟ ؛ و ویرگول)</label><br>
+        <label class="chk"><input type="checkbox" id="optEllip" title="فونت‌های داخلی این نویسه را ندارند"> سه‌نقطهٔ تک‌نویسه</label><br>
+        <label class="chk"><input type="checkbox" id="optDigits"> ارقام فارسی</label>
+        <div class="row" style="margin-top:12px"><button class="btn sm" id="bReparse"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16 13.5 6.5M12 3.2l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6L9.8 5.4l1.6-.6L12 3.2ZM16.4 9.6l.4 1.1 1.1.4-1.1.4-.4 1.1-.4-1.1-1.1-.4 1.1-.4.4-1.1Z"/></svg>پردازش دوبارهٔ متن</button></div>
+      </div>
+
+      <div class="tp" id="tpProj">
+        <div class="rcard">
+          <div class="row" style="justify-content:space-between">
+            <b>☁️ ادامهٔ کار در موبایل / لپ‌تاپ (Remote Sync)</b>
+            <span class="pill inf" id="remStatusPill">آماده</span>
+          </div>
+          <p class="hint" style="margin:6px 0 10px">وقتی بخشی از چپتر را روی لپ‌تاپ زدید و می‌خواهید بیرون از خانه (در حالی که لپ‌تاپ کاملاً خاموش است) روی گوشی ادامه دهید، یک «کد انتقال ابری» بسازید یا فایل <code>.mobin</code> را در کلود/تلگرام بفرستید.</p>
+          <div class="row" style="flex-wrap:wrap;gap:6px">
+            <button class="btn sm pri" type="button" id="bRemPush">📤 ارسال پیشرفت به ابر (دریافت کد)</button>
+            <button class="btn sm" type="button" id="bRemShare">📲 اشتراک‌گذاری سریع (تلگرام / کلود گوشی)</button>
+          </div>
+          <div id="remCodeWrap" style="display:none">
+            <div class="rcode" id="remCodeBox">—</div>
+            <div class="hint" style="text-align:center">این کد را در دستگاه دیگر وارد کنید تا تمام لایه‌ها، متن‌ها، استایل‌ها و پاک‌کاری‌ها منتقل شوند.</div>
+          </div>
+          <div class="row" style="margin-top:10px;gap:6px">
+            <input type="text" id="remPullInput" class="ltr" placeholder="کد انتقال ابری یا لینک را اینجا وارد کنید…" style="flex:1">
+            <button class="btn sm" type="button" id="bRemPull">📥 دریافت و ادامهٔ کار</button>
+          </div>
+        </div>
+
+        <span class="lbl">نام پروژه</span>
+        <input type="text" id="pTitle" maxlength="100" placeholder="مثلاً: نام مانهوا — فصل ۱۲">
+
+        <hr class="sep2">
+        <span class="lbl">ذخیره و بازکردن</span>
+        <div class="prow">
+          <div><b>فایل پروژه (.mobin)</b><span class="hint">مثل فایل فتوشاپ: عکس‌ها، متن مترجم، همهٔ لایه‌ها، پاک‌کاری‌ها و فونت‌های اضافه‌شده در یک فایل. با دوبار کلیک باز می‌شود.</span></div>
+          <span class="row" style="gap:6px;flex:none"><button class="btn sm" id="bSaveProjM">ذخیره</button><button class="btn sm gho" id="bSaveAs2">ذخیره با نام…</button></span>
+        </div>
+        <div class="prow">
+          <div><b>باز کردن</b><span class="hint">فایل .mobin — یا JSON / ZIP نسخه‌های قبلی.</span></div>
+          <button class="btn sm" id="bOpenProj2">انتخاب فایل</button>
+        </div>
+        <div class="prow">
+          <div><b>خروجی سبک (JSON)</b><span class="hint">فقط متن‌ها و لایه‌ها، بدون عکس — برای فرستادن سریع. موقع باز کردن همان عکس‌ها را هم بدهید.</span></div>
+          <button class="btn sm gho" id="bSaveProj2">ذخیرهٔ JSON</button>
+        </div>
+
+        <hr class="sep2">
+        <div class="row" style="margin-bottom:12px">
+          <span class="lbl" style="flex:1;margin:0">نقاط بازگشت</span>
+          <button class="btn sm" id="bSnapNow">نقطهٔ تازه</button>
+        </div>
+        <div id="snapList"></div>
+
+        <hr class="sep2">
+        <div class="row"><span class="lbl" style="flex:1;margin:0">دادهٔ ذخیره‌شده در مرورگر</span><span class="hint" id="lsInfo">—</span><button class="btn sm dgr" id="bWipe">پاک کردن همه</button></div>
+      </div>
+
+      <div class="tp" id="tpHelp">
+        <div class="hero">
+          <div><b>تازه‌کارید؟</b><span class="hint">آموزش گام‌به‌گام هر دکمه را سر جای خودش نشان می‌دهد.</span></div>
+          <div class="row" style="gap:8px;flex-wrap:wrap">
+            <button class="btn sm pri hideMob" id="bTour">شروع آموزش</button>
+            <button class="btn sm" id="bDemo">نمونهٔ تمرینی</button>
+          </div>
+        </div>
+
+        <details class="hx" open><summary>چرخهٔ کار</summary>
+          <ol class="hl">
+            <li>عکس‌های <b>کلین</b> فصل را بارگذاری کنید (یا یک فایل ZIP).</li>
+            <li>فایل <b>متن مترجم</b> را بدهید؛ هر صفحه با خطی مثل <code>صفحه ۳</code> شروع می‌شود و <b>خط خالی</b> مرز دو بالن است.</li>
+            <li>در پنل متن یک بالن را انتخاب و وسط بالن در تصویر کلیک کنید.</li>
+            <li>اگر لازم بود، با ابزار پاک‌کن (<kbd>E</kbd>) متن قدیمی داخل بالن را بردارید.</li>
+            <li><b>خروجی</b> بگیرید: یک صفحه یا کل فصل به‌صورت ZIP.</li>
+          </ol>
+        </details>
+
+        <details class="hx"><summary>وقتی تعداد عکس و صفحهٔ متن یکی نیست</summary>
+          <p>اگر عکس اول بنر باشد، همه‌چیز یک خانه جابه‌جا می‌افتد. دکمهٔ <b>هم‌ترازی</b> بالای پنل متن را بزنید و بگویید متنِ صفحهٔ ۱ روی کدام عکس بیفتد؛ «حدس خودکار» معمولاً درست می‌زند.</p>
+        </details>
+
+        <details class="hx"><summary>مشکلات رایج</summary>
+          <ul class="hl">
+            <li><b>متن از بالن می‌زند بیرون:</b> پهنای لایه را کم کنید.</li>
+            <li><b>بالن پیدا نمی‌شود:</b> روی جای خالی‌ترِ داخل بالن بزنید یا حساسیت رنگ را بالا ببرید.</li>
+            <li><b>فایل متن به‌هم‌ریخته است:</b> آن را با رمزگذاری UTF-8 ذخیره کنید.</li>
+          </ul>
+        </details>
+
+        <details class="hx"><summary>میان‌برهای کیبورد</summary>
+          <table class="kt"><tbody>
+            <tr><td>بالن بعدی</td><td><kbd>Tab</kbd></td></tr>
+            <tr><td>جابه‌جایی لایه</td><td>کشیدن · <kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd></td></tr>
+            <tr><td>تغییر اندازه</td><td><kbd>[</kbd> <kbd>]</kbd> · <kbd>Alt</kbd>+چرخ</td></tr>
+            <tr><td>کپی / حذف لایه</td><td><kbd>Ctrl</kbd>+<kbd>D</kbd> · <kbd>Delete</kbd></td></tr>
+            <tr><td>ویرایش متن لایه</td><td><kbd>F2</kbd></td></tr>
+            <tr><td>زوم · اندازهٔ پنجره</td><td><kbd>Ctrl</kbd>+چرخ · <kbd>Ctrl</kbd>+<kbd>0</kbd></td></tr>
+            <tr><td>ابزار پاک‌کن · برگرداندن لکه</td><td><kbd>E</kbd> · <kbd>Alt</kbd>+کلیک</td></tr>
+            <tr><td>پنل متن · پنل لایه</td><td><kbd>F9</kbd> · <kbd>F10</kbd></td></tr>
+            <tr><td>واگرد / ازنو</td><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> · <kbd>Ctrl</kbd>+<kbd>Y</kbd></td></tr>
+            <tr><td>ذخیره · خروجی · نقطهٔ بازگشت</td><td><kbd>Ctrl</kbd>+<kbd>S</kbd> · <kbd>Ctrl</kbd>+<kbd>E</kbd> · <kbd>Ctrl</kbd>+<kbd>B</kbd></td></tr>
+          </tbody></table>
+        </details>
+      </div>
+    </div>
+    <div class="mf"><button class="btn" data-close>بستن</button></div>
+  </div>
+</div>
+
+<!-- ===== paste text ===== -->
+<div class="ov" id="ovPaste" role="dialog" aria-modal="true" aria-labelledby="pasteTitle">
+  <div class="mw">
+    <div class="mh"><h2 id="pasteTitle">چسباندن متن مترجم</h2><span class="grow"></span><button class="btn gho ico" data-close aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button></div>
+    <div class="mb">
+      <textarea id="pasteText" rows="13" spellcheck="false" placeholder="صفحه ۱&#10;آرین (عادی): بالاخره رسیدیم.&#10;آرین (فکر): ولی یه چیزی درست نیست…&#10;SFX: خش‌خش&#10;&#10;صفحه ۲&#10;ناشناس (فریاد): تکون نخور!"></textarea>
+      <div id="pasteReport" style="margin-top:12px"></div>
+    </div>
+    <div class="mf"><button class="btn" data-close>انصراف</button><button class="btn pri" id="bPasteGo"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2.5 4.8 11h4L9 17.5 15.2 9h-4L11 2.5Z"/></svg>پردازش متن</button></div>
+  </div>
+</div>
+
+<!-- ===== confirm ===== -->
+<div class="ov" id="ovAsk" role="dialog" aria-modal="true" aria-labelledby="askTitle">
+  <div class="mw sm">
+    <div class="mh"><h2 id="askTitle">تأیید</h2></div>
+    <div class="mb"><p id="askBody" style="margin:0;line-height:1.85;color:var(--tx2)"></p></div>
+    <div class="mf"><button class="btn gho" id="askAlt" style="display:none"></button><span class="mfsp"></span><button class="btn" id="askNo">نه</button><button class="btn pri" id="askYes">بله</button></div>
+  </div>
+</div>
+
+<!-- ===== script / image alignment ===== -->
+<div class="ov" id="ovAlign" role="dialog" aria-modal="true" aria-labelledby="alignTitle">
+  <div class="mw">
+    <div class="mh"><h2 id="alignTitle">هم‌ترازی متن و تصویر</h2><span class="grow"></span><button class="btn gho ico" data-close aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button></div>
+    <div class="mb">
+      <div class="note" id="alInfo"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M8 7.8a2.1 2.1 0 1 1 2.6 2.05c-.4.12-.6.45-.6.85v.6"/><path d="M10 14.3v.05" stroke-width="2"/></svg><span id="alInfoT">—</span></div>
+      <div class="alRow">
+        <span>متنِ صفحهٔ ۱ روی عکس شمارهٔ</span>
+        <div class="alNum">
+          <button type="button" id="alMinus" aria-label="کمتر">−</button>
+          <input type="number" id="alStart" min="1" step="1" value="1" aria-label="شمارهٔ عکس">
+          <button type="button" id="alPlus" aria-label="بیشتر">+</button>
+        </div>
+        <span>بیفتد</span>
+        <span class="grow"></span>
+        <button class="btn sm gho" id="alAuto" type="button">حدس خودکار</button>
+      </div>
+      <div class="alThumbs" id="alThumbs"></div>
+      <div class="alMap" id="alMap"></div>
+    </div>
+    <div class="mf"><button class="btn gho" id="alReset" type="button">بدون جابه‌جایی</button><span class="grow"></span><button class="btn" data-close>انصراف</button><button class="btn pri" id="alApply" type="button">اعمال کن</button></div>
+  </div>
+</div>
+

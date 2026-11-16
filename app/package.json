@@ -1,0 +1,8 @@
+{
+  "name": "mobin-studio",
+  "productName": "Mobin Studio",
+  "version": "8.2.3",
+  "main": "main.js",
+  "author": "Mobin Studio",
+  "description": "Persian manhwa & webtoon typesetting studio"
+}

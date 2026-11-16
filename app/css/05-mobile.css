@@ -1,0 +1,175 @@
+
+/* ============================================================
+   گوشی و لمسی
+   body.touchUI = صفحهٔ لمسی (کشیدن با یک انگشت، زوم با دو انگشت)
+   body.mob     = گوشیِ ایستاده: نوار پایین، پنل‌ها به‌شکل برگهٔ کشویی
+   (app.js این کلاس‌ها را می‌گذارد — syncMob)
+   ============================================================ */
+body:not(.mob) .mOnly,body:not(.android) .aOnly{display:none!important}
+.mbl{display:none}
+body.mob .dsk,body.mob .hideMob{display:none!important}
+body.mob .mbl{display:inline}
+.sgrab{display:none}
+
+/* ---------- touch screens (phones, tablets, phones in landscape) ---------- */
+body.touchUI{-webkit-tap-highlight-color:transparent}
+body.touchUI #stage{scroll-behavior:auto;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body.touchUI #pages,body.touchUI #pages *{touch-action:none}
+body.touchUI #rail,body.touchUI #titlebar,body.touchUI .sh,body.touchUI .ihead,body.touchUI .pop,body.touchUI #sbar,body.touchUI .tabs{-webkit-user-select:none;user-select:none}
+@media (hover:none){
+  #rail .rb:hover{background:transparent;color:var(--tx3)}
+  #rail .rb.on:hover{background:var(--acs);color:var(--ac2)}
+  .pop .mi:hover{background:transparent}
+  .card:hover{background:var(--surface2);border-color:var(--bd)}
+}
+body.touchUI #rail .rb:active,body.touchUI .pop .mi:active{background:var(--hov)}
+body.touchUI .card:active{background:var(--raised)}
+
+/* ---------- phone (portrait) ---------- */
+body.mob{--tb:52px;--rail:62px;--foot:0px;--gap:0px;--safeB:env(safe-area-inset-bottom,0px);
+  --bar:calc(var(--rail) + var(--safeB));--sheet:min(calc(var(--vh,100vh) * .54),480px);font-size:13.5px}
+body.mob.kbd{--bar:0px}
+body.mob footer{display:none}
+
+/* main area leaves room for the bottom bar (and the open sheet) */
+body.mob main{padding:0 0 var(--bar);gap:0}
+body.mob.panelOpen main{padding-bottom:calc(var(--bar) + var(--sheet))}
+body.mob.panelOpen.sheetTall main{padding-bottom:var(--bar)}
+body.mob .stagewrap{border:0;border-radius:0}
+
+/* title bar */
+body.mob #titlebar{height:calc(var(--tb) + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 6px 0;gap:4px;
+  border-bottom:1px solid var(--bd)}
+body.mob .tb-s,body.mob .tb-e{flex:none;gap:2px}
+body.mob .tb-m{flex:1 1 auto;min-width:0}
+body.mob .tbsep{display:none}
+body.mob .appbtn{height:42px;padding:0 8px;gap:5px;border-radius:11px}
+body.mob .appbtn b{display:none}
+body.mob .appbtn .logo{width:25px;height:24px}
+body.mob #titlebar .btn.gho.ico{width:40px;height:42px;border-radius:11px}
+body.mob #titlebar .btn.gho.ico svg{width:20px;height:20px}
+body.mob #titlebar .tb-e .btn{height:40px;padding:0 12px;border-radius:11px}
+body.mob #titlebar .tb-e .btn .cv{display:none}
+body.mob #titlebar .tb-e .btn svg{width:19px;height:19px}
+body.mob .doc{max-width:100%;height:32px;padding:0 12px;gap:7px}
+body.mob .doc b{font-size:12.5px}
+body.mob .doc .dsub{display:none}
+
+/* bottom bar (the rail turned sideways) */
+body.mob #rail{position:fixed;left:0;right:0;bottom:0;z-index:50;width:auto;height:var(--bar);
+  flex-direction:row;align-items:center;justify-content:space-around;gap:0;padding:0 6px var(--safeB);
+  border:0;border-top:1px solid var(--bd);border-radius:0;overflow:visible;background:var(--surface)}
+body.mob.kbd #rail{display:none}
+body.mob #rail .rsep,body.mob #rail .grow,body.mob #rail #bFit,body.mob #rail #bTheme,body.mob #rail #bHelp{display:none}
+body.mob #rail .rb{flex:1 1 0;width:auto;max-width:88px;height:54px;border-radius:13px;gap:4px}
+body.mob #rail .rb svg{width:22px;height:22px}
+body.mob #rail .rb i{font-size:11px}
+body.mob #rail .rb.on::before{inset-inline-start:auto;left:30%;right:30%;top:-5px;bottom:auto;width:auto;height:3px}
+body.mob #rail #bNextM{flex:none;width:62px;height:62px;max-width:none;margin:-28px 2px 0;border-radius:50%;gap:1px;
+  background:var(--grad);color:var(--onac);box-shadow:0 12px 26px -10px var(--glow),0 0 0 5px var(--surface);transition:transform .12s ease,filter .12s ease}
+body.mob #rail #bNextM svg{width:25px;height:25px}
+body.mob #rail #bNextM i{font-size:10.5px;font-weight:700}
+body.mob #rail #bNextM:active{transform:scale(.93);background:var(--grad)}
+body.mob.noPages #rail #bNextM,body.mob.toolClean #rail #bNextM{filter:grayscale(.8);opacity:.5}
+
+/* panels become bottom sheets */
+body.mob .side{position:fixed;left:0;right:0;bottom:var(--bar);z-index:45;width:auto!important;height:var(--sheet);
+  border-radius:18px 18px 0 0;border:1px solid var(--bd2);border-bottom:0;
+  box-shadow:0 -16px 38px -14px rgba(0,0,0,.55);animation:sheetIn .2s cubic-bezier(.2,.8,.2,1);transition:transform .16s ease}
+body.mob .side.dragging{transition:none}
+body.mob .side.tall{height:calc(var(--vh,100vh) - var(--tb) - var(--bar) - 10px)}
+@keyframes sheetIn{from{transform:translateY(28px);opacity:.3}}
+body.mob .sgrab{display:flex;justify-content:center;align-items:center;height:20px;flex:none;margin-bottom:-8px;cursor:grab;touch-action:none}
+body.mob .sgrab i{width:42px;height:5px;border-radius:5px;background:var(--bd3)}
+body.mob .sh,body.mob .ihead{touch-action:none}
+body.mob .side .closeBtn{display:inline-flex}
+body.mob .sh{padding:10px 12px 8px}
+body.mob .sh .btn.sm.ico,body.mob .ihead .btn.sm.ico{width:36px;height:36px}
+body.mob .sh .btn.sm svg,body.mob .ihead .btn.sm svg{width:17px;height:17px}
+body.mob .ihead .seg button{height:32px;font-size:13px}
+body.mob .sbody{padding:4px 12px 48px;overscroll-behavior:contain}
+body.mob .card{padding:12px 14px;font-size:14px}
+body.mob .pchip{width:48px;padding:8px 6px 7px}
+
+/* stage */
+body.mob #pages{padding:10px 0 78px;gap:10px}
+body.mob .pw .pnum{top:6px;inset-inline-start:6px;padding:3px 7px;font-size:10px}
+body.mob #sbar.dock{bottom:12px;height:46px;padding:0 4px;gap:1px;border-radius:15px}
+body.mob #sbar .btn.sm.ico{width:38px;height:38px;border-radius:10px}
+body.mob #sbar .btn.sm svg{width:18px;height:18px}
+body.mob #sbar .pgnav b{min-width:64px;font-size:12.5px}
+body.mob .zoom{height:38px}
+body.mob .zoom button{width:36px;height:38px;font-size:19px}
+body.mob .zoom b{min-width:48px;height:38px;line-height:38px}
+body.mob #cleanBar{top:8px;left:8px;right:8px;width:auto;max-width:none;padding:8px 8px;padding-inline-start:12px;gap:8px 10px;font-size:12.5px}
+body.mob #cleanBar #cleanHint{display:none}
+body.mob #cleanBar input[type=range]{width:96px}
+body.mob #cleanBar .btn.sm{height:34px}
+body.mob #cleanBar .btn.sm.ico{width:34px}
+
+/* start screen */
+body.mob #welcome{padding:18px 14px 24px}
+body.mob .wmark{width:62px;height:62px;border-radius:19px;margin-bottom:14px;box-shadow:0 16px 34px -14px rgba(0,0,0,.65),0 0 0 6px var(--acs)}
+body.mob .wmark .big{width:36px;height:34px}
+body.mob .wc h1{font-size:20px;margin-bottom:6px}
+body.mob .wc>p{font-size:13px;line-height:1.9;margin-bottom:16px}
+body.mob .dropzone{padding:22px 14px 20px;border-radius:16px}
+body.mob .dropzone>b{font-size:15.5px}
+body.mob .steps{grid-template-columns:1fr;gap:8px;margin:12px 0 14px}
+body.mob .step{padding:11px 12px;border-radius:13px}
+body.mob .step span{font-size:12.5px}
+body.mob .learn .btn{height:42px;padding:0 18px}
+
+/* menus open full width under the title bar */
+body.mob .dd>.pop,body.mob #ddApp>.pop{position:fixed;top:calc(var(--tb) + env(safe-area-inset-top,0px) + 4px);left:8px;right:8px;
+  inset-inline-start:8px;inset-inline-end:8px;min-width:0;max-height:calc(var(--vh,100vh) - var(--tb) - var(--bar) - 16px);
+  overflow-y:auto;overscroll-behavior:contain;border-radius:16px;padding:8px}
+body.mob .pop .mi{min-height:48px;padding:8px 12px;gap:12px;font-size:14px;border-radius:11px}
+body.mob .pop .mi>svg{width:20px;height:20px}
+body.mob .pop .mi small{font-size:11.5px}
+body.mob .pop .mi kbd{display:none}
+body.mob .pop .ph{font-size:11.5px;padding:10px 12px 6px}
+body.mob .pop .seg button{height:36px;font-size:13px}
+body.mob .pop .mi.rec small{max-width:none}
+
+/* dialogs slide up from the bottom */
+body.mob .ov{padding:0;align-items:flex-end}
+body.mob .mw{width:100%!important;max-height:calc(var(--vh,100vh) - 20px);border-radius:20px 20px 0 0;border-bottom:0;
+  padding-bottom:var(--safeB);animation:sheetIn .22s cubic-bezier(.2,.8,.2,1)}
+body.mob #ovSet .mw{height:var(--vh,100vh);max-height:none;border-radius:0;border:0}
+body.mob .mh{padding:14px 16px 10px}
+body.mob .mh h2{font-size:16px}
+body.mob .mh .btn.ico{width:40px;height:40px}
+body.mob .mb{padding:6px 16px 16px;overscroll-behavior:contain}
+body.mob .mf{padding:10px 12px;flex-wrap:wrap}
+body.mob .mf .btn{height:44px;padding:0 16px;font-size:14px;border-radius:11px}
+body.mob #ovAsk .mf .btn{flex:1 1 0}
+body.mob #ovAsk .mfsp{display:none}
+body.mob .tabs{overflow-x:auto;scrollbar-width:none;padding:0 8px}
+body.mob .tabs::-webkit-scrollbar{display:none}
+body.mob .tabs button{flex:none;height:46px;padding:0 14px;font-size:13.5px}
+
+/* bigger controls for fingers */
+body.mob input[type=text],body.mob input[type=number],body.mob input[type=search],body.mob select{height:40px;font-size:14px}
+body.mob textarea{font-size:15px}
+body.mob .btn{height:38px}
+body.mob .btn.sm{height:34px;font-size:12.5px;padding:0 11px}
+body.mob .btn.sm.ico{width:34px;padding:0}
+body.mob input[type=range]{height:32px}
+body.mob input[type=range]::-webkit-slider-runnable-track{height:5px}
+body.mob input[type=range]::-webkit-slider-thumb{width:22px;height:22px;margin-top:-8.5px}
+body.mob input[type=color]{width:40px;height:40px}
+body.mob .chk{font-size:13.5px;line-height:2.3}
+body.mob .sl{gap:10px}
+body.mob .sl input[type=number]{width:64px}
+body.mob .grp{margin-bottom:18px}
+body.mob .lbl{font-size:12px}
+
+/* toasts sit above the bottom bar / the open sheet */
+body.mob #toasts{bottom:calc(var(--bar) + 70px);padding:0 12px}
+body.mob.panelOpen:not(.sheetTall) #toasts{bottom:calc(var(--bar) + var(--sheet) + 14px)}
+body.mob.panelOpen.sheetTall #toasts,body.mob.noPages #toasts{bottom:calc(var(--bar) + 16px)}
+body.mob .toast{font-size:13px;max-width:100%}
+body.mob #busy .bx{width:min(340px,calc(100vw - 40px))}
+/* a dialog is open: messages move to the top so they do not cover it */
+body.mob:has(.ov.on) #toasts{bottom:auto;top:calc(var(--tb) + env(safe-area-inset-top,0px) + 8px)}
