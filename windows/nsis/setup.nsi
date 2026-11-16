@@ -6,7 +6,7 @@ Unicode true
 !define APPNAME       "Mobin Studio"
 !define APPFOLDER     "Mobin Studio"
 !define APPEXE        "MobinStudio.exe"
-!define APPVER        "8.2.4"
+!define APPVER        "8.2.5"
 !define APPPUB        "Mobin Studio"
 !define REGKEY        "Software\Microsoft\Windows\CurrentVersion\Uninstall\MobinStudio"
 !define APPREG        "Software\MobinStudio"
@@ -26,7 +26,7 @@ ShowUnInstDetails hide
 ManifestDPIAware true
 AllowSkipFiles off
 
-VIProductVersion "8.2.4.0"
+VIProductVersion "8.2.5.0"
 VIAddVersionKey /LANG=1065 "ProductName"     "${APPNAME}"
 VIAddVersionKey /LANG=1065 "CompanyName"     "${APPPUB}"
 VIAddVersionKey /LANG=1065 "FileDescription" "${APPNAME} Setup"
@@ -64,6 +64,12 @@ Function ${UN}CloseRunning
     Pop $0
     Pop $1
     StrCmp $0 "0" 0 done
+    ; an update started from inside the app runs silent (/S): the app has
+    ; already asked to restart, so just close it instead of showing a prompt
+    ; that nobody is there to answer.
+    ${If} ${Silent}
+      Goto force
+    ${EndIf}
     MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "${APPNAME} الان باز است.$\r$\n$\r$\nاگر کار ذخیره‌نشده دارید، اول آن را ذخیره کنید، بعد برنامه را ببندید و «Retry» را بزنید." /SD IDCANCEL IDRETRY check
     MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "${APPNAME} به‌اجبار بسته شود؟$\r$\n$\r$\nکار ذخیره‌نشده از بین می‌رود." /SD IDYES IDYES force
     Abort

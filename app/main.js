@@ -498,9 +498,11 @@ async function installUpdate(url) {
   }
   /* the app must be closed before setup runs, so the installer is started with a
      short delay and this copy steps aside; NSIS then finds the folder free and
-     updates it in place (projects and settings live outside the install dir). */
+     updates it in place (projects and settings live outside the install dir).
+     /S installs without any wizard so an update is a single click, and the app
+     is opened again as soon as setup finishes. */
   try {
-    const cmd = 'ping -n 3 127.0.0.1 >nul & start "" "' + file + '"';
+    const cmd = 'ping -n 3 127.0.0.1 >nul & start "" /wait "' + file + '" /S & start "" "' + process.execPath + '"';
     /* windowsVerbatimArguments keeps cmd.exe from receiving the command line
        double-quoted by Node; with the default quoting cmd /s strips the inner
        quotes and the setup file is never started. */
