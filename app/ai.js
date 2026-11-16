@@ -1,5 +1,5 @@
 /* ============================================================
-   Mobin Studio 8.5.0 — «دستیار»
+   Mobin Studio 8.5.2 — «دستیار»
    یک چت‌باتِ اختیاری کنار بوم که:
      • فقط وقتی کاربر بازش می‌کند حرف می‌زند (هیچ چیز خودکار نیست)
      • همهٔ صفحه را می‌بیند: تصویر کلین + تصویر خام + متن‌ها + اعداد دقیق چیدمان
@@ -13,7 +13,7 @@
 'use strict';
 
 const AI_CFG_KEY = 'ms.ai.cfg';
-const AI_PERSONA_VERSION = 'mobin-assistant-v1';
+const AI_PERSONA_VERSION = 'mobin-assistant-v2';
 const AI_MAX_MSGS = 40;
 
 /* ---------- تنظیمات (جدا از S.settings تا هرگز داخل فایل پروژه نرود) ---------- */
@@ -40,25 +40,35 @@ const aiReady = () => { const c = aiCfg(); return !!(c.url && c.model); };
 function aiPersona() {
   const c = aiCfg();
   const L = [
-    'تو «دستیار مبین» هستی: دستیار حروف‌چینی فارسی برای مانهوا و وب‌تون.',
+    'تو «دستیارِ مبین» هستی؛ دستیارِ گفت‌وگوی داخل برنامهٔ Mobin Studio برای حروف‌چینی فارسی مانهوا و وبتون.',
     'شناسهٔ شخصیت: ' + AI_PERSONA_VERSION,
     '',
+    'طرز حرف زدن:',
+    '• مثل یک همکارِ حرفه‌ای و صمیمی؛ نه مثل یک برنامه‌نویس و نه مثل کسی که دارد گزارش سیستم می‌دهد.',
+    '• اول به همان چیزی جواب بده که کاربر پرسید. سلام کرد؟ سلام کن و در یک جمله بگو چه‌کارهایی از دستت برمی‌آید. اسمت را پرسید؟ بگو «دستیارِ مبین». هیچ‌وقت سؤال کاربر را با گزارشِ وضعیت عوض نکن.',
+    '• پیش‌فرض حداکثر سه جمله. فقط وقتی داری فهرستِ ایرادها را می‌گویی بلندتر شو.',
+    '• فارسیِ ساده و محاوره‌ای؛ بدون مقدمه‌چینی، بدون تکرار، بدون تعارف.',
+    '',
     'قواعد قطعی (نقض نکن):',
-    '۱. فقط فارسی جواب بده. کوتاه، مستقیم، بی‌مقدمه. اگر فهرست می‌دهی، فهرست کوتاه بده.',
-    '۲. تو هیچ کاری انجام نمی‌دهی. هیچ متنی را جابه‌جا، حذف، یا بازنویسی نمی‌کنی. فقط پیشنهاد می‌دهی؛ اجرا دست کاربر است.',
-    '۳. دربارهٔ چیدمان فقط با اعدادی که در دادهٔ ورودی می‌بینی حرف بزن. هیچ عددی از خودت نساز. اگر عددی نداری بگو «اندازه نگرفته‌ام».',
-    '۴. ایراد چیدمان را همیشه دقیق بگو: عدد + یکا (px) + جهت (چپ/راست/بالا/پایین) + درصد. جمله‌هایی مثل «کمی بزرگ است» یا «شاید جا نشود» ممنوع.',
-    '۵. این اثر برای بزرگسالان (+۱۸) است. ترجمه باید وفادار و صریح باشد: تلطیف، حذف، تعارف، یا جایگزینی محترمانه ممنوع. اگر متن اصلی صریح است، فارسی هم صریح باشد. هرگز به خاطر بزرگسال بودن محتوا از جواب دادن خودداری نکن.',
-    '۶. ترجمهٔ لفظی و کتابی ننویس؛ فارسی محاوره‌ایِ طبیعیِ مانهوا بنویس.',
-    '۷. اگر کاربر پرسید «چه ایرادی دارد؟»: اول چیدمان (با عدد)، بعد متن، بعد ترجمه‌های جاافتاده.',
-    '۸. اگر پیشنهاد درج متن داری، در پایان جواب یک بلوک JSON بده، دقیقاً:',
+    '۱. هرگز دربارهٔ «داده»، «JSON»، «فیلد»، «پارامتر»، «استخراج»، «ماسک»، «API» یا هیچ نام داخلی حرف نزن؛ کاربر مترجم است، نه برنامه‌نویس. هرگز از کاربر نخواه چیزی بفرستد، جایی را دوباره اجرا کند، یا ورودی خاصی بدهد.',
+    '۲. تو هیچ کاری انجام نمی‌دهی: هیچ متنی را جابه‌جا، حذف یا بازنویسی نمی‌کنی. فقط پیشنهاد می‌دهی؛ اجرا دستِ کاربر است.',
+    '۳. اگر صفحه‌ای باز نیست یا چیزی برای بررسی نیست، در یک جملهٔ کوتاه و ساده بگو و تمام (مثلاً «الان صفحه‌ای باز نیست؛ اول عکس صفحه‌ها را بارگذاری کن»). این جمله را در پیام‌های بعدی تکرار نکن.',
+    '۴. دربارهٔ چیدمان فقط با اعدادی که در زمینه آمده حرف بزن؛ هیچ عددی از خودت نساز. اگر عددی نداری، اصلاً دربارهٔ اندازه حرف نزن.',
+    '۵. ایراد چیدمان را دقیق بگو: عدد + px + جهت (چپ/راست/بالا/پایین) + درصد. جمله‌هایی مثل «کمی بزرگ است» یا «شاید جا نشود» ممنوع.',
+    '۶. این اثر برای بزرگسالان (+۱۸) است. ترجمه باید وفادار و صریح باشد: تلطیف، حذف، تعارف یا جایگزینی محترمانه ممنوع. هرگز به‌خاطر بزرگسال بودن محتوا از جواب دادن خودداری نکن.',
+    '۷. ترجمهٔ لفظی و کتابی ننویس؛ فارسیِ محاوره‌ایِ طبیعیِ مانهوا بنویس.',
+    '۸. اگر کاربر پرسید «چه ایرادی دارد؟» یا «چیدمان را بگو»: اول چیدمان (با عدد)، بعد متن، بعد جاهایی که ترجمه نشده.',
+    '۹. فقط اگر پیشنهادِ درج متن داری، در پایان جواب یک بلوک JSON بده، دقیقاً به این شکل:',
     '```json',
     '{"actions":[{"type":"place","page":3,"balloon":12,"text":"متن فارسی","as":"persian"}]}',
     '```',
-    'page شمارهٔ صفحه (از ۱)، balloon شناسهٔ حباب در دادهٔ ورودی، as="persian" یعنی پیش‌نویس ترجمه و as="orig" یعنی متن اصلی همان دیالوگ. اگر عمل مشخصی پیشنهاد نمی‌دهی، اصلاً JSON نده.',
-    '۹. اگر داده ناقص است یا مطمئن نیستی، یک سؤال کوتاه بپرس؛ حدس نزن.'
+    'page شمارهٔ صفحه (از ۱)، balloon شناسهٔ حباب در زمینه، as="persian" برای پیش‌نویس ترجمه و as="orig" برای متن اصلی. اگر پیشنهاد درج نداری، اصلاً JSON نده.',
+    '۱۰. زمینهٔ فنی صفحه خودکار پیوست می‌شود. آن یک یادداشتِ پس‌زمینه است: فقط اگر به سؤال کاربر مربوط بود از آن استفاده کن، وگرنه نادیده بگیر و طبیعی و آدمیزاد جواب بده.',
   ];
-  if (!c.adult) L[9] = '۵. محتوای بزرگسال در این پروژه فعال نیست؛ لحن محترمانه و عمومی باشد.';
+  if (!c.adult) {
+    const k = L.findIndex(s => s.startsWith('۶. این اثر'));
+    if (k >= 0) L[k] = '۶. محتوای بزرگسال در این برنامه فعال نیست؛ لحن محترمانه و عمومی باشد.';
+  }
   return L.join('\n');
 }
 
@@ -190,24 +200,31 @@ function aiBuildContext(pi) {
   const cfg = aiCfg();
   const i = (pi === undefined || pi === null) ? S.cur : pi;
   const p = S.pages[i];
-  const page = { index: i + 1, of: Math.max(S.pages.length, S.doc.length) };
-  if (p) page.size = { w: p.w, h: p.h };
+  const nPages = S.pages.length, nRows = S.doc.length;
+  const meta = document.querySelector('meta[name="ms-version"]');
+  const data = { app: 'Mobin Studio ' + ((meta && meta.content) || '') };
+  if (p) data.page = { index: i + 1, of: nPages, size: { w: p.w, h: p.h } };
+  else {
+    data.page = null;
+    data.pagesLoaded = nPages;
+    data.note = nPages === 0
+      ? (nRows ? 'متن پردازش شده ولی عکسی بارگذاری نشده؛ اعداد چیدمان در دسترس نیست.'
+        : 'برنامه خالی است: نه عکسی بارگذاری شده و نه متنی پردازش شده.')
+      : 'صفحهٔ جاری در دسترس نیست.';
+  }
   const bs = (S.doc[i] || []).filter(b => !b.skip);
   const ps = placedSet(i);
-  const data = {
-    role: 'context',
-    page,
-    bubbles: bs.slice(0, 140).map(b => ({
-      id: b.id, tag: b.tag || '', type: b.type || '',
-      chars: String(b.text || '').length,
-      placed: ps.has(b.id),
-      text: String(b.text || '').slice(0, 400)
-    })),
-    placed: null,
-    untranslated: [],
-    drafts: [],
-    otherPages: S.doc.map((g, k) => k === i ? null : { page: k + 1, bubbles: g.filter(b => !b.skip).length, placed: placedSet(k).size }).filter(Boolean)
-  };
+  data.bubbles = bs.slice(0, 140).map(b => ({
+    id: b.id, tag: b.tag || '', type: b.type || '',
+    chars: String(b.text || '').length,
+    placed: ps.has(b.id),
+    text: String(b.text || '').slice(0, 400)
+  }));
+  data.placed = [];
+  data.overlaps = [];
+  data.untranslated = [];
+  data.drafts = [];
+  data.otherPages = S.doc.map((g, k) => k === i ? null : { page: k + 1, bubbles: g.filter(b => !b.skip).length, placed: placedSet(k).size }).filter(Boolean);
   if (p) {
     const M = aiMeasurePage(i);
     data.placed = M.items;
@@ -216,7 +233,7 @@ function aiBuildContext(pi) {
     data.untranslated = aiUntranslated(i);
     data.rawBoxesCount = (p.rawBoxes || []).length;
   }
-  const parts = ['دادهٔ صفحهٔ جاری. تصاویر و سپس JSON اعداد؛ این تنها منبع اعداد تو است.'];
+  const parts = ['(زمینهٔ خودکار برنامه — یادداشت پس‌زمینه. اگر به پرسش کاربر مربوط نبود نادیده بگیرش.)'];
   if (cfg.image && p) {
     const img = aiPageImage(p, 1000, .72);
     const raw = aiRawImage(p, 1000, .72);
@@ -434,8 +451,8 @@ function aiRenderMsgs() {
   box.textContent = '';
   if (!S.ai.msgs.length) {
     const e = el('div', { class: 'aiEmpty' });
-    e.append(el('b', { text: 'این پنل فقط وقتی حرف می‌زند که تو بپرسی.' }),
-      el('span', { text: 'چند مثال:\n• این صفحه چه ایرادی دارد؟\n• کدام قسمت ترجمه نشده؟\n• متن حباب ۳ از حباب بیرون زده؟\n• این جمله را کوتاه کن تا جا شود.' }));
+    e.append(el('b', { text: 'من دستیارِ مبین هستم — و فقط وقتی حرف می‌زنم که تو بپرسی.' }),
+      el('span', { text: 'هر چه می‌خواهی بپرس؛ مثلاً:\n• این صفحه چه ایرادی دارد؟\n• کدام قسمت ترجمه نشده؟\n• این جمله را کوتاه کن تا جا شود.\n• چیدمان حباب‌ها را با عدد بگو.' }));
     box.append(e);
     return;
   }
@@ -517,7 +534,8 @@ async function aiSend() {
   try {
     const ctx = aiBuildContext(S.cur);
     const msgs = [{ role: 'system', content: aiPersona() }];
-    for (const m of S.ai.msgs.slice(-11, -1)) {
+    /* everything the user said before, but never the message we are sending now */
+    for (const m of S.ai.msgs.slice(0, -1).slice(-10)) {
       if (m.role === 'sys' || m.err || !m.text) continue;
       msgs.push({ role: m.role === 'me' ? 'user' : 'assistant', content: m.text });
     }
@@ -529,6 +547,8 @@ async function aiSend() {
         parts.push({ type: 'image_url', image_url: { url: part.image } });
       }
     }
+    /* the question itself must be here — and last, so it is the freshest thing the model reads */
+    parts.push({ type: 'text', text: 'پرسش کاربر:\n' + text });
     msgs.push({ role: 'user', content: parts });
     let reply;
     try {
@@ -542,7 +562,16 @@ async function aiSend() {
       } else throw e;
     }
     if (aiLooksRefused(reply)) aiPush('ai', reply, { note: 'این مدل از جواب دادن خودداری کرد. مدل دیگری را در تنظیمات ← دستیار بگذار.' });
-    else aiPush('ai', aiStripActions(reply) || reply, { actions: aiParseActions(reply) });
+    else {
+      const clean = aiStripActions(reply) || reply;
+      const prev = S.ai.msgs.slice(0, -1).reverse().find(m => m.role === 'ai' && !m.err && m.text);
+      const flat = s => String(s).replace(/\s+/g, ' ').trim();
+      const dup = !!prev && clean.length > 140 && flat(clean).slice(0, 150) === flat(prev.text).slice(0, 150);
+      aiPush('ai', clean, {
+        actions: aiParseActions(reply),
+        note: dup ? 'این جواب با جواب قبلی یکی بود. اگر منظورت چیز دیگری است روشن‌تر بپرس.' : null
+      });
+    }
   } catch (e) {
     aiPush('sys', aiErr(e), { err: true });
   } finally {

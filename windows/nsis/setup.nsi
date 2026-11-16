@@ -6,7 +6,7 @@ Unicode true
 !define APPNAME       "Mobin Studio"
 !define APPFOLDER     "Mobin Studio"
 !define APPEXE        "MobinStudio.exe"
-!define APPVER        "8.5.1"
+!define APPVER        "8.5.2"
 !define APPPUB        "Mobin Studio"
 !define REGKEY        "Software\Microsoft\Windows\CurrentVersion\Uninstall\MobinStudio"
 !define APPREG        "Software\MobinStudio"
@@ -26,7 +26,7 @@ ShowUnInstDetails hide
 ManifestDPIAware true
 AllowSkipFiles off
 
-VIProductVersion "8.5.1.0"
+VIProductVersion "8.5.2.0"
 VIAddVersionKey /LANG=1065 "ProductName"     "${APPNAME}"
 VIAddVersionKey /LANG=1065 "CompanyName"     "${APPPUB}"
 VIAddVersionKey /LANG=1065 "FileDescription" "${APPNAME} Setup"
