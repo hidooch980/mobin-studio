@@ -11,7 +11,7 @@ letter=[
   {'k':'استعداد','css':'Estedad','faces':[[400,None],[700,None]]},
   {'k':'لاله‌زار','bold':1,'faces':[[400,B64(L+'Lalezar-Regular.woff2')]]},
 ]
-js='\n'.join(R(f).rstrip('\n') for f in ('builtin-fonts.js','android-bridge.js','app.js','mobile.js','update.js'))+'\n'
+js='\n'.join(R(f).rstrip('\n') for f in ('builtin-fonts.js','android-bridge.js','app.js','extras.js','mobile.js','update.js'))+'\n'
 PH='/*@@LETTERFONTS@@*/[]'
 assert js.count(PH)==1, 'placeholder missing'
 js=js.replace(PH, json.dumps(letter,ensure_ascii=False,separators=(',',':')))

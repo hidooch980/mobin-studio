@@ -16,6 +16,8 @@
         <div class="mrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg><span>اندازهٔ متن برنامه</span>
           <span class="mz"><button type="button" class="btn sm ico" data-cmd="uiZoomOut" title="کوچک‌تر (Ctrl+Shift+−)" aria-label="کوچک‌تر">−</button><button type="button" class="btn sm" data-cmd="uiZoom0" title="اندازهٔ عادی (Ctrl+Shift+0)">عادی</button><button type="button" class="btn sm ico" data-cmd="uiZoomIn" title="بزرگ‌تر (Ctrl+Shift++)" aria-label="بزرگ‌تر">+</button></span></div>
         <button class="mi" type="button" data-cmd="theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span>حالت روشن / تیره</span></button>
+        <button class="mi" type="button" data-cmd="typeMode"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5h13M3.5 10h8.5M3.5 14.5h5.5"/><path d="m13.6 11.6 2.9 2.9-2.9 2.9" /></svg><span>حالت تایپ پشت‌سرهم<small>متن را یکی‌یکی بنویس، Enter = بعدی</small></span><kbd>F7</kbd></button>
+        <button class="mi" type="button" data-cmd="proof"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.2h9.2L16 6v10.8H4V3.2Z"/><path d="M6.6 8h6.8M6.6 11h6.8M6.6 14h4.2"/></svg><span>بازبینی متن<small>نیم‌فاصله، خطای نگارشی و سند پشت‌سرهم</small></span><kbd>F8</kbd></button>
         <button class="mi" type="button" data-cmd="fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span>تمام‌صفحه</span><kbd>F11</kbd></button>
         <hr>
         <div class="ph">برنامه</div>
@@ -117,6 +119,7 @@
       <button class="btn sm ico gho" id="bAutoPage" title="چیدن خودکار همهٔ متن‌های این صفحه در بالن‌ها (Ctrl+Shift+A)" aria-label="چیدن خودکار متن‌های این صفحه"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.2c0-2.6 2.6-4.7 5.8-4.7s5.8 2.1 5.8 4.7-2.6 4.7-5.8 4.7c-.7 0-1.4-.1-2-.3L4.4 14l.6-2.6c-.9-.9-1.5-2-1.5-3.2Z"/><path d="M15.6 12.6v4.2M13.5 14.7h4.2"/></svg></button>
       <button class="btn sm ico gho" id="bAlign" title="هم‌ترازی متن و تصویر" aria-label="هم‌ترازی متن و تصویر"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.8 17 6.4 10 10 3 6.4l7-3.6Z"/><path d="m3.6 10 6.4 3.3 6.4-3.3M3.6 13.4 10 16.7l6.4-3.3"/></svg></button>
       <button class="btn sm ico gho" id="bFilter" title="فقط گذاشته‌نشده‌ها" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="5.3"/><path d="m13 13 3.5 3.5"/></svg></button>
+      <button class="btn sm ico gho" id="bTypeMode" title="حالت تایپ پشت‌سرهم (F7)" aria-label="حالت تایپ پشت‌سرهم" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5h13M3.5 10h8.5M3.5 14.5h5.5"/><path d="m13.6 11.6 2.9 2.9-2.9 2.9" /></svg></button>
       <button class="btn sm ico gho closeBtn" data-closepanel="script" aria-label="بستن پنل"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
     </div>
     <div class="strip" id="strip"></div>
@@ -135,6 +138,26 @@
       <span class="cg"><span class="mini">حاشیه</span><input type="number" id="ckGrow" min="-5" max="5" step="1" value="0" style="width:52px" title="حاشیه — مثبت یعنی کمی روی خط دور بالن هم برود"></span>
       <button class="btn sm" id="bCleanPage" type="button" title="همهٔ لکه‌های این صفحه را بردار">پاک‌کردن این صفحه</button>
       <button class="btn sm gho ico" id="bCleanDone" type="button" title="بستن ابزار"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+    </div>
+    <div id="typeBar" role="toolbar" aria-label="حالت تایپ پشت‌سرهم">
+      <div class="tbSide">
+        <button class="btn sm gho ico" type="button" id="tbClose" title="بستن حالت تایپ (F7)" aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+      </div>
+      <div class="tbMain">
+        <div class="tbHead">
+          <b id="tbCount">۱ از ۱</b>
+          <span class="tag" id="tbTag">—</span>
+          <span id="tbState">—</span>
+          <span class="grow"></span>
+          <span>Enter = متن بعدی · Shift+Enter = خط تازه</span>
+        </div>
+        <div class="tbProg"><i></i></div>
+        <textarea id="tbText" rows="2" spellcheck="false" placeholder="ترجمهٔ این متن را اینجا بنویس..."></textarea>
+      </div>
+      <div class="tbNav">
+        <button class="btn sm" type="button" id="tbPrev" title="متن قبلی (Tab با Shift)" aria-label="قبلی"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 5 6.5 10l5 5"/></svg></button>
+        <button class="btn sm pri" type="button" id="tbNext" title="متن بعدی (Enter)" aria-label="بعدی"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5l5 5-5 5"/></svg></button>
+      </div>
     </div>
     <div id="mobQuick" role="toolbar" aria-label="ابزار سریع لایه">
       <button class="btn sm" type="button" id="mqSm" title="کوچک‌تر">A−</button>
@@ -210,6 +233,9 @@
           <div class="grp">
             <span class="lbl">متن</span>
             <textarea id="iText" rows="3" spellcheck="false"></textarea>
+            <div class="row" style="margin-top:6px">
+              <button class="btn sm gho" type="button" id="iFix" title="نیم‌فاصله، ی/ک فارسی، فاصله‌های اضافه و علائم">✨ اصلاح سریع</button>
+            </div>
           </div>
           <div class="grp">
             <span class="lbl">فونت</span>
@@ -363,6 +389,7 @@
         <label class="chk"><input type="checkbox" id="optRtlOrder"> ترتیب بالن‌های کنار هم: راست به چپ (مانگا)</label><br>
         <label class="chk"><input type="checkbox" id="optAutoClean"> پاک کردن متن اصلی بالن هنگام گذاشتن متن فارسی</label><br>
         <label class="chk"><input type="checkbox" id="optDragBox" checked> کشیدن کادر با ماوس/انگشت در جاهای بدون بالن (Drag-to-Box)</label><br>
+        <label class="chk"><input type="checkbox" id="optSmartGuides" checked> خطکش هوشمند: چسبیدن متن به مرکز و لبه‌ها هنگام کشیدن (کلید Alt خاموشش می‌کند)</label><br>
         <label class="chk"><input type="checkbox" id="optOpenSpace" checked> تشخیص خودکار فضاهای خالی و نوارهای نریشنِ بدون بالن</label><br>
         <label class="chk"><input type="checkbox" id="optSinglePageMob" checked> حالت فوق‌سبک موبایل (نمایش تک‌صفحه‌ای برای جلوگیری از هنگ و داغ شدن گوشی)</label>
 
@@ -521,6 +548,26 @@
 </div>
 
 <!-- ===== confirm ===== -->
+<div class="ov" id="ovProof" role="dialog" aria-modal="true" aria-labelledby="proofTitle">
+  <div class="mw">
+    <div class="mh">
+      <h2 id="proofTitle">بازبینی متن</h2>
+      <span class="hint" id="proofCount"></span>
+      <span class="grow"></span>
+      <button class="btn sm" type="button" id="bProofFixAll">اصلاح همه</button>
+      <button class="btn sm gho" type="button" id="bProofRefresh" title="دوباره بررسی کن">تازه‌سازی</button>
+      <button class="btn ico gho" data-close type="button" aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-pt="issues" aria-selected="true">خطاهای نگارشی</button>
+      <button role="tab" data-pt="doc" aria-selected="false">کل متن</button>
+    </div>
+    <div class="mb">
+      <div id="proofIssues"></div>
+      <div id="proofDoc" style="display:none"></div>
+    </div>
+  </div>
+</div>
 <div class="ov" id="ovAsk" role="dialog" aria-modal="true" aria-labelledby="askTitle">
   <div class="mw sm">
     <div class="mh"><h2 id="askTitle">تأیید</h2></div>

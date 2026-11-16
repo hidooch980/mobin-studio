@@ -90,7 +90,8 @@ const DEFAULTS = {
   dragBox: true, openSpace: true, singlePageMob: true, directSave: false, saveDirPath: '',
   arabic: true, zwnj: true, zwnjTar: false, punct: true, ellip: false, digits: false,
   fmt: 'png', quality: 92, scale: 1,
-  autoClean: false, cleanTol: 58, cleanGrow: 0, cleanAuto: true, cleanColor: '#FFFFFF'
+  autoClean: false, cleanTol: 58, cleanGrow: 0, cleanAuto: true, cleanColor: '#FFFFFF',
+  smartGuides: true
 };
 const S = {
   pages: [], doc: [], cur: 0,
@@ -776,6 +777,7 @@ function render(i = S.cur) {
   }
   const sel = i === S.cur ? S.sel : null;
   for (const L of p.layers) drawLayer(c, L, L === sel);
+  if (i === S.cur && S.guides && S.drag) drawGuidesExtras(c, i);
   if (i === S.cur) drawTarget(c, i);
   if (i === S.cur && S.drag && S.drag.mode === 'drawbox' && S.drag.moved) {
     const k = 1 / (S.zoom || 1), x0 = Math.min(S.drag.o.x, S.drag.cur.x), y0 = Math.min(S.drag.o.y, S.drag.cur.y);
@@ -2495,13 +2497,18 @@ function onMove(e) {
   if (!S.sel) return;
   const L = S.sel;
   d.moved = true;
-  if (d.mode === 'move') { L.x = Math.round(d.x + (o.x - d.o.x)); L.y = Math.round(d.y + (o.y - d.o.y)); }
+  if (d.mode === 'move') {
+    L.x = Math.round(d.x + (o.x - d.o.x)); L.y = Math.round(d.y + (o.y - d.o.y));
+    /* 8.4.0 — چسبیدن به مرکز/لبه‌ها؛ Alt موقتاً خاموشش می‌کند */
+    if (S.settings.smartGuides !== false && !e.altKey) snapLayerExtras(L);
+    else S.guides = null;
+  }
   else { const dx = (o.x - d.o.x) * (d.side === 2 ? 2 : -2); L.w = clamp(Math.round(d.w + dx), 30, S.pages[d.i].w * 2); }
   render(d.i);
 }
 function onUp() {
   if (!S.drag) return;
-  const d = S.drag; S.drag = null;
+  const d = S.drag; S.drag = null; S.guides = null;
   if (d.mode === 'drawbox') {
     const i = d.i, b = d.b;
     pushHist();
@@ -2523,6 +2530,7 @@ function onUp() {
   const moved = d.moved;
   if (!moved) S.hist.pop();
   else { syncInspector(); autosave(); }
+  if (d.mode === 'move') render(d.i);      // 8.4.0 — خطوط راهنما از بوم پاک شوند
   updateHistBtns();
 }
 addEventListener('pointermove', onMove, { passive: true });
@@ -4069,7 +4077,7 @@ const OPT_MAP = {
   optAutoPlace: 'autoPlace', optAutoGo: 'autoGo', optRtlOrder: 'rtlOrder',
   optDragBox: 'dragBox', optOpenSpace: 'openSpace', optSinglePageMob: 'singlePageMob', optDirectSave: 'directSave',
   optArabic: 'arabic', optZwnj: 'zwnj', optZwnjTar: 'zwnjTar', optPunct: 'punct', optEllip: 'ellip', optDigits: 'digits',
-  optCleanAuto: 'cleanAuto'
+  optCleanAuto: 'cleanAuto', optSmartGuides: 'smartGuides'
 };
 function readSettingsToUI() {
   for (const id in OPT_MAP) { const n = $('#' + id); if (n) n.checked = !!S.settings[OPT_MAP[id]]; }
@@ -4560,6 +4568,8 @@ async function appCmd(c) {
     case 'uiZoomOut': return showMenuState(await dcmd('uizoom', -1));
     case 'uiZoom0': return showMenuState(await dcmd('uizoom', 0));
     case 'theme': return toggleTheme();
+    case 'proof': closeMenus(); return openProof('issues');
+    case 'typeMode': closeMenus(); return typeOpen(!S.typeMode);
     case 'fullscreen': closeMenus();
       if (!window.msDesktop) { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch (e) { toast('تمام‌صفحه در این مرورگر در دسترس نیست', 'wn'); } return; }
       return dcmd('fullscreen');
