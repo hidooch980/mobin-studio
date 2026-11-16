@@ -91,7 +91,7 @@ const DEFAULTS = {
   arabic: true, zwnj: true, zwnjTar: false, punct: true, ellip: false, digits: false,
   fmt: 'png', quality: 92, scale: 1,
   autoClean: false, cleanTol: 58, cleanGrow: 0, cleanAuto: true, cleanColor: '#FFFFFF',
-  smartGuides: true
+  smartGuides: true, autoResume: true
 };
 const S = {
   pages: [], doc: [], cur: 0,
@@ -3879,16 +3879,13 @@ function wireTour() {
   on('#bDemo', loadDemo);
   on('#bDemo2', loadDemo);
 }
-async function maybeFirstRun() {
+function maybeFirstRun() {
   if (LS.get(TOUR_KEY)) return;
   LS.set(TOUR_KEY, '1');
   if (document.body.classList.contains('mob')) return;
   if (S.doc.length || S.pages.length) return;
-  const yes = await ask('آموزش کوتاه را ببینیم؟',
-    'در حدود دو دقیقه، هر بخش برنامه را سر جای خودش نشان می‌دهم. هر وقت خواستید می‌توانید ببندیدش و بعداً از دکمهٔ «راهنما» در نوار کناری دوباره بازش کنید.',
-    'شروع آموزش', 'فعلاً نه');
-  if (yes) startTour();
-  else toast('آموزش همیشه از دکمهٔ «راهنما» در نوار کناری در دسترس است', 'i', 5000);
+  /* بدون هیچ پنجره‌ای: آموزش همیشه از دکمهٔ «راهنما» در نوار کناری باز می‌شود */
+  toast('آموزش کوتاه هر وقت خواستی از دکمهٔ «راهنما» در نوار کناری باز می‌شود', 'i', 6000);
 }
 
 /* ============================================================
@@ -4089,7 +4086,7 @@ const OPT_MAP = {
   optAutoPlace: 'autoPlace', optAutoGo: 'autoGo', optRtlOrder: 'rtlOrder',
   optDragBox: 'dragBox', optOpenSpace: 'openSpace', optSinglePageMob: 'singlePageMob', optDirectSave: 'directSave',
   optArabic: 'arabic', optZwnj: 'zwnj', optZwnjTar: 'zwnjTar', optPunct: 'punct', optEllip: 'ellip', optDigits: 'digits',
-  optCleanAuto: 'cleanAuto', optSmartGuides: 'smartGuides'
+  optCleanAuto: 'cleanAuto', optSmartGuides: 'smartGuides', optAutoResume: 'autoResume'
 };
 function readSettingsToUI() {
   for (const id in OPT_MAP) { const n = $('#' + id); if (n) n.checked = !!S.settings[OPT_MAP[id]]; }
@@ -4745,7 +4742,7 @@ addEventListener('keyup', e => {
   addEventListener('focus', () => probeAA());
   try { document.fonts.addEventListener('loadingdone', () => { fontEpoch++; renderAll(); }); } catch (e) { }
 
-  /* restore previous session */
+  /* restore previous session — quietly, without any question (see optAutoResume) */
   let auto = null;
   try { auto = JSON.parse(LS.get('ms6.auto') || 'null'); } catch (e) { }
   /* started by double-clicking a .mobin in Explorer: open that one instead */
@@ -4753,14 +4750,10 @@ addEventListener('keyup', e => {
   if (pend) auto = null;
   const autoFile = !!(auto && auto.file && auto.file.path && window.msDesktop && msDesktop.openProject);
   if (auto && (auto.v === 6 || auto.v === 7) && Array.isArray(auto.doc) && (auto.doc.flat().length || autoFile)) {
-    const when = auto.at ? new Date(auto.at) : null;
-    const ago = when ? Math.round((Date.now() - when.getTime()) / 60000) : null;
-    const label = ago === null ? '' : ago < 60 ? ` (${faNum(ago)} دقیقه پیش)` : ` (${faNum(Math.round(ago / 60))} ساعت پیش)`;
-    const yes = await ask('بازیابی کار قبلی؟',
-      autoFile ? `آخرین پروژه «${fileBase(auto.file.name || auto.file.path)}» بود${label}. دوباره با عکس‌ها باز شود؟`
-        : `کار ذخیره‌شده‌ای پیدا شد${label}: ${faNum(auto.doc.length)} صفحه و ${faNum(auto.doc.flat().length)} بالن. بازیابی شود؟`,
-      'بازیابی کن', 'شروع از نو');
-    if (yes && !(autoFile && await reopenAuto(auto))) {
+    /* خاموش‌بودن بازگشایی خودکار: کاربر نمی‌خواهد کار قبلی برگردد، پس هیچ سؤالی هم پرسیده نمی‌شود */
+    if (S.settings.autoResume === false) {
+      /* deliberately kept in localStorage: turning the option back on brings it home */
+    } else if (!(autoFile && await reopenAuto(auto))) {
       S.raw = str(auto.raw, '', 2e6);
       S.doc = cleanDoc(auto.doc);
       if (auto.styles) S.styles = Object.assign(cleanStyles(auto.styles), S.styles);
@@ -4768,8 +4761,8 @@ addEventListener('keyup', e => {
       S.pendingCleans = Array.isArray(auto.C) ? auto.C : [];
       S.imgNames = Array.isArray(auto.names) ? auto.names : [];
       pickNextBubble();
-      toast('متن بازیابی شد — حالا عکس‌ها را بارگذاری کنید', 'ok', 5500);
-    } else if (!yes) { LS.del('ms6.auto'); }
+      toast('متن کار قبلی باز شد — حالا عکس‌ها را بارگذاری کنید', 'ok', 5500);
+    }
   }
   readSettingsToUI();
   syncAll();
