@@ -17,6 +17,7 @@
           <span class="mz"><button type="button" class="btn sm ico" data-cmd="uiZoomOut" title="کوچک‌تر (Ctrl+Shift+−)" aria-label="کوچک‌تر">−</button><button type="button" class="btn sm" data-cmd="uiZoom0" title="اندازهٔ عادی (Ctrl+Shift+0)">عادی</button><button type="button" class="btn sm ico" data-cmd="uiZoomIn" title="بزرگ‌تر (Ctrl+Shift++)" aria-label="بزرگ‌تر">+</button></span></div>
         <button class="mi" type="button" data-cmd="theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span>حالت روشن / تیره</span></button>
         <button class="mi" type="button" data-cmd="ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6 11.5 7l4.4 1.5-4.4 1.5L10 14.4 8.5 10 4.1 8.5 8.5 7 10 2.6Z"/><path d="M15.4 13.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg><span>دستیار<small>بررسی صفحه، ایرادهای چیدمان و جای خالی ترجمه</small></span><kbd>F6</kbd></button>
+        <button class="mi" type="button" data-cmd="gloss"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.5h8.5A2.5 2.5 0 0 1 15 6v10.5H6.5A2.5 2.5 0 0 1 4 14V3.5Z"/><path d="M6.4 7.4h6M6.4 10.6h4"/></svg><span>واژه‌نامه<small>اسم‌ها و اصطلاح‌ها؛ یک‌دست در کل فصل</small></span></button>
         <button class="mi" type="button" data-cmd="typeMode"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5h13M3.5 10h8.5M3.5 14.5h5.5"/><path d="m13.6 11.6 2.9 2.9-2.9 2.9" /></svg><span>حالت تایپ پشت‌سرهم<small>متن را یکی‌یکی بنویس، Enter = بعدی</small></span><kbd>F7</kbd></button>
         <button class="mi" type="button" data-cmd="proof"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.2h9.2L16 6v10.8H4V3.2Z"/><path d="M6.6 8h6.8M6.6 11h6.8M6.6 14h4.2"/></svg><span>بازبینی متن<small>نیم‌فاصله، خطای نگارشی و سند پشت‌سرهم</small></span><kbd>F8</kbd></button>
         <button class="mi" type="button" data-cmd="fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span>تمام‌صفحه</span><kbd>F11</kbd></button>
@@ -625,6 +626,13 @@
     <button class="btn ico gho" type="button" id="aiClose" aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
   </div>
   <div class="aiMsgs" id="aiMsgs"></div>
+  <div class="aiQuick" id="aiQuick">
+    <button class="btn sm gho" type="button" id="aiRead" title="متن اصلی هر حباب را از تصویر خام بخوان">خواندن متن اصلی</button>
+    <button class="btn sm gho" type="button" id="aiPageCard" title="کارت ترجمهٔ صفحه — با دستیار یا با تایپ خودت">ترجمهٔ صفحه</button>
+    <button class="btn sm gho" type="button" id="aiChapter" title="یکدستی اسم‌ها و لحن در کل فصل">بازخوانی فصل</button>
+    <button class="btn sm gho" type="button" id="aiGloss" title="واژه‌نامهٔ اسم‌ها و اصطلاح‌ها">واژه‌نامه</button>
+    <button class="btn sm gho" type="button" id="aiLearn" title="چه چیزی از کارت یاد گرفته">یادگیری</button>
+  </div>
   <div id="aiPrev"></div>
   <div class="aiFoot">
     <button class="btn sm" type="button" id="aiConfirm">تأیید پیش‌نویس‌ها</button>
@@ -637,6 +645,95 @@
     <button class="btn pri" type="submit" id="aiSend">بفرست</button>
   </form>
   <div id="aiState"></div>
+</div>
+<div class="ov" id="ovGloss" role="dialog" aria-modal="true" aria-labelledby="glTitle">
+  <div class="mw">
+    <div class="mh">
+      <h2 id="glTitle">واژه‌نامه</h2>
+      <span class="hint" id="glCount"></span>
+      <span class="grow"></span>
+      <button class="btn sm gho dgr" type="button" id="glClearP">پاک کردن واژه‌نامهٔ پروژه</button>
+      <button class="btn ico gho" data-close type="button" aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+    </div>
+    <div class="mb">
+      <p class="hint" style="margin:0 0 10px">هر اسم یا اصطلاحی که اینجا بنویسی، دستیار همان معادل را به‌کار می‌برد؛ پس یک اسم در کل فصل یک‌جور ترجمه می‌شود.</p>
+      <div class="glAdd">
+        <input id="glSrc" type="text" placeholder="واژهٔ اصلی" spellcheck="false">
+        <span class="glArw">←</span>
+        <input id="glFa" type="text" placeholder="معادل فارسی" spellcheck="false">
+        <input id="glNote" type="text" placeholder="توضیح (اختیاری)">
+        <button class="btn pri" type="button" id="glAdd">افزودن</button>
+      </div>
+      <div class="glBar">
+        <div class="tabs sm" id="glScope" role="tablist">
+          <button role="tab" data-s="p" aria-selected="true">این پروژه</button>
+          <button role="tab" data-s="g" aria-selected="false">عمومی (همهٔ پروژه‌ها)</button>
+        </div>
+        <span class="grow"></span>
+        <input id="glSearch" type="text" placeholder="جست‌وجو…">
+      </div>
+      <details class="glPasteWrap">
+        <summary>افزودن گروهی — هر خط یک واژه: ‏اصل = فارسی‏</summary>
+        <textarea id="glPasteBox" rows="4" spellcheck="false" placeholder="Seoul = سئول&#10;Guild = گیلد"></textarea>
+        <button class="btn sm" type="button" id="glPaste">همه را اضافه کن</button>
+      </details>
+      <div id="glList" class="glList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="ovLearn" role="dialog" aria-modal="true" aria-labelledby="lnTitle">
+  <div class="mw">
+    <div class="mh">
+      <h2 id="lnTitle">یادگیری از کار تو</h2>
+      <span class="grow"></span>
+      <button class="btn ico gho" data-close type="button" aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+    </div>
+    <div class="mb">
+      <label class="chk" style="margin-bottom:12px"><input type="checkbox" id="lnOn" checked> از کارهای من یاد بگیر (هر ترجمه‌ای که خودت بنویسی یا اصلاح کنی)</label>
+      <div id="lnBody"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="ovPg" role="dialog" aria-modal="true" aria-labelledby="pgTitle">
+  <div class="mw wide">
+    <div class="mh">
+      <h2 id="pgTitle">کارت ترجمهٔ صفحه</h2>
+      <span class="hint" id="pgCount"></span>
+      <span class="grow"></span>
+      <button class="btn sm" type="button" id="pgFill">با دستیار پر کن</button>
+      <button class="btn sm gho" type="button" id="pgManual" title="خودم تایپ می‌کنم">تایپ دستی</button>
+      <button class="btn ico gho" data-close type="button" aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+    </div>
+    <div class="mb">
+      <p class="hint" style="margin:0 0 12px">تصویر اصلِ هر حباب کنارش است. هر ردیف را می‌توانی خودت تایپ کنی یا با دستیار پر کنی؛ بعد یک‌جا پیش‌نویس می‌شوند و قبل از قطعی‌شدن روی بوم می‌بینی‌شان.</p>
+      <div id="pgList" class="pgList"></div>
+    </div>
+    <div class="mf">
+      <span class="hint">تا وقتی تأیید نکنی چیزی ساخته نمی‌شود</span>
+      <span class="mfsp"></span>
+      <button class="btn gho" data-close type="button">لغو</button>
+      <button class="btn pri" id="pgBuild" type="button">ساخت پیش‌نویس‌ها</button>
+    </div>
+  </div>
+</div>
+
+<div id="manyBar" class="manyBar" role="toolbar" aria-label="تراز گروهی">
+  <b id="manyN"></b>
+  <button type="button" class="mb" data-al="l" title="تراز چپ">چپ</button>
+  <button type="button" class="mb" data-al="cx" title="وسط افقی">وسط</button>
+  <button type="button" class="mb" data-al="r" title="تراز راست">راست</button>
+  <span class="sep"></span>
+  <button type="button" class="mb" data-al="t" title="تراز بالا">بالا</button>
+  <button type="button" class="mb" data-al="cy" title="وسط عمودی">میانه</button>
+  <button type="button" class="mb" data-al="b" title="تراز پایین">پایین</button>
+  <span class="sep"></span>
+  <button type="button" class="mb" data-al="dh" title="فاصلهٔ مساوی افقی">فاصله افقی</button>
+  <button type="button" class="mb" data-al="dv" title="فاصلهٔ مساوی عمودی">فاصله عمودی</button>
+  <button type="button" class="mb" data-al="same" title="همان اندازهٔ لایهٔ اول">هم‌اندازه</button>
+  <span class="sep"></span>
+  <button type="button" class="mb gho" data-al="clear" title="برداشتن انتخاب">✕</button>
 </div>
 <div class="ov" id="ovAsk" role="dialog" aria-modal="true" aria-labelledby="askTitle">
   <div class="mw sm">

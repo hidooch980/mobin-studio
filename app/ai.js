@@ -1,5 +1,5 @@
 /* ============================================================
-   Mobin Studio 8.5.2 — «دستیار»
+   Mobin Studio 8.6.0 — «دستیار»
    یک چت‌باتِ اختیاری کنار بوم که:
      • فقط وقتی کاربر بازش می‌کند حرف می‌زند (هیچ چیز خودکار نیست)
      • همهٔ صفحه را می‌بیند: تصویر کلین + تصویر خام + متن‌ها + اعداد دقیق چیدمان
@@ -69,6 +69,12 @@ function aiPersona() {
     const k = L.findIndex(s => s.startsWith('۶. این اثر'));
     if (k >= 0) L[k] = '۶. محتوای بزرگسال در این برنامه فعال نیست؛ لحن محترمانه و عمومی باشد.';
   }
+  /* واژه‌نامه و هر چیزی که از کار خودِ کاربر یاد گرفته */
+  try {
+    const g = glPromptBlock(); if (g) L.push('', g);
+    const st = lnStyleBlock(); if (st) L.push('', st);
+    const ex = lnExamplesBlock(12); if (ex) L.push('', ex);
+  } catch (e) { }
   return L.join('\n');
 }
 
@@ -218,8 +224,14 @@ function aiBuildContext(pi) {
     id: b.id, tag: b.tag || '', type: b.type || '',
     chars: String(b.text || '').length,
     placed: ps.has(b.id),
+    /* raw = خط اصلیِ متن؛ text = آخرین چیزی که روی حباب نوشته شده */
+    orig: String(b.raw || '').slice(0, 400),
     text: String(b.text || '').slice(0, 400)
   }));
+  /* 8.6.0 — فهرست همهٔ حباب‌های پیدا‌شده؛ مدل باید بتواند به هر حباب شماره بدهد */
+  data.balloons = p ? aiBalloons(i).slice(0, 60).map((B, k) => ({
+    id: k, kind: B.kind || '', cx: Math.round(B.cx), cy: Math.round(B.cy), cw: Math.round(B.cw), ch: Math.round(B.ch)
+  })) : [];
   data.placed = [];
   data.overlaps = [];
   data.untranslated = [];
@@ -345,6 +357,7 @@ function aiPlaceDraft(pi, balloonIdx, text, as) {
   const b = aiBubbleFor(pi, text);
   const L = newLayer(b, B.cx, B.cy);
   L.t = text; L.draft = as === 'orig' ? 'orig' : 'ai';
+  L.draftText = String(text);
   try { fitShape(L, B, true); } catch (e) { L.w = Math.round(B.cw * .8); L.size = Math.max(8, Math.round(B.ch * .12)); }
   p.layers.push(L);
   return L;
@@ -372,7 +385,18 @@ function aiConfirmDrafts() {
   const all = aiDrafts();
   if (!all.length) return 0;
   pushHist();
-  for (const { L } of all) delete L.draft;
+  for (const { pi, L } of all) {
+    /* 8.6.0 — از تأیید و اصلاحِ خودِ کاربر یاد می‌گیریم */
+    const b = (S.doc[pi] || []).find(x => x.id === L.bid);
+    const orig = b ? String(b.raw || '').trim() : '';
+    const fa = String(L.t || '').trim();
+    if (fa) {
+      if (orig) lnCapture(orig, fa, L.tag, L.draft === 'orig' ? 'orig' : 'ai');
+      else if (L.draftText && L.draftText.trim() !== fa) lnCapture(L.draftText, fa, L.tag, 'fix');
+    }
+    delete L.draft;
+    delete L.draftText;
+  }
   renderAll(); syncAll(); autosave();
   return all.length;
 }
@@ -519,7 +543,6 @@ function aiBusy(on) {
 }
 
 async function aiSend() {
-  if (S.ai.busy) return;
   const inp = $('#aiInput');
   const text = (inp.value || '').trim();
   if (!text) return;
@@ -529,6 +552,19 @@ async function aiSend() {
     return;
   }
   inp.value = ''; inp.style.height = '';
+  return aiAsk(text, '');
+}
+
+/* یک دور گفت‌وگو؛ extra یک دستور یک‌بارهٔ اضافه است (فقط همین درخواست) */
+async function aiAsk(text, extra) {
+  if (S.ai.busy) return;
+  text = String(text || '').trim();
+  if (!text) return;
+  if (!aiReady()) {
+    aiPush('sys', 'اول در تنظیمات ← دستیار، آدرس API و نام مدل را وارد کن.', { err: true });
+    aiOpenSettings();
+    return;
+  }
   aiPush('me', text);
   S.ai.busy = true; aiBusy(true);
   try {
@@ -549,6 +585,7 @@ async function aiSend() {
     }
     /* the question itself must be here — and last, so it is the freshest thing the model reads */
     parts.push({ type: 'text', text: 'پرسش کاربر:\n' + text });
+    if (extra) parts.push({ type: 'text', text: extra });
     msgs.push({ role: 'user', content: parts });
     let reply;
     try {

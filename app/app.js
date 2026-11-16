@@ -107,6 +107,8 @@ const S = {
   shift: 0,              // empty script pages prepended (image/text alignment)
   drag: null, filterLeft: false, imgNames: [], quotaWarned: false,
   tool: 'text',          // 'text' | 'clean'
+  many: [],              // 8.6.0 — چند لایهٔ انتخاب‌شده برای جابه‌جایی/تراز گروهی
+  gloss: [],             // 8.6.0 — واژه‌نامهٔ همین پروژه
   rawGhost: false,       // Hold Space or toggle Ghost Overlay of Raw reference
   rawBoxes: [],          // page index -> [{x0,y0,x1,y1,cx,cy,cw,ch,kind,rawHint:true}]
   remCode: '',           // last remote sync code
@@ -782,7 +784,8 @@ function render(i = S.cur) {
     }
   }
   const sel = i === S.cur ? S.sel : null;
-  for (const L of p.layers) drawLayer(c, L, L === sel);
+  const many = i === S.cur && S.many && S.many.length > 1 ? S.many : null;
+  for (const L of p.layers) drawLayer(c, L, L === sel || !!(many && many.indexOf(L) >= 0));
   if (i === S.cur && S.guides && S.drag) drawGuidesExtras(c, i);
   if (i === S.cur && S.aiPreview) drawAiPreviewExtras(c, i);
   if (i === S.cur) drawTarget(c, i);
@@ -1875,6 +1878,8 @@ function restore(json) {
     if (JSON.stringify(p.cleans || []) !== JSON.stringify(nw)) { p.cleans = nw; markClean(i); }
   });
   S.sel = null;
+  S.many = [];                 /* 8.6.0 — اشیای لایه با واگرد عوض می‌شوند */
+  syncManyBar();
   syncAll(); autosave();
 }
 function undo() { if (!S.hist.length) return toast('چیزی برای واگرد نیست'); S.future.push(snapshot()); restore(S.hist.pop()); updateHistBtns(); }
@@ -2190,7 +2195,7 @@ function flashLayer(L, i) {
 }
 function gotoPage(i, scroll = true) {
   if (i < 0 || i >= Math.max(S.pages.length, S.doc.length)) return;
-  const old = S.cur; S.cur = i; S.sel = null;
+  const old = S.cur; S.cur = i; S.sel = null; S.many = []; syncManyBar();
   pickNextBubble();
   syncSinglePageMode();
   if (old !== i && !isSinglePageMob()) render(old);
@@ -2258,7 +2263,7 @@ async function loadImages(fileList, keepWork, ordered) {
   S.pages = loaded;
   buildCanvases();
   clearHist();
-  S.cur = 0; S.sel = null; pickNextBubble();
+  S.cur = 0; S.sel = null; S.many = []; pickNextBubble();
   fitZoom(); syncAll(); makeThumbs();
   $('#stage').scrollTop = 0;
   autosave();
@@ -2454,7 +2459,7 @@ function onDown(e, i) {
   const o = toImg(e, i);
   if (S.tool === 'clean') {
     e.preventDefault();
-    if (i !== S.cur) { const old = S.cur; S.cur = i; S.sel = null; pickNextBubble(); render(old); }
+    if (i !== S.cur) { const old = S.cur; S.cur = i; S.sel = null; S.many = []; syncManyBar(); pickNextBubble(); render(old); }
     pushHist();
     const erase = e.altKey || e.shiftKey || e.ctrlKey || e.metaKey;
     const done = erase ? removeCleanAt(i, o.x, o.y) : addClean(i, o.x, o.y);
@@ -2463,21 +2468,33 @@ function onDown(e, i) {
     return;
   }
   let switched = false;
-  if (i !== S.cur) { const old = S.cur; S.cur = i; S.sel = null; pickNextBubble(); render(old); switched = true; }
+  if (i !== S.cur) { const old = S.cur; S.cur = i; S.sel = null; S.many = []; syncManyBar(); pickNextBubble(); render(old); switched = true; }
   const p = S.pages[i];
 
   const fpad = e.pointerType === 'touch' ? 14 / (S.zoom || 1) : 0;
   for (let k = p.layers.length - 1; k >= 0; k--) {
     const L = p.layers[k], h = hitLayer(L, o.x, o.y, fpad);
     if (!h) continue;
+    /* Ctrl/Cmd یا Shift روی متن = افزودن/برداشتن از انتخاب گروهی */
+    if (h === 1 && (e.ctrlKey || e.metaKey || e.shiftKey)) {
+      manyToggle(L);
+      selectLayer(L, true);
+      render(i); syncManyBar();
+      e.preventDefault();
+      return;
+    }
     pushHist();
-    S.drag = { mode: h === 1 ? 'move' : 'width', o, x: L.x, y: L.y, w: L.w, i, side: h, moved: false };
+    const group = h === 1 && S.many.length > 1 && S.many.indexOf(L) >= 0
+      ? S.many.map(M => ({ L: M, x: M.x, y: M.y })) : null;
+    S.drag = { mode: h === 1 ? 'move' : 'width', o, x: L.x, y: L.y, w: L.w, i, side: h, moved: false, group };
     try { e.target.setPointerCapture(e.pointerId); } catch (err) { }
+    if (!group) { S.many = [L]; syncManyBar(); }
     selectLayer(L, true);
     if (switched) syncLight();
     e.preventDefault();
     return;
   }
+  if (S.many.length > 1) { S.many = []; syncManyBar(); }
   const b = currentBubble();
   if (!switched && b && !b.skip && !placedSet(i).has(b.id)) {
     if (S.settings.dragBox && e.pointerType !== 'touch') {
@@ -2510,10 +2527,16 @@ function onMove(e) {
   const L = S.sel;
   d.moved = true;
   if (d.mode === 'move') {
-    L.x = Math.round(d.x + (o.x - d.o.x)); L.y = Math.round(d.y + (o.y - d.o.y));
-    /* 8.4.0 — چسبیدن به مرکز/لبه‌ها؛ Alt موقتاً خاموشش می‌کند */
-    if (S.settings.smartGuides !== false && !e.altKey) snapLayerExtras(L);
-    else S.guides = null;
+    const dx = o.x - d.o.x, dy = o.y - d.o.y;
+    if (d.group) {                       /* 8.6.0 — همهٔ انتخاب‌شده‌ها با هم */
+      for (const m of d.group) { m.L.x = Math.round(m.x + dx); m.L.y = Math.round(m.y + dy); }
+      S.guides = null;
+    } else {
+      L.x = Math.round(d.x + dx); L.y = Math.round(d.y + dy);
+      /* 8.4.0 — چسبیدن به مرکز/لبه‌ها؛ Alt موقتاً خاموشش می‌کند */
+      if (S.settings.smartGuides !== false && !e.altKey) snapLayerExtras(L);
+      else S.guides = null;
+    }
   }
   else { const dx = (o.x - d.o.x) * (d.side === 2 ? 2 : -2); L.w = clamp(Math.round(d.w + dx), 30, S.pages[d.i].w * 2); }
   render(d.i);
@@ -2541,11 +2564,115 @@ function onUp() {
   }
   const moved = d.moved;
   if (!moved) S.hist.pop();
-  else { syncInspector(); autosave(); }
+  else { syncInspector(); autosave(); learnFromSelection(); }
   if (d.mode === 'move') render(d.i);      // 8.4.0 — خطوط راهنما از بوم پاک شوند
+  syncManyBar();
   updateHistBtns();
 }
 addEventListener('pointermove', onMove, { passive: true });
+
+/* ============================================================
+   8.6.0 — انتخاب گروهی، تراز و توزیع
+   ============================================================ */
+function manyToggle(L) {
+  if (!L) return;
+  /* اگر تا حالا گروهی نبوده، انتخاب فعلی هم عضو گروه شود (Ctrl+کلیک روی لایهٔ دوم) */
+  const p = S.pages[S.cur];
+  if (!S.many.length && S.sel && S.sel !== L && p && p.layers.indexOf(S.sel) >= 0) S.many.push(S.sel);
+  const k = S.many.indexOf(L);
+  if (k >= 0) S.many.splice(k, 1); else S.many.push(L);
+  if (S.many.length === 1) S.sel = S.many[0];
+}
+function manyClear() { if (S.many.length) { S.many = []; syncManyBar(); } }
+function manyList() {
+  const p = S.pages[S.cur]; if (!p) return [];
+  return S.many.filter(L => p.layers.indexOf(L) >= 0);
+}
+function manyBounds(list) {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const L of list) {
+    const m = layout(L);
+    x0 = Math.min(x0, L.x - L.w / 2); x1 = Math.max(x1, L.x + L.w / 2);
+    y0 = Math.min(y0, L.y - m.h / 2); y1 = Math.max(y1, L.y + m.h / 2);
+  }
+  return { x0, y0, x1, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0 };
+}
+/* تراز گروهی روی کادر کل انتخاب */
+function manyAlign(edge) {
+  const list = manyList(); if (list.length < 2) return;
+  pushHist();
+  const B = manyBounds(list);
+  for (const L of list) {
+    const m = layout(L);
+    if (edge === 'l') L.x = Math.round(B.x0 + L.w / 2);
+    else if (edge === 'r') L.x = Math.round(B.x1 - L.w / 2);
+    else if (edge === 'cx') L.x = Math.round(B.cx);
+    else if (edge === 't') L.y = Math.round(B.y0 + m.h / 2);
+    else if (edge === 'b') L.y = Math.round(B.y1 - m.h / 2);
+    else if (edge === 'cy') L.y = Math.round(B.cy);
+  }
+  manyDone(edge === 'l' ? 'تراز چپ' : edge === 'r' ? 'تراز راست' : edge === 'cx' ? 'تراز وسط افقی'
+    : edge === 't' ? 'تراز بالا' : edge === 'b' ? 'تراز پایین' : 'تراز وسط عمودی');
+}
+/* فاصله‌های مساوی بین لبه‌ها (لبه‌چین، مثل فیگما) */
+function manyDist(axis) {
+  const list = manyList(); if (list.length < 3) return toast('برای فاصلهٔ مساوی حداقل ۳ لایه لازم است', 'i');
+  pushHist();
+  const box = L => { const m = layout(L); return axis === 'h' ? { a: L.x - L.w / 2, b: L.x + L.w / 2, c: L.x, s: L.w, o: 'x' } : { a: L.y - m.h / 2, b: L.y + m.h / 2, c: L.y, s: m.h, o: 'y' }; };
+  const arr = list.map(L => ({ L, k: box(L) })).sort((p, q) => p.k.a - q.k.a);
+  const first = arr[0].k, last = arr[arr.length - 1].k;
+  const span = (last.b - first.a);
+  const used = arr.reduce((a, e) => a + e.k.s, 0);
+  const gap = (span - used) / (arr.length - 1);
+  let cur = first.a;
+  for (const e of arr) { e.L[e.k.o] = Math.round(cur + e.k.s / 2); cur += e.k.s + gap; }
+  manyDone(axis === 'h' ? 'فاصلهٔ مساوی افقی' : 'فاصلهٔ مساوی عمودی');
+}
+/* همان اندازهٔ لایهٔ اول (عرض و اندازهٔ قلم) */
+function manySameSize() {
+  const list = manyList(); if (list.length < 2) return;
+  pushHist();
+  const A = list[0];
+  for (const L of list) {
+    if (L === A) continue;
+    if (!L.tag && A.tag) L.tag = A.tag;
+    L.w = A.w; L.size = A.size;
+    if (A.bold !== undefined) L.bold = A.bold;
+    if (A.font) L.font = A.font;
+  }
+  manyDone('اندازهٔ یکدست');
+}
+function manyDone(what) {
+  renderAll(); syncInspector(); syncManyBar(); autosave();
+  toast(what + ' انجام شد', 'ok', 1800);
+}
+function syncManyBar() {
+  const bar = document.getElementById('manyBar'); if (!bar) return;
+  const list = manyList();
+  const on = list.length > 1;
+  bar.classList.toggle('on', on);
+  if (on) {
+    /* 8.6.0 — دقیقاً بالای داک ناوبری صفحه بنشیند، نه رویش */
+    const dock = document.getElementById('sbar');
+    let bottom = 18;
+    if (dock && dock.getBoundingClientRect().height > 0)
+      bottom = Math.max(18, Math.round(window.innerHeight - dock.getBoundingClientRect().top + 8));
+    bar.style.bottom = bottom + 'px';
+  }
+  const t = document.getElementById('manyN');
+  if (t) t.textContent = on ? faNum(list.length) + ' لایه' : '';
+  if (!on && S.drag && S.drag.group) S.drag.group = null;
+  const dis = document.querySelectorAll('#manyBar button[data-al]');
+  dis.forEach(b => { b.disabled = !on; });
+}
+/* جابه‌جایی گروهی با کلیدهای جهت‌دار (Shift = ۱۰px) */
+function manyNudge(dx, dy) {
+  const list = manyList(); if (list.length < 2) return false;
+  pushHist();
+  for (const L of list) { L.x = Math.round(L.x + dx); L.y = Math.round(L.y + dy); }
+  renderAll(); syncInspector(); autosave();
+  return true;
+}
 addEventListener('pointerup', onUp);
 addEventListener('pointercancel', onUp);
 
@@ -2568,7 +2695,7 @@ $('#stage').addEventListener('scroll', () => {
     const mid = innerHeight * .42;
     let best = S.cur, bestD = 1e9;
     S.pages.forEach((p, i) => { if (!p.wrap) return; const r = p.wrap.getBoundingClientRect(); const d = (r.top <= mid && r.bottom >= mid) ? 0 : Math.min(Math.abs(r.top - mid), Math.abs(r.bottom - mid)); if (d < bestD) { bestD = d; best = i; } });
-    if (best !== S.cur) { const old = S.cur; S.cur = best; S.sel = null; pickNextBubble(); render(old); syncInspector(); syncLight(); syncPagesPanel(); }
+    if (best !== S.cur) { const old = S.cur; S.cur = best; S.sel = null; S.many = []; pickNextBubble(); render(old); syncInspector(); syncLight(); syncPagesPanel(); }
   }, 110);
 }, { passive: true });
 
@@ -2737,7 +2864,8 @@ function projectJSON() {
     names: S.pages.map(p => p.name),
     sizes: S.pages.map(p => [p.w, p.h]),
     fonts: Object.keys(S.uploads),
-    styles: S.styles, settings: S.settings
+    styles: S.styles, settings: S.settings,
+    gloss: S.gloss || []          /* 8.6.0 — واژه‌نامهٔ همین پروژه */
   });
 }
 async function saveProject() {
@@ -2769,6 +2897,7 @@ async function loadProjectObject(o, from) {
   const cleans = Array.isArray(o.cleans) ? o.cleans : [];
   const rawBoxes = Array.isArray(o.rawBoxes) ? o.rawBoxes : [];
   const names = Array.isArray(o.names) ? o.names : [];
+  S.gloss = glossClean(o.gloss);      /* 8.6.0 */
   if (S.pages.length) {
     applyLayers(layers); applyCleans(cleans);
     if (rawBoxes.length) S.pages.forEach((p, i) => { if (Array.isArray(rawBoxes[i])) p.rawBoxes = rawBoxes[i]; });
@@ -2777,7 +2906,7 @@ async function loadProjectObject(o, from) {
     if (names.length && names.length !== S.pages.length)
       toast(`پروژه برای ${faNum(names.length)} صفحه بود ولی ${faNum(S.pages.length)} عکس باز است`, 'wn', 6500);
   } else { S.pending = layers; S.pendingCleans = cleans; S.imgNames = names; }
-  clearHist(); S.cur = 0; S.sel = null; pickNextBubble();
+  clearHist(); S.cur = 0; S.sel = null; S.many = []; pickNextBubble();
   readSettingsToUI(); buildFontList(); saveStyles(); renderAll(); syncAll(); autosave();
   S.lastSnapSig = typeof snapSig === 'function' ? snapSig() : '';
   if (from !== 'bundle' && from !== 'folder')
@@ -3318,7 +3447,7 @@ async function newProject() {
   if (!await confirmDiscard('شروع پروژهٔ تازه')) return;
   releasePages(); S.pages = []; buildCanvases();
   S.doc = []; S.rawDoc = []; S.raw = ''; S.shift = 0; S.cur = 0; S.sel = null; S.selB = null;
-  S.meta = { title: '', created: Date.now() }; S.file = null;
+  S.meta = { title: '', created: Date.now() }; S.file = null; S.many = []; S.gloss = [];
   S.pending = null; S.pendingCleans = null; S.imgNames = [];
   clearHist(); readSettingsToUI();
   ['#parseReport', '#pasteReport'].forEach(q => { const n = $(q); if (n) n.textContent = ''; });
@@ -4444,6 +4573,7 @@ function wire() {
     const b = bubbles(S.cur).find(x => x.id === S.sel.bid); if (b) b.text = S.sel.t;
     render(S.cur); syncCards(); autosave();
   });
+  $('#iText').addEventListener('change', () => { if (S.sel) learnFromSelection(); });
   $('#iFont').addEventListener('change', () => { if (!S.sel) return; pushHist(); S.sel.font = $('#iFont').value; afterEdit(true); });
   $('#iBold').addEventListener('change', () => { if (!S.sel) return; pushHist(); S.sel.bold = $('#iBold').checked; afterEdit(true); });
   $('#iItalic').addEventListener('change', () => { if (!S.sel) return; pushHist(); S.sel.italic = $('#iItalic').checked; afterEdit(true); });
@@ -4578,6 +4708,7 @@ async function appCmd(c) {
     case 'uiZoom0': return showMenuState(await dcmd('uizoom', 0));
     case 'theme': return toggleTheme();
     case 'ai': closeMenus(); return aiOpen();
+    case 'gloss': closeMenus(); return openGloss(true);
     case 'proof': closeMenus(); return openProof('issues');
     case 'typeMode': closeMenus(); return typeOpen(!S.typeMode);
     case 'fullscreen': closeMenus();

@@ -1,0 +1,114 @@
+/* ============================================================
+   8.6.0 — واژه‌نامه، یادگیری، کارت ترجمهٔ صفحه، نوار تراز گروهی
+   ============================================================ */
+
+/* ---------- دکمه‌های سریع پنل دستیار ---------- */
+.aiQuick {
+  display: flex; gap: 6px; padding: 8px 10px 2px;
+  overflow-x: auto; scrollbar-width: none;
+  border-bottom: 1px solid var(--ln);
+}
+.aiQuick::-webkit-scrollbar { display: none; }
+.aiQuick .btn { white-space: nowrap; flex: 0 0 auto; font-size: 12px; padding: 5px 9px; }
+
+/* ---------- واژه‌نامه ---------- */
+.glAdd { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.glAdd input {
+  background: var(--bg3); border: 1px solid var(--ln); color: var(--tx);
+  border-radius: 9px; padding: 8px 10px; font: inherit; font-size: 13px; min-width: 120px;
+}
+#glNote { flex: 1 1 120px; }
+.glAdd input:focus { outline: none; border-color: var(--acc); }
+.glBar { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+.glBar input#glSearch {
+  background: var(--bg3); border: 1px solid var(--ln); color: var(--tx);
+  border-radius: 9px; padding: 7px 10px; font: inherit; font-size: 13px; min-width: 140px;
+}
+.tabs.sm button { padding: 5px 10px; font-size: 12px; }
+.glPasteWrap { margin: 0 0 10px; }
+.glPasteWrap summary { cursor: pointer; font-size: 12.5px; color: var(--tx2); padding: 4px 0; }
+.glPasteWrap textarea {
+  width: 100%; margin: 6px 0; background: var(--bg3); border: 1px solid var(--ln);
+  color: var(--tx); border-radius: 9px; padding: 8px 10px; font: inherit; font-size: 13px; resize: vertical;
+}
+.glList { display: flex; flex-direction: column; gap: 4px; max-height: 46vh; overflow: auto; }
+.glRow, .lnRow {
+  display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+  background: var(--bg2); border: 1px solid var(--ln); border-radius: 10px; font-size: 13px;
+}
+.glRow.p { border-color: color-mix(in srgb, var(--acc) 38%, var(--ln)); }
+.glRow code, .lnRow code { font-size: 12.5px; color: var(--tx2); direction: ltr; }
+.glArw { color: var(--tx3); font-size: 12px; }
+.glRow b, .lnRow b { color: var(--tx); font-weight: 600; }
+
+/* ---------- یادگیری ---------- */
+.lnStat {
+  display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline;
+  padding: 10px 12px; margin-bottom: 12px;
+  background: var(--bg2); border: 1px solid var(--ln); border-radius: 12px; font-size: 13px; color: var(--tx2);
+}
+.lnStat b { color: var(--tx); font-size: 15px; }
+.lnIdeas { margin-bottom: 12px; }
+.lnIdeas p { margin: 0 0 8px; }
+.lnChips { display: flex; gap: 6px; flex-wrap: wrap; }
+.lnList { display: flex; flex-direction: column; gap: 4px; }
+.lnHead { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--tx3); margin-bottom: 4px; }
+.lnRow { font-size: 12.5px; }
+.lnRow .lnO { color: var(--tx3); }
+.lnBody, #lnBody { max-height: 62vh; overflow: auto; }
+
+/* ---------- کارت ترجمهٔ صفحه ---------- */
+.mw.wide { width: min(1050px, 94vw); }
+.pgList { display: flex; flex-direction: column; gap: 10px; max-height: 58vh; overflow: auto; padding-inline-end: 4px; }
+.pgRow {
+  display: grid; grid-template-columns: 250px 1fr; gap: 12px; align-items: start;
+  padding: 10px; background: var(--bg2); border: 1px solid var(--ln); border-radius: 12px;
+}
+.pgSide { display: flex; flex-direction: column; gap: 6px; }
+.pgSide img {
+  width: 100%; height: auto; border-radius: 9px; background: #fff;
+  border: 1px solid var(--ln); object-fit: contain;
+}
+.pgNoImg {
+  display: flex; align-items: center; justify-content: center;
+  height: 74px; border-radius: 9px; border: 1px dashed var(--ln);
+  color: var(--tx3); font-size: 12px;
+}
+.pgN { font-size: 11.5px; color: var(--tx3); }
+.pgMid textarea {
+  width: 100%; box-sizing: border-box; resize: vertical; min-height: 74px;
+  background: var(--bg3); border: 1px solid var(--ln); color: var(--tx);
+  border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14px; line-height: 1.8;
+}
+.pgMid textarea:focus { outline: none; border-color: var(--acc); }
+
+/* ---------- نوار تراز گروهی ---------- */
+.manyBar {
+  position: fixed; z-index: 70;
+  left: 8px; right: 8px; margin-inline: auto; width: max-content; max-width: 94vw;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 68px);   /* بالای داک ناوبری صفحه */
+  display: none; align-items: center; gap: 4px; padding: 6px 8px;
+  background: var(--bg2); border: 1px solid var(--ln); border-radius: 13px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .35);
+  overflow-x: auto; scrollbar-width: none;
+}
+.manyBar::-webkit-scrollbar { display: none; }
+.manyBar.on { display: flex; animation: manyIn .16s ease-out; }
+@keyframes manyIn { from { opacity: 0; } to { opacity: 1; } }
+.manyBar b { font-size: 12px; color: var(--tx2); padding: 0 6px; white-space: nowrap; }
+.manyBar .sep { width: 1px; height: 20px; background: var(--ln); margin: 0 4px; flex: 0 0 auto; }
+.manyBar button.mb {
+  flex: 0 0 auto; border: 1px solid transparent; background: var(--bg3); color: var(--tx);
+  border-radius: 9px; padding: 6px 10px; font: inherit; font-size: 12.5px; cursor: pointer;
+}
+.manyBar button.mb:hover { border-color: var(--acc); }
+.manyBar button.mb:disabled { opacity: .45; cursor: default; }
+.manyBar button.mb.gho { background: transparent; color: var(--tx3); }
+
+@media (max-width: 640px) {
+  .pgRow { grid-template-columns: 108px 1fr; gap: 8px; }
+  .pgList { max-height: 52vh; }
+  .mw.wide { width: 96vw; }
+  .manyBar { width: auto; margin-inline: 0; justify-content: flex-start; }
+  .glAdd input { min-width: 92px; }
+}
