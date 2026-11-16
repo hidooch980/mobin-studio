@@ -20,9 +20,8 @@ try { if (fs.existsSync(SAFE_FLAG)) app.disableHardwareAcceleration(); } catch (
 
 /* never show Electron's English crash box for a main-process error; log it instead */
 const LOG = path.join(app.getPath('userData'), 'error.log');
-process.on('uncaughtException', (err) => {
-  try { fs.appendFileSync(LOG, new Date().toISOString() + ' ' + ((err && err.stack) || err) + '\n'); } catch (e) { }
-});
+const log = (msg) => { try { fs.appendFileSync(LOG, new Date().toISOString() + ' ' + msg + '\n'); } catch (e) { } };
+process.on('uncaughtException', (err) => { log((err && err.stack) || err); });
 
 /* answers native message boxes during automated tests (never set for users) */
 function askBox(opts) {
@@ -502,9 +501,13 @@ async function installUpdate(url) {
      updates it in place (projects and settings live outside the install dir). */
   try {
     const cmd = 'ping -n 3 127.0.0.1 >nul & start "" "' + file + '"';
+    /* windowsVerbatimArguments keeps cmd.exe from receiving the command line
+       double-quoted by Node; with the default quoting cmd /s strips the inner
+       quotes and the setup file is never started. */
     const child = require('child_process').spawn(process.env.COMSPEC || 'cmd.exe', ['/d', '/s', '/c', cmd], {
-      detached: true, stdio: 'ignore', windowsHide: true, cwd: dir
+      detached: true, stdio: 'ignore', windowsHide: true, cwd: dir, windowsVerbatimArguments: true
     });
+    child.on('error', err => { log('update spawn: ' + ((err && err.message) || err)); });
     child.unref();
   } catch (err) {
     return { ok: false, error: 'اجرای نصب‌کننده ممکن نشد' };
