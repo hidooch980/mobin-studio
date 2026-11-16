@@ -90,6 +90,9 @@ body{margin:0;background:var(--bg);color:var(--tx);
   display:flex;flex-direction:column;overflow:hidden;overscroll-behavior:none;
   text-rendering:optimizeLegibility}
 ::selection{background:rgba(255,122,61,.32)}
+/* 8.3.0 — اصلاح باگ: مرورگر روی <button> فونت Arial میگذاشت،
+   پس برچسبهای ریل و شمارهٔ صفحهها با فونت برنامه نمایش داده نمیشدند */
+button,input,select,textarea,optgroup{font-family:inherit}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-corner{background:transparent}

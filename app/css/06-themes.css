@@ -1,0 +1,283 @@
+/* ============================================================
+   Mobin Studio 8.3.0 — سه طراحی تازه (۰۳ آذر)
+   ۷) نئون ترمینال (Neon Terminal)  data-theme="neon"
+   ۸) کاغذ و جوهر  (Ink & Paper)     data-theme="paper"
+   ۹) لومن        (Lumen)            data-theme="lumen"
+   این فایل آخر از همه بار می‌شود تا بتواند شکل‌ها (گردی گوشه،
+   سایه، فونت، بافت) را هم عوض کند، نه فقط رنگ‌ها.
+   ============================================================ */
+
+/* ============================================================
+   ۷) نئون ترمینال — مشکی عمیق، نعنایی/سرخابی، گوشه‌های تیز
+   ============================================================ */
+html[data-theme="neon"]{
+  --ui:'Sahel','Vazirmatn','Segoe UI',Tahoma,system-ui,sans-serif;
+  --bg:#05070B; --surface:rgba(10,17,24,.88); --surface2:#0B1219; --raised:#101B24; --btnh:#16252F;
+  --field:#070D13; --menu:rgba(9,16,22,.97);
+  --stage:#03060A; --dot:rgba(0,245,196,.1);
+  --hov:rgba(0,245,196,.07); --active:rgba(0,245,196,.12);
+  --bd:rgba(0,245,196,.15); --bd2:rgba(0,245,196,.25); --bd3:rgba(0,245,196,.42);
+  --tx:#D6FFF5; --tx2:#9ED6CC; --tx3:#627E7C;
+  --ac:#00F5C4; --ac2:#5CFFE0; --acs:rgba(0,245,196,.12); --acb:rgba(0,245,196,.46); --onac:#03120F;
+  --grad:linear-gradient(135deg,#00F5C4 0%,#FF2E88 100%);
+  --glow:rgba(0,245,196,.45);
+  --ok:#3DFFA8; --oks:rgba(61,255,168,.13); --okb:rgba(61,255,168,.4);
+  --wn:#FFC93C; --wns:rgba(255,201,60,.13); --wnb:rgba(255,201,60,.42);
+  --dg:#FF2E88; --dgs:rgba(255,46,136,.12); --dgs2:rgba(255,46,136,.2); --dgb:rgba(255,46,136,.34); --dgb2:rgba(255,46,136,.55);
+  --veil:rgba(2,4,7,.66); --veil2:rgba(2,4,7,.82); --ovbg:rgba(2,4,7,.7);
+  --glass:rgba(8,14,19,.92);
+  --chk:#0A1015; --pwbg:#080E13; --thumbbg:#0A1015;
+  --scroll:rgba(0,245,196,.2); --scroll2:rgba(0,245,196,.38);
+  --shc:rgba(0,0,0,.6); --shc2:rgba(0,0,0,.75);
+  --sh:0 0 0 1px rgba(0,245,196,.08),0 14px 34px rgba(0,0,0,.66);
+  --sh2:0 0 0 1px rgba(0,245,196,.12),0 34px 90px rgba(0,0,0,.8);
+  --pgsh:0 0 0 1px rgba(0,245,196,.1),0 16px 40px rgba(0,0,0,.7);
+  --r:3px; --r2:4px; --r3:6px;
+  color-scheme:dark;
+}
+html[data-theme="neon"] ::selection{background:rgba(0,245,196,.26)}
+html[data-theme="neon"] #titlebar{box-shadow:inset 0 -1px 0 var(--bd)}
+html[data-theme="neon"] .appbtn b{text-transform:uppercase;letter-spacing:2.4px;font-size:11.5px}
+html[data-theme="neon"] .doc,
+html[data-theme="neon"] .tag,
+html[data-theme="neon"] .pill,
+html[data-theme="neon"] .pchip,
+html[data-theme="neon"] .seg,
+html[data-theme="neon"] .seg button,
+html[data-theme="neon"] .mz,
+html[data-theme="neon"] .mz .btn,
+html[data-theme="neon"] .mchk,
+html[data-theme="neon"] .card,
+html[data-theme="neon"] .fcard,
+html[data-theme="neon"] .snap,
+html[data-theme="neon"] .dropzone,
+html[data-theme="neon"] .step,
+html[data-theme="neon"] .btn.sm,
+html[data-theme="neon"] kbd,
+html[data-theme="neon"] code,
+html[data-theme="neon"] .pw,
+html[data-theme="neon"] .pw canvas{border-radius:3px}
+html[data-theme="neon"] body:not(.mob) .side,
+html[data-theme="neon"] body:not(.mob) #rail{border-radius:4px}
+html[data-theme="neon"] .sh h2,
+html[data-theme="neon"] .lbl,
+html[data-theme="neon"] .pop .ph{letter-spacing:1.2px;font-weight:700}
+html[data-theme="neon"] #rail .rb i{text-transform:uppercase;letter-spacing:.8px;font-size:9px}
+html[data-theme="neon"] #rail .rb.on{box-shadow:inset 0 0 0 1px var(--acb),0 0 20px -6px var(--glow)}
+html[data-theme="neon"] #rail .rb.on::before{border-radius:0}
+html[data-theme="neon"] .card[aria-current=true]{box-shadow:inset 0 0 0 1px var(--acb),0 0 24px -10px var(--glow)}
+html[data-theme="neon"] .card::before{border-radius:0;width:2px}
+html[data-theme="neon"] .btn.pri{box-shadow:inset 0 0 0 1px rgba(0,245,196,.45),0 10px 26px -10px var(--glow)}
+html[data-theme="neon"] .pw.cur{box-shadow:0 0 0 2px var(--ac),0 0 0 6px var(--acs),0 0 30px -8px var(--glow),var(--pgsh)}
+html[data-theme="neon"] #stage{
+  background-image:linear-gradient(rgba(0,245,196,.055) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,245,196,.055) 1px,transparent 1px);
+  background-size:26px 26px;background-position:0 0}
+html[data-theme="neon"] .pw .pnum{border-radius:2px;background:rgba(3,6,10,.82);border-color:rgba(0,245,196,.28);color:#CFFFF4}
+html[data-theme="neon"] .pw.cur .pnum{background:var(--ac);color:var(--onac)}
+html[data-theme="neon"] #welcome{background:radial-gradient(560px 320px at 50% 2%,rgba(0,245,196,.1),transparent 70%),
+  radial-gradient(420px 260px at 50% 100%,rgba(255,46,136,.08),transparent 70%)}
+html[data-theme="neon"] .wmark{background:#070D13;border-color:rgba(0,245,196,.28);border-radius:4px;
+  box-shadow:0 0 34px -8px rgba(0,245,196,.42),inset 0 0 0 1px rgba(0,245,196,.12),0 0 0 8px var(--acs)}
+html[data-theme="neon"] .wc h1{letter-spacing:.4px}
+html[data-theme="neon"] .toast{border-radius:3px}
+html[data-theme="neon"] .updateNote{border-radius:3px;background:rgba(8,14,19,.96);border-color:var(--acb)}
+html[data-theme="neon"] #sbar.dock,
+html[data-theme="neon"] #cleanBar,
+html[data-theme="neon"] #mobQuick{border-radius:4px;box-shadow:0 0 0 1px var(--acb),0 12px 30px -10px rgba(0,0,0,.8),0 0 24px -14px var(--glow)}
+html[data-theme="neon"] #sbar .btn.sm.ico,
+html[data-theme="neon"] .zoom button,
+html[data-theme="neon"] .zoom b{border-radius:3px}
+
+/* ============================================================
+   ۸) کاغذ و جوهر — کاغذ گرم، مرکب، صفر گوشهٔ گرد، سایهٔ سخت
+   ============================================================ */
+html[data-theme="paper"]{
+  --ui:'Estedad','Vazirmatn','Segoe UI',Tahoma,system-ui,sans-serif;
+  --bg:#F4EFE4; --surface:#FBF7EF; --surface2:#F8F3E9; --raised:#EFE7D7; --btnh:#E7DDCA;
+  --field:#FFFDF8; --menu:#FFFCF5;
+  --stage:#EDE6D7; --dot:rgba(26,23,19,.14);
+  --hov:rgba(26,23,19,.05); --active:rgba(26,23,19,.09);
+  --bd:rgba(26,23,19,.16); --bd2:rgba(26,23,19,.28); --bd3:rgba(26,23,19,.46);
+  --tx:#1A1713; --tx2:#4A4237; --tx3:#736A5D;
+  --ac:#B4472A; --ac2:#8A331C; --acs:rgba(180,71,42,.1); --acb:rgba(180,71,42,.44); --onac:#FFFDF8;
+  --grad:linear-gradient(135deg,#B4472A 0%,#D97742 100%);
+  --glow:rgba(180,71,42,.26);
+  --ok:#3F6B3A; --oks:rgba(63,107,58,.12); --okb:rgba(63,107,58,.4);
+  --wn:#8A6512; --wns:rgba(138,101,18,.12); --wnb:rgba(138,101,18,.4);
+  --dg:#A32B22; --dgs:rgba(163,43,34,.1); --dgs2:rgba(163,43,34,.16); --dgb:rgba(163,43,34,.34); --dgb2:rgba(163,43,34,.52);
+  --veil:rgba(26,23,19,.4); --veil2:rgba(26,23,19,.58); --ovbg:rgba(237,230,215,.72);
+  --glass:rgba(251,247,239,.96);
+  --chk:#EFE7D7; --pwbg:#FFFDF8; --thumbbg:#EFE7D7;
+  --scroll:rgba(26,23,19,.2); --scroll2:rgba(26,23,19,.36);
+  --shc:rgba(26,23,19,.14); --shc2:rgba(26,23,19,.24);
+  --sh:2px 2px 0 rgba(26,23,19,.18);
+  --sh2:5px 5px 0 rgba(26,23,19,.22);
+  --pgsh:1px 1px 0 rgba(26,23,19,.22),4px 4px 0 rgba(26,23,19,.1);
+  --r:0px; --r2:0px; --r3:0px;
+  color-scheme:light;
+}
+html[data-theme="paper"] ::selection{background:rgba(180,71,42,.22)}
+html[data-theme="paper"] #titlebar{border-bottom:2px solid var(--tx)}
+html[data-theme="paper"] .appbtn b{letter-spacing:.2px}
+html[data-theme="paper"] .doc,
+html[data-theme="paper"] .tag,
+html[data-theme="paper"] .pill,
+html[data-theme="paper"] .pchip,
+html[data-theme="paper"] .seg,
+html[data-theme="paper"] .seg button,
+html[data-theme="paper"] .mz,
+html[data-theme="paper"] .mz .btn,
+html[data-theme="paper"] .mchk,
+html[data-theme="paper"] .card,
+html[data-theme="paper"] .fcard,
+html[data-theme="paper"] .snap,
+html[data-theme="paper"] .dropzone,
+html[data-theme="paper"] .step,
+html[data-theme="paper"] .btn,
+html[data-theme="paper"] .btn.sm,
+html[data-theme="paper"] kbd,
+html[data-theme="paper"] code,
+html[data-theme="paper"] .pw,
+html[data-theme="paper"] .pw canvas,
+html[data-theme="paper"] .toast,
+html[data-theme="paper"] .wmark{border-radius:0}
+html[data-theme="paper"] body:not(.mob) .side,
+html[data-theme="paper"] body:not(.mob) #rail{border-radius:0;box-shadow:2px 2px 0 rgba(26,23,19,.16)}
+html[data-theme="paper"] .btn{border-color:var(--bd2)}
+html[data-theme="paper"] .btn:hover{box-shadow:1px 1px 0 rgba(26,23,19,.2)}
+html[data-theme="paper"] .btn.pri{box-shadow:2px 2px 0 rgba(26,23,19,.32)}
+html[data-theme="paper"] .btn:active{transform:translate(1px,1px);box-shadow:none}
+/* متن: کارت‌های جدا با خط، شمارهٔ دایره‌ای در کنار */
+html[data-theme="paper"] .cards{counter-reset:c}
+html[data-theme="paper"] .card{counter-increment:c;background:transparent;border:0;border-bottom:1px solid var(--bd);
+  padding:12px 12px 13px 30px;padding-inline-start:12px;padding-inline-end:30px}
+html[data-theme="paper"] .card:hover{background:rgba(26,23,19,.035);border-color:var(--bd2)}
+html[data-theme="paper"] .card::before{display:none}
+html[data-theme="paper"] .card::after{content:counter(c);position:absolute;top:11px;inset-inline-end:8px;
+  width:17px;height:17px;border:1.5px solid var(--bd2);border-radius:50%;display:grid;place-items:center;
+  font:700 9px/1 var(--ui);color:var(--tx3);font-variant-numeric:tabular-nums}
+html[data-theme="paper"] .card[aria-current=true]{background:rgba(180,71,42,.06);border-color:var(--acb);box-shadow:none}
+html[data-theme="paper"] .card[aria-current=true]::after{border-color:var(--ac);color:var(--ac)}
+html[data-theme="paper"] .card.placed::after{opacity:.4}
+html[data-theme="paper"] .ctx.clip::after,
+html[data-theme="paper"] .card:hover .ctx.clip::after,
+html[data-theme="paper"] .card[aria-current=true] .ctx.clip::after{display:none}
+html[data-theme="paper"] .ctx{line-height:1.95}
+/* نوار صفحه‌ها: خط‌کشی زیرین به‌جای قرص رنگی */
+html[data-theme="paper"] .pchip{background-image:none;border:0;border-bottom:2px solid transparent;padding-bottom:4px}
+html[data-theme="paper"] .pchip:hover{background-color:transparent;border-bottom-color:var(--bd2)}
+html[data-theme="paper"] .pchip[aria-current=true]{background-color:transparent;border-color:transparent;border-bottom-color:var(--ac)}
+html[data-theme="paper"] .pchip[aria-current=true] b{color:var(--ac)}
+html[data-theme="paper"] #rail .rb.on{background:transparent;color:var(--ac);box-shadow:inset 0 0 0 1.5px var(--tx)}
+html[data-theme="paper"] #rail .rb.on::before{background:var(--ac);width:2px;border-radius:0}
+html[data-theme="paper"] #rail .rsep{background:var(--bd2)}
+html[data-theme="paper"] #stage{background-image:radial-gradient(circle at 1px 1px,rgba(26,23,19,.11) 1px,transparent 1.5px);
+  background-size:7px 7px}
+html[data-theme="paper"] .pw{border:1px solid var(--bd2);box-shadow:1px 1px 0 rgba(26,23,19,.22),4px 4px 0 rgba(26,23,19,.1)}
+html[data-theme="paper"] .pw.cur{box-shadow:0 0 0 2px var(--tx),1px 1px 0 rgba(26,23,19,.22),4px 4px 0 rgba(26,23,19,.1)}
+html[data-theme="paper"] .pw .pnum{border-radius:0;background:#1A1713;border-color:#1A1713;color:#F4EFE4;font-weight:600}
+html[data-theme="paper"] .pw.cur .pnum{background:var(--ac);border-color:var(--ac);color:var(--onac)}
+html[data-theme="paper"] #welcome{background:radial-gradient(520px 300px at 50% 0,rgba(180,71,42,.09),transparent 70%)}
+html[data-theme="paper"] .wmark{background:#1A1713;border:1px solid #1A1713;
+  box-shadow:4px 4px 0 rgba(26,23,19,.24),0 0 0 7px rgba(180,71,42,.1)}
+html[data-theme="paper"] .dropzone{border-style:solid;border-width:1.5px;background:transparent}
+html[data-theme="paper"] .dropzone:hover{background:rgba(180,71,42,.06);box-shadow:none}
+html[data-theme="paper"] .dzi{box-shadow:none}
+html[data-theme="paper"] .step{background:transparent}
+html[data-theme="paper"] .step>i{color:var(--tx);background:transparent;border-color:var(--bd3)}
+html[data-theme="paper"] .toast{background:#1A1713;color:#F4EFE4;border-color:#1A1713;box-shadow:3px 3px 0 rgba(26,23,19,.24)}
+html[data-theme="paper"] .toast .x{color:#C9BFA9}
+html[data-theme="paper"] .toast svg{color:#C9BFA9}
+html[data-theme="paper"] .updateNote{background:#FFFDF8;border-color:var(--tx);box-shadow:3px 3px 0 rgba(26,23,19,.2)}
+html[data-theme="paper"] #sbar.dock,
+html[data-theme="paper"] #cleanBar,
+html[data-theme="paper"] #mobQuick{border-radius:0;box-shadow:2px 2px 0 rgba(26,23,19,.2)}
+html[data-theme="paper"] .seg button[aria-selected=true]{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--tx)}
+html[data-theme="paper"] .seg{background:transparent;border-color:var(--bd2)}
+
+/* ============================================================
+   ۹) لومن — پاستیل شیشه‌ای، همه‌چیز کپسولی، بنفش→فیروزه‌ای
+   ============================================================ */
+html[data-theme="lumen"]{
+  --ui:'Vazirmatn','Segoe UI',Tahoma,system-ui,sans-serif;
+  --bg:#EEF1F9; --surface:rgba(255,255,255,.72); --surface2:rgba(255,255,255,.64); --raised:rgba(255,255,255,.9); --btnh:#F3F5FC;
+  --field:rgba(255,255,255,.92); --menu:rgba(255,255,255,.97);
+  --stage:#E9EDF8; --dot:rgba(108,92,231,.16);
+  --hov:rgba(108,92,231,.07); --active:rgba(108,92,231,.12);
+  --bd:rgba(108,92,231,.14); --bd2:rgba(108,92,231,.24); --bd3:rgba(108,92,231,.4);
+  --tx:#232840; --tx2:#4E5573; --tx3:#676C7D;
+  --ac:#6C5CE7; --ac2:#5A48D6; --acs:rgba(108,92,231,.12); --acb:rgba(108,92,231,.42); --onac:#FFFFFF;
+  --grad:linear-gradient(135deg,#6C5CE7 0%,#00B4D8 100%);
+  --glow:rgba(108,92,231,.34);
+  --ok:#0E9F6E; --oks:rgba(14,159,110,.12); --okb:rgba(14,159,110,.4);
+  --wn:#B4791A; --wns:rgba(180,121,26,.12); --wnb:rgba(180,121,26,.4);
+  --dg:#DC3E64; --dgs:rgba(220,62,100,.1); --dgs2:rgba(220,62,100,.17); --dgb:rgba(220,62,100,.34); --dgb2:rgba(220,62,100,.52);
+  --veil:rgba(35,40,64,.34); --veil2:rgba(35,40,64,.5); --ovbg:rgba(233,237,248,.7);
+  --glass:rgba(255,255,255,.82);
+  --chk:#E7EBF6; --pwbg:#FFFFFF; --thumbbg:#E7EBF6;
+  --scroll:rgba(35,40,64,.16); --scroll2:rgba(35,40,64,.3);
+  --shc:rgba(84,96,160,.14); --shc2:rgba(84,96,160,.24);
+  --sh:0 6px 18px rgba(84,96,160,.1),0 1px 2px rgba(84,96,160,.08);
+  --sh2:0 30px 70px rgba(84,96,160,.22),0 2px 6px rgba(84,96,160,.1);
+  --pgsh:0 2px 6px rgba(84,96,160,.12),0 16px 38px rgba(84,96,160,.16);
+  --r:12px; --r2:20px; --r3:24px;
+  color-scheme:light;
+}
+html[data-theme="lumen"] ::selection{background:rgba(108,92,231,.2)}
+html[data-theme="lumen"] body{background:
+  radial-gradient(680px 420px at 6% 0%,#DCE4FF 0%,transparent 62%),
+  radial-gradient(620px 380px at 96% 4%,#D6F4FF 0%,transparent 64%),
+  radial-gradient(720px 460px at 50% 108%,#FBE4FF 0%,transparent 60%),var(--bg)}
+html[data-theme="lumen"] #titlebar{background:transparent}
+html[data-theme="lumen"] .doc,
+html[data-theme="lumen"] .tag,
+html[data-theme="lumen"] .pill,
+html[data-theme="lumen"] .pchip,
+html[data-theme="lumen"] .seg,
+html[data-theme="lumen"] .seg button,
+html[data-theme="lumen"] .mz,
+html[data-theme="lumen"] .mz .btn,
+html[data-theme="lumen"] .btn.sm,
+html[data-theme="lumen"] kbd{border-radius:999px}
+html[data-theme="lumen"] .mchk{border-radius:6px}
+html[data-theme="lumen"] .card{border-radius:14px;border-color:rgba(255,255,255,.85);background:rgba(255,255,255,.72)}
+html[data-theme="lumen"] .card:hover{background:#FFFFFF;border-color:var(--acb)}
+html[data-theme="lumen"] .card[aria-current=true]{background:#FFFFFF;box-shadow:0 0 0 2px var(--acb),0 10px 24px -14px var(--glow)}
+html[data-theme="lumen"] .fcard,
+html[data-theme="lumen"] .snap,
+html[data-theme="lumen"] .step,
+html[data-theme="lumen"] .toast{border-radius:16px;border-color:rgba(255,255,255,.85)}
+html[data-theme="lumen"] .dropzone{border-radius:22px;border-color:rgba(108,92,231,.3);background:rgba(255,255,255,.6)}
+html[data-theme="lumen"] body:not(.mob) .side,
+html[data-theme="lumen"] body:not(.mob) #rail{border-radius:20px;border-color:rgba(255,255,255,.8);
+  box-shadow:0 12px 32px -14px rgba(84,96,160,.34),0 0 0 1px rgba(255,255,255,.6) inset}
+html[data-theme="lumen"] #rail .rb{border-radius:14px}
+html[data-theme="lumen"] #rail .rb.on{background:var(--grad);color:#fff;box-shadow:0 8px 18px -8px var(--glow)}
+html[data-theme="lumen"] #rail .rb.on::before{display:none}
+html[data-theme="lumen"] .btn.pri{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 12px 26px -12px var(--glow)}
+html[data-theme="lumen"] .pw{border-radius:14px;box-shadow:0 2px 6px rgba(84,96,160,.12),0 16px 38px rgba(84,96,160,.16)}
+html[data-theme="lumen"] .pw canvas{border-radius:14px}
+html[data-theme="lumen"] .pw.cur{box-shadow:0 0 0 2px var(--ac),0 0 0 7px rgba(108,92,231,.16),0 18px 40px rgba(84,96,160,.2)}
+html[data-theme="lumen"] #stage{background-color:transparent;
+  background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 1.7px);background-size:24px 24px}
+html[data-theme="lumen"] .stagewrap{background:rgba(255,255,255,.42);border-color:rgba(255,255,255,.85)}
+html[data-theme="lumen"] .pw .pnum{border-radius:999px;background:rgba(255,255,255,.9);border-color:rgba(255,255,255,.9);color:var(--tx2)}
+html[data-theme="lumen"] .pw.cur .pnum{background:var(--ac);border-color:transparent;color:#fff}
+html[data-theme="lumen"] #welcome{background:radial-gradient(560px 320px at 50% 0,rgba(108,92,231,.13),transparent 70%),
+  radial-gradient(420px 260px at 50% 100%,rgba(0,180,216,.12),transparent 70%)}
+html[data-theme="lumen"] .wmark{border:1px solid rgba(255,255,255,.9);border-radius:26px;
+  background:linear-gradient(160deg,#FFFFFF,#EFEBFF);
+  box-shadow:0 20px 44px -16px rgba(84,96,160,.4),inset 0 1px 0 #fff,0 0 0 8px rgba(108,92,231,.1)}
+html[data-theme="lumen"] .wmark .big{filter:drop-shadow(0 8px 16px rgba(108,92,231,.4))}
+html[data-theme="lumen"] #sbar.dock,
+html[data-theme="lumen"] #cleanBar,
+html[data-theme="lumen"] #mobQuick{border-radius:999px;border-color:rgba(255,255,255,.9);
+  box-shadow:0 10px 28px -12px rgba(84,96,160,.36)}
+html[data-theme="lumen"] #sbar .btn.sm.ico,
+html[data-theme="lumen"] .zoom button,
+html[data-theme="lumen"] .zoom b{border-radius:999px}
+html[data-theme="lumen"] .seg button[aria-selected=true]{background:var(--surface);box-shadow:inset 0 0 0 1px var(--bd2)}
+html[data-theme="lumen"] .updateNote{background:#fff;border-color:var(--bd2);border-radius:999px}
+html[data-theme="lumen"] .pop{border-radius:18px}
+html[data-theme="lumen"] .pop .mi{border-radius:12px}

@@ -140,40 +140,53 @@ const LS = {
 
 /* ---------- light / dark theme ---------- */
 const THEME_KEY = 'ms.theme';
-const THEME_LIST = ['macos', 'nordic', 'light'];
+const THEME_LIST = ['macos', 'nordic', 'light', 'neon', 'paper', 'lumen'];
 const THEME_LABELS = {
-  macos: 'طراحی ۲: مک‌او‌اس شیشه‌ای (macOS Glass)',
+  macos: 'طراحی ۲: مکاواس شیشه‌ای (macOS Glass)',
   nordic: 'طراحی ۶: نوردیک قطبی (Nordic Frost)',
-  light: 'حالت روشن (Snow Light)'
+  light: 'حالت روشن (Snow Light)',
+  neon: 'طراحی ۷: نئون ترمینال (Neon Terminal)',
+  paper: 'طراحی ۸: کاغذ و جوهر (Ink & Paper)',
+  lumen: 'طراحی ۹: لومن (Lumen)'
 };
+const THEME_SHORT = {
+  macos: 'مکاواس', nordic: 'نوردیک', light: 'روشن',
+  neon: 'نئون', paper: 'کاغذ', lumen: 'لومن'
+};
+const THEME_BG = {
+  macos: '#14171D', nordic: '#242933', light: '#E9EEF5',
+  neon: '#05070B', paper: '#F4EFE4', lumen: '#EEF1F9'
+};
+/* تم‌هایی که زمینهٔ روشن دارند: قاب پنجره هم باید روشن شود */
+const THEME_LIGHT = ['light', 'paper', 'lumen'];
 function curTheme() {
   const v = LS.get(THEME_KEY);
   return THEME_LIST.includes(v) ? v : 'macos';
 }
 function applyTheme(mode, save) {
   const m = THEME_LIST.includes(mode) ? mode : 'macos';
+  const isLight = THEME_LIGHT.includes(m);
   document.documentElement.dataset.theme = m;
   if (save) LS.set(THEME_KEY, m);
-  const bgMap = { macos: '#14171D', nordic: '#242933', light: '#E9EEF5' };
   const mt = document.querySelector('meta[name=theme-color]');
-  if (mt) mt.setAttribute('content', bgMap[m]);
-  try { if (window.msDesktop && msDesktop.cmd) msDesktop.cmd('theme', m === 'light' ? 'light' : 'dark').catch(() => { }); } catch (e) { }
+  if (mt) mt.setAttribute('content', THEME_BG[m] || '#14171D');
+  try { if (window.msDesktop && msDesktop.cmd) msDesktop.cmd('theme', isLight ? 'light' : 'dark').catch(() => { }); } catch (e) { }
   const nextM = THEME_LIST[(THEME_LIST.indexOf(m) + 1) % THEME_LIST.length];
   const tm = document.querySelector('#ddApp [data-cmd=theme]');
   if (tm) {
     const sp = tm.querySelector('span');
-    if (sp) sp.textContent = 'تم فعلی: ' + (m === 'macos' ? 'مک‌او‌اس شیشه‌ای' : m === 'nordic' ? 'نوردیک قطبی' : 'روشن');
+    if (sp) sp.textContent = 'تم فعلی: ' + (THEME_SHORT[m] || 'مکاواس');
     const i = tm.querySelector('svg');
-    if (i && typeof I !== 'undefined') i.outerHTML = m === 'light' ? I.moon : I.sun;
+    if (i && typeof I !== 'undefined') i.outerHTML = isLight ? I.moon : I.sun;
   }
   for (const s of ['#bTheme', '#bMoreTheme']) {
     const n = document.querySelector(s);
     if (n) {
       const i = n.querySelector('svg');
-      if (i) i.outerHTML = m === 'light' ? I.moon : I.sun;
+      if (i) i.outerHTML = isLight ? I.moon : I.sun;
       n.title = 'تغییر تم به «' + THEME_LABELS[nextM] + '»';
       const lbl = n.querySelector('i');
-      if (lbl) lbl.textContent = m === 'macos' ? 'مک‌او‌اس' : m === 'nordic' ? 'نوردیک' : 'روشن';
+      if (lbl) lbl.textContent = THEME_SHORT[m] || 'مکاواس';
     }
   }
   return m;

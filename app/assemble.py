@@ -6,9 +6,9 @@ L='assets/letter/'
 # high-quality lettering fonts (SIL OFL). Vazirmatn reuses the UI @font-face data (no duplicate bytes).
 letter=[
   {'k':'وزیرمتن','css':'Vazirmatn','faces':[[400,None],[700,None]]},
-  {'k':'ساحل','faces':[[400,B64(L+'Sahel-Regular.woff2')],[700,B64(L+'Sahel-Bold.woff2')]]},
+  {'k':'ساحل','css':'Sahel','faces':[[400,None],[700,None]]},
   {'k':'شبنم','faces':[[400,B64(L+'Shabnam-Regular.woff2')],[700,B64(L+'Shabnam-Bold.woff2')]]},
-  {'k':'استعداد','faces':[[400,B64(L+'Estedad-Regular.woff2')],[700,B64(L+'Estedad-Bold.woff2')]]},
+  {'k':'استعداد','css':'Estedad','faces':[[400,None],[700,None]]},
   {'k':'لاله‌زار','bold':1,'faces':[[400,B64(L+'Lalezar-Regular.woff2')]]},
 ]
 js='\n'.join(R(f).rstrip('\n') for f in ('builtin-fonts.js','android-bridge.js','app.js','mobile.js','update.js'))+'\n'
