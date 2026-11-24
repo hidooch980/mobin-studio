@@ -512,7 +512,10 @@ async function installAsarUpdate(asarUrl, manifestUrl) {
 
   const dir = resourcesDir();
   const target = path.join(dir, 'app.asar');
-  try { fs.accessSync(target, fs.constants.W_OK); } catch (e) { return { ok: false, error: 'پوشهٔ نصب قابل نوشتن نیست' }; }
+  /* Electron's fs is asar-aware: fs.accessSync() on app.asar itself throws
+     ENOENT ("not found in ...app.asar"), so test the resources folder that
+     will hold app.asar.new; that is the permission the swap actually needs. */
+  try { fs.accessSync(dir, fs.constants.W_OK); } catch (e) { return { ok: false, error: 'پوشهٔ نصب قابل نوشتن نیست' }; }
 
   const tmpDir = path.join(app.getPath('temp'), 'MobinStudioUpdate');
   const manFile = path.join(tmpDir, 'update.json');

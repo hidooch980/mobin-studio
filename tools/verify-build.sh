@@ -3,9 +3,9 @@
 # shipped artifact.
 #
 #   bash tools/verify-build.sh                      rebuild + print size/sha256
-#   bash tools/verify-build.sh dist/MobinStudio-8.8.0.apk
+#   bash tools/verify-build.sh dist/MobinStudio-8.8.1.apk
 #   bash tools/verify-build.sh path/to/index.html
-#   bash tools/verify-build.sh dist/MobinStudio-8.8.0-app.asar
+#   bash tools/verify-build.sh dist/MobinStudio-8.8.1-app.asar
 #
 # Exit 0 = identical bytes, 1 = different (with both hashes printed), 2 = bad input.
 set -euo pipefail
