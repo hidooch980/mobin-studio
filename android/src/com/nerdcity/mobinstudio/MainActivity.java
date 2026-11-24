@@ -57,6 +57,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -96,6 +97,10 @@ public class MainActivity extends Activity {
   final ExecutorService io = Executors.newSingleThreadExecutor();
   /* bytes the page is sending us (token -> temp file) */
   final Map<String, File> uploads = new ConcurrentHashMap<>();
+  /* project addresses the user actually chose (picker, recents, a "view" intent).
+     The page may only reopen one of these — same rule as the Windows build, so a
+     manipulated page cannot ask this app to read an arbitrary file. */
+  final Set<String> known = Collections.synchronizedSet(new LinkedHashSet<String>());
   /* files the page may fetch once from /__msa/<token> */
   final Map<String, Uri> served = new ConcurrentHashMap<>();
   /* file chooser of <input type=file> */
@@ -112,6 +117,7 @@ public class MainActivity extends Activity {
   @Override protected void onCreate(Bundle state) {
     super.onCreate(state);
     prefs = getSharedPreferences("msa", MODE_PRIVATE);
+    seedKnown();
     light = "light".equals(prefs.getString("theme", "dark"));
     io.execute(new Runnable() { public void run() { cleanTemp(); } });
 
@@ -423,6 +429,9 @@ public class MainActivity extends Activity {
         ui.post(new Runnable() { public void run() { openBox(id); } });
         return;
       }
+      /* only an address the user chose — the file box, the recent list, or a
+         .mobin opened from a file manager / Telegram */
+      if (!known.contains(path)) { done(id, err("این مسیر از برنامه انتخاب نشده است")); return; }
       io.execute(new Runnable() { public void run() { openUri(id, Uri.parse(path), true); } });
     }
 
@@ -842,6 +851,7 @@ public class MainActivity extends Activity {
   String viewUri(Intent it) {
     if (it == null || !Intent.ACTION_VIEW.equals(it.getAction()) || it.getData() == null) return null;
     Uri u = it.getData();
+    known.add(u.toString());
     keep(u);
     return u.toString();
   }
@@ -852,9 +862,22 @@ public class MainActivity extends Activity {
     try { return new JSONArray(prefs.getString("recent", "[]")); } catch (Exception e) { return new JSONArray(); }
   }
 
+  /* everything in the recent list was picked by the user, so it stays allowed
+     across restarts (the page may reopen it without asking again) */
+  void seedKnown() {
+    try {
+      JSONArray a = recentList();
+      for (int k = 0; k < a.length(); k++) {
+        JSONObject x = a.optJSONObject(k);
+        if (x != null) known.add(x.optString("path"));
+      }
+    } catch (Exception e) { }
+  }
+
   synchronized void addRecent(Uri u, String name) {
     try {
       String p = u.toString();
+      known.add(p);
       JSONArray a = recentList(), b = new JSONArray();
       JSONObject o = new JSONObject();
       o.put("path", p);

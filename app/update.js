@@ -91,12 +91,21 @@
       if (go) { go.disabled = !latest || !latest.asset; go.textContent = 'دانلود و نصب'; }
     }
   }
+  /* The automatic startup check talks to api.github.com, so it is a setting
+     (تنظیمات ← عمومی ← «اینترنت و حریم خصوصی»). The button "بررسی به‌روزرسانی"
+     in the app menu always works, whatever this says. */
+  function autoCheckOn() {
+    try {
+      const s = JSON.parse(localStorage.getItem('ms6.settings') || '{}');
+      return !s || s.autoUpdate !== false;
+    } catch (e) { return true; }
+  }
   function wire() {
     const checkBtn = byId('bCheckUpdate'), installBtn = byId('bInstallUpdate'), dismiss = byId('bDismissUpdate');
     if (checkBtn) checkBtn.addEventListener('click', () => check(true));
     if (installBtn) installBtn.addEventListener('click', install);
     if (dismiss) dismiss.addEventListener('click', () => { const n = byId('updateNote'); if (n) n.hidden = true; });
-    setTimeout(() => check(false), 4500);
+    setTimeout(() => { if (autoCheckOn()) check(false); }, 4500);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire, { once: true }); else wire();
 })();

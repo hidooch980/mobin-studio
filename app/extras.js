@@ -417,8 +417,8 @@ function wireExtras() {
   $$('#ovProof [data-pt]').forEach(b => b.addEventListener('click', () => proofTab(b.dataset.pt)));
   const fx = $('#bProofFixAll'); if (fx) fx.onclick = proofFixAll;
   const rf = $('#bProofRefresh'); if (rf) rf.onclick = () => proofTab('issues');
-  const setBtn = $('#bProof');
-  if (setBtn) setBtn.onclick = () => { $('#ovSet').classList.remove('on'); openProof('issues'); };
+
+  /* بازبینی از این‌جا باز نمی‌شود: از منوی برنامه (data-cmd="proof") و F8 باز می‌شود. */
 
   /* میان‌بر صفحه‌کلید — F7 تایپ، F8 بازبینی */
   addEventListener('keydown', e => {

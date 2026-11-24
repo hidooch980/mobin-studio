@@ -3,11 +3,16 @@
 # needs: Electron win32-x64 zip (EL_ZIP), @electron/asar (ASAR), resedit (node_modules next to patch-exe.cjs), NSIS makensis (MAKENSIS, NSISDIR)
 set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"; ROOT="$(dirname "$HERE")"
-VER=$(node -p "require('./app/package.json').version")
-EL_ZIP=${EL_ZIP:-/data/pack/el-win.zip}   # electron-v45.2.1-win32-x64.zip from github.com/electron/electron/releases
-if [ -z "${ASAR:-}" ]; then
-  ASAR="$HERE/node_modules/@electron/asar/bin/asar.mjs"; [ -f "$ASAR" ] || ASAR=/tmp/ebt/node_modules/@electron/asar/bin/asar.mjs
+# the version always comes from app/package.json, no matter which folder this is started from
+VER=$(node -p "require(process.argv[1]).version" "$ROOT/app/package.json")
+# electron-v<ver>-win32-x64.zip: set EL_ZIP, or keep the zip next to the repo / in windows/
+if [ -z "${EL_ZIP:-}" ]; then
+  for c in "$HERE"/electron-v*-win32-x64.zip "$ROOT"/electron-v*-win32-x64.zip "$ROOT"/../electron-v*-win32-x64.zip; do
+    [ -f "$c" ] && { EL_ZIP="$c"; break; }
+  done
 fi
+EL_ZIP=${EL_ZIP:-}
+if [ -z "${ASAR:-}" ]; then ASAR="$HERE/node_modules/@electron/asar/bin/asar.mjs"; fi
 if [ -z "${MAKENSIS:-}" ]; then
   if [ -x /tmp/nsisdl/nsis/linux/makensis ]; then MAKENSIS=/tmp/nsisdl/nsis/linux/makensis; export NSISDIR=${NSISDIR:-/tmp/nsisdl/nsis}
   else MAKENSIS=$(command -v makensis || true); fi
@@ -18,7 +23,9 @@ if [ -z "${MAKENSIS:-}" ]; then
     if [ -x "$m" ]; then MAKENSIS="$m"; export NSISDIR=${NSISDIR:-$(dirname "$m")}; break; fi
   done
 fi
-for t in "$EL_ZIP" "$ASAR" "$MAKENSIS"; do [ -n "$t" ] && [ -e "$t" ] || { echo "missing build tool: '$t' (see README.md)" >&2; exit 1; }; done
+[ -n "$EL_ZIP" ] && [ -e "$EL_ZIP" ] || { echo "missing the Electron zip — set EL_ZIP=/path/electron-v<ver>-win32-x64.zip (github.com/electron/electron/releases)" >&2; exit 1; }
+[ -e "$ASAR" ] || { echo "missing @electron/asar — run: cd \"$HERE\" && npm ci" >&2; exit 1; }
+[ -n "$MAKENSIS" ] && [ -e "$MAKENSIS" ] || { echo "missing makensis — install NSIS 3 or set MAKENSIS=/path/to/makensis" >&2; exit 1; }
 W=${WORK:-/tmp/winbuild}
 bash "$ROOT/app/build.sh"
 rm -rf "$W"; mkdir -p "$W/app" "$W/win-unpacked" "$ROOT/dist"

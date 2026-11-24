@@ -1,0 +1,9 @@
+{
+  "name": "mobin-studio-build",
+  "private": true,
+  "description": "Build-only tools for Mobin Studio's Windows packaging (used by windows/mkwin.sh). Not shipped with the app.",
+  "devDependencies": {
+    "@electron/asar": "4.3.2",
+    "resedit": "3.1.0"
+  }
+}

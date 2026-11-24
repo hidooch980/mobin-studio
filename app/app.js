@@ -91,7 +91,7 @@ const DEFAULTS = {
   arabic: true, zwnj: true, zwnjTar: false, punct: true, ellip: false, digits: false,
   fmt: 'png', quality: 92, scale: 1,
   autoClean: false, cleanTol: 58, cleanGrow: 0, cleanAuto: true, cleanColor: '#FFFFFF',
-  smartGuides: true, autoResume: true
+  smartGuides: true, autoResume: true, autoUpdate: true
 };
 const S = {
   pages: [], doc: [], cur: 0,
@@ -3655,8 +3655,16 @@ async function remotePush() {
     const { u8, z } = await compressString(json);
     const InlineToken = (z ? 'MS8Z_' : 'MS8R_') + u8ToB64Url(u8);
     let finalCode = InlineToken;
-    /* Try cloud relay first for a short code; fallback to self-contained offline/online token */
-    try {
+    /* کد کوتاه یعنی آپلود کل پروژه روی یک سرویس عمومی ثالث.
+       بدون اجازهٔ صریح کاربر هیچ بایتی بیرون نمی‌رود؛ در صورت رد کردن،
+       همان بستهٔ مستقیم (که آفلاین هم کار می‌کند) داده می‌شود. */
+    if (S.cloudAsked !== true) {
+      S.cloudAsked = true;
+      S.cloudOk = (await ask('ارسال به سرور ابری؟',
+        'برای ساختن کد کوتاه، کل پروژه (فشرده‌شده) روی سرویس همگانی bytebin.lucko.me آپلود می‌شود و هر کسی که این کد را داشته باشد می‌تواند آن را باز کند. اگر نمی‌خواهی پروژه جایی آپلود شود، «کد مستقیم» را بزن: یک بستهٔ طولانی که فقط در پیام خودت جابه‌جا می‌شود.',
+        'آپلود کن', 'کد مستقیم بده')) === true;
+    }
+    if (S.cloudOk) try {
       const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 4500);
       const res = await fetch('https://bytebin.lucko.me/post', {
         method: 'POST',
@@ -4215,7 +4223,7 @@ const OPT_MAP = {
   optAutoPlace: 'autoPlace', optAutoGo: 'autoGo', optRtlOrder: 'rtlOrder',
   optDragBox: 'dragBox', optOpenSpace: 'openSpace', optSinglePageMob: 'singlePageMob', optDirectSave: 'directSave',
   optArabic: 'arabic', optZwnj: 'zwnj', optZwnjTar: 'zwnjTar', optPunct: 'punct', optEllip: 'ellip', optDigits: 'digits',
-  optCleanAuto: 'cleanAuto', optSmartGuides: 'smartGuides', optAutoResume: 'autoResume'
+  optCleanAuto: 'cleanAuto', optSmartGuides: 'smartGuides', optAutoResume: 'autoResume', optAutoUpdate: 'autoUpdate'
 };
 function readSettingsToUI() {
   for (const id in OPT_MAP) { const n = $('#' + id); if (n) n.checked = !!S.settings[OPT_MAP[id]]; }
@@ -4426,7 +4434,9 @@ function wire() {
     for (const n of Object.keys(S.uploads)) await idb('del', 'font:' + n);
     toast('پاک شد — صفحه را تازه کنید', 'ok', 5000); updateLsInfo();
   };
-  for (const id in OPT_MAP) { if (id === 'optCleanAuto') continue; const n = $('#' + id); if (n) n.onchange = () => { S.settings[OPT_MAP[id]] = n.checked; saveSettings(); syncSinglePageMode(); if (S.pages.length) { BALCACHE.clear(); renderAll(); } }; }
+  for (const id in OPT_MAP) { if (id === 'optCleanAuto' || id === 'optAutoUpdate') continue; const n = $('#' + id); if (n) n.onchange = () => { S.settings[OPT_MAP[id]] = n.checked; saveSettings(); syncSinglePageMode(); if (S.pages.length) { BALCACHE.clear(); renderAll(); } }; }
+  /* شبکه/حریم خصوصی: فقط ذخیره می‌شود، بوم را دوباره نمی‌کشد */
+  if ($('#optAutoUpdate')) $('#optAutoUpdate').onchange = () => { S.settings.autoUpdate = $('#optAutoUpdate').checked; saveSettings(); };
 
   /* export format */
   $$('#segFmt button').forEach(b => b.onclick = () => {
