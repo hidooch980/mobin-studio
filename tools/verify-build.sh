@@ -20,6 +20,7 @@ SIZE=$(wc -c < "$APP" | tr -d ' ')
 echo "rebuilt : $SIZE bytes  sha256 $SHA"
 [ -n "$T" ] || exit 0
 [ -e "$T" ] || { echo "no such file: $T" >&2; exit 2; }
+T="$(cd "$(dirname "$T")" && pwd)/$(basename "$T")" 
 
 set +e
 case "$T" in
@@ -35,18 +36,18 @@ sys.exit(0 if data == ref else 1)
 PY
     ;;
   *.asar)
-    ASARMOD="$ROOT/windows/node_modules/@electron/asar"
-    [ -d "$ASARMOD" ] || { echo "run: cd windows && npm ci   (needed to read an .asar)" >&2; exit 2; }
-    node -e '
-      const asar = require(process.argv[1]);
+    [ -d "$ROOT/windows/node_modules/@electron/asar" ] || { echo "run: cd windows && npm ci   (needed to read an .asar)" >&2; exit 2; }
+    # @electron/asar 4 is ESM and only resolves as a bare specifier, so run from windows/
+    ( cd "$ROOT/windows" && node -e '
+      const asar = require("@electron/asar");
       const fs = require("fs"), crypto = require("crypto");
-      const data = asar.extractFile(process.argv[2], "index.html");
-      const ref = fs.readFileSync(process.argv[3]);
+      const data = asar.extractFile(process.argv[1], "index.html");
+      const ref = fs.readFileSync(process.argv[2]);
       console.log("artifact: %d bytes  sha256 %s  (index.html inside %s)",
         data.length, crypto.createHash("sha256").update(data).digest("hex"),
-        process.argv[2].split("/").pop());
+        process.argv[1].split(/[\/]/).pop());
       process.exit(Buffer.compare(data, ref) === 0 ? 0 : 1);
-    ' "$ASARMOD" "$T" "$APP"
+    ' "$T" "$APP" )
     ;;
   *.exe)
     echo "an NSIS installer cannot be read back; verify the matching -app.asar or -update.json instead:" >&2
