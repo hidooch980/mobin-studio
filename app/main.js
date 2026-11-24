@@ -425,6 +425,12 @@ function safeReload() {
 const UPDATE_URL = /^https:\/\/github\.com\/hidooch980\/mobin-studio\/releases\/download\/[A-Za-z0-9._%\-/]+$/;
 const UPDATE_EXE = /^MobinStudio-Setup-\d+\.\d+\.\d+\.exe$/;
 const UPDATE_MAX = 420 * 1024 * 1024;
+/* a fast update ships only resources/app.asar (~2 MB) plus a manifest with its
+   sha256, instead of the whole 105 MB installer. The install folder lives in
+   %LOCALAPPDATA%\Programs, so replacing one file needs no elevation. */
+const UPDATE_ASAR = /^MobinStudio-\d+\.\d+\.\d+-app\.asar$/;
+const UPDATE_JSON = /^MobinStudio-\d+\.\d+\.\d+-update\.json$/;
+const ASAR_MAX = 40 * 1024 * 1024;
 
 function download(url, dest, max, hop) {
   return new Promise((resolve, reject) => {
@@ -474,7 +480,130 @@ function looksLikeExe(file) {
   } catch (e) { return false; }
 }
 
-async function installUpdate(url) {
+/* the resources folder next to the running executable (…\resources) */
+function resourcesDir() {
+  try { if (process.resourcesPath) return process.resourcesPath; } catch (e) { }
+  return path.join(path.dirname(process.execPath), 'resources');
+}
+function newerVersion(a, b) {
+  const p = v => String(v || '0').split('.').map(x => parseInt(x, 10) || 0);
+  const x = p(a), y = p(b);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0);
+  return false;
+}
+const sha256Of = buf => require('crypto').createHash('sha256').update(buf).digest('hex');
+/* leftovers of an interrupted swap never pile up and never break the next start */
+function cleanUpdateLeftovers() {
+  const dir = resourcesDir();
+  for (const f of ['app.asar.new', 'app.asar.old', 'app.asar.update.cmd']) {
+    try { fs.unlinkSync(path.join(dir, f)); } catch (e) { }
+  }
+}
+
+/* Replace only resources/app.asar. Everything is verified first (release URL,
+   file name, manifest version, size and sha256) and the swap happens in a tiny
+   cmd script after the app has exited; a failed move restores the old file. */
+async function installAsarUpdate(asarUrl, manifestUrl) {
+  if (typeof asarUrl !== 'string' || asarUrl.length > 500 || !UPDATE_URL.test(asarUrl)) return { ok: false, error: 'لینک به‌روزرسانی معتبر نیست' };
+  if (typeof manifestUrl !== 'string' || manifestUrl.length > 500 || !UPDATE_URL.test(manifestUrl)) return { ok: false, error: 'لینک به‌روزرسانی معتبر نیست' };
+  const asarName = decodeURIComponent(asarUrl.slice(asarUrl.lastIndexOf('/') + 1));
+  const jsonName = decodeURIComponent(manifestUrl.slice(manifestUrl.lastIndexOf('/') + 1));
+  if (!UPDATE_ASAR.test(asarName) || !UPDATE_JSON.test(jsonName)) return { ok: false, error: 'نام فایل به‌روزرسانی معتبر نیست' };
+
+  const dir = resourcesDir();
+  const target = path.join(dir, 'app.asar');
+  try { fs.accessSync(target, fs.constants.W_OK); } catch (e) { return { ok: false, error: 'پوشهٔ نصب قابل نوشتن نیست' }; }
+
+  const tmpDir = path.join(app.getPath('temp'), 'MobinStudioUpdate');
+  const manFile = path.join(tmpDir, 'update.json');
+  try {
+    fs.mkdirSync(tmpDir, { recursive: true });
+    try { fs.unlinkSync(manFile); } catch (e) { }
+  } catch (e) { return { ok: false, error: 'پوشهٔ موقت در دسترس نیست' }; }
+
+  try { await download(manifestUrl, manFile, 256 * 1024, 0); }
+  catch (err) { return { ok: false, error: String((err && err.message) || err) }; }
+  let man;
+  try { man = JSON.parse(fs.readFileSync(manFile, 'utf8')); } catch (e) { return { ok: false, error: 'اطلاعات به‌روزرسانی خوانده نشد' }; }
+  const ver = man && typeof man.version === 'string' ? man.version : '';
+  const a = man && man.asar;
+  if (!/^\d+\.\d+\.\d+$/.test(ver) || !newerVersion(ver, VERSION)) return { ok: false, error: 'این بسته برای نسخهٔ تازه‌تر از برنامهٔ فعلی نیست' };
+  if (!a || a.name !== asarName || !/^[a-f0-9]{64}$/.test(String(a.sha256 || '').toLowerCase())) return { ok: false, error: 'اطلاعات فایل به‌روزرسانی ناقص است' };
+  const size = Number(a.size) || 0;
+  if (!size || size > ASAR_MAX) return { ok: false, error: 'اندازهٔ فایل به‌روزرسانی معتبر نیست' };
+
+  /* download next to the file it will replace: no long path has to survive in
+     the swap script, and the folder is known to be writable */
+  const part = path.join(dir, 'app.asar.new');
+  try { fs.unlinkSync(part); } catch (e) { }
+  let bytes;
+  try { bytes = await download(asarUrl, part, ASAR_MAX, 0); }
+  catch (err) { try { fs.unlinkSync(part); } catch (e) { } return { ok: false, error: String((err && err.message) || err) }; }
+  if (bytes !== size) { try { fs.unlinkSync(part); } catch (e) { } return { ok: false, error: 'دانلود کامل نشد' }; }
+  let sum = '';
+  try { sum = sha256Of(fs.readFileSync(part)); } catch (e) { try { fs.unlinkSync(part); } catch (e2) { } return { ok: false, error: 'فایل دریافتی خوانده نشد' }; }
+  if (sum !== String(a.sha256).toLowerCase()) {
+    try { fs.unlinkSync(part); } catch (e) { }
+    return { ok: false, error: 'فایل دریافتی سالم نیست (هش نخواند)' };
+  }
+
+  const cmdFile = path.join(dir, 'app.asar.update.cmd');
+  const script = [
+    '@echo off',
+    'cd /d "%~dp0"',
+    'ping -n 3 127.0.0.1 >nul',
+    'if exist app.asar.old del /f /q app.asar.old >nul 2>&1',
+    'set tries=0',
+    ':retry',
+    'move /y app.asar app.asar.old >nul 2>&1',
+    'if not exist app.asar goto swapin',
+    'set /a tries+=1',
+    'if %tries% GEQ 5 goto done',
+    'ping -n 2 127.0.0.1 >nul',
+    'goto retry',
+    ':swapin',
+    'move /y app.asar.new app.asar >nul 2>&1',
+    'if exist app.asar goto done',
+    'if exist app.asar.old move /y app.asar.old app.asar >nul 2>&1',
+    ':done',
+    'if exist app.asar.old del /f /q app.asar.old >nul 2>&1',
+    'cd /d "%~dp0.."',
+    'if exist "MobinStudio.exe" start "" "MobinStudio.exe"',
+    ''
+  ].join('\r\n');
+  try { fs.writeFileSync(cmdFile, script, { encoding: 'latin1' }); }
+  catch (e) { try { fs.unlinkSync(part); } catch (e2) { } return { ok: false, error: 'نوشتن فایل به‌روزرسانی ممکن نشد' }; }
+
+  try {
+    const child = require('child_process').spawn(process.env.COMSPEC || 'cmd.exe', ['/d', '/s', '/c', '""' + cmdFile + '""'], {
+      detached: true, stdio: 'ignore', windowsHide: true, windowsVerbatimArguments: true
+    });
+    child.on('error', err => { log('asar swap spawn: ' + ((err && err.message) || err)); });
+    child.unref();
+  } catch (err) {
+    try { fs.unlinkSync(part); } catch (e) { }
+    try { fs.unlinkSync(cmdFile); } catch (e) { }
+    return { ok: false, error: 'اجرای جایگزینی ممکن نشد' };
+  }
+
+  forceClose = true;
+  setTimeout(() => { try { writeState(win); } catch (err) { } app.quit(); }, 900);
+  return { ok: true, fast: true, version: ver };
+}
+
+/* one entry point: prefer the small asar update, keep the installer as fallback */
+async function installUpdate(payload) {
+  const req = (payload && typeof payload === 'object') ? payload : { setup: payload };
+  if (req.asar && req.manifest) {
+    const r = await installAsarUpdate(req.asar, req.manifest).catch(e => ({ ok: false, error: String((e && e.message) || e) }));
+    if (r && r.ok) return r;
+    log('asar update skipped: ' + ((r && r.error) || 'unknown'));
+    if (!req.setup) return r;              /* nothing to fall back to */
+  }
+  return installSetup(req.setup);
+}
+
+async function installSetup(url) {
   if (typeof url !== 'string' || url.length > 500 || !UPDATE_URL.test(url)) return { ok: false, error: 'لینک به‌روزرسانی معتبر نیست' };
   const name = decodeURIComponent(url.slice(url.lastIndexOf('/') + 1));
   if (!UPDATE_EXE.test(name)) return { ok: false, error: 'نام فایل به‌روزرسانی معتبر نیست' };
@@ -628,6 +757,7 @@ app.on('second-instance', (e, argv, cwd) => {
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
+  try { cleanUpdateLeftovers(); } catch (e) { }
   createWindow();
   wireContextMenu(win.webContents);
 });

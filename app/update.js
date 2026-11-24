@@ -16,11 +16,20 @@
     return false;
   }
   const platform = () => window.MOBIN_ANDROID ? 'android' : window.MOBIN_DESKTOP ? 'windows' : 'web';
+  const ASAR = /^MobinStudio-\d+\.\d+\.\d+-app\.asar$/i;
+  const MANIFEST = /^MobinStudio-\d+\.\d+\.\d+-update\.json$/i;
+  const OK_URL = /^https:\/\/github\.com\/[^/]+\/[^/]+\/releases\/download\//;
   function assetFor(release, target) {
     const assets = release && Array.isArray(release.assets) ? release.assets : [];
     const want = target === 'android' ? /^MobinStudio-.*\.apk$/i : /^MobinStudio-Setup-.*\.exe$/i;
     return assets.find(a => a && typeof a.name === 'string' && want.test(a.name) && typeof a.browser_download_url === 'string') || null;
   }
+  function findAsset(release, re) {
+    const assets = release && Array.isArray(release.assets) ? release.assets : [];
+    return assets.find(a => a && typeof a.name === 'string' && re.test(a.name) && typeof a.browser_download_url === 'string') || null;
+  }
+  /* a 2 MB app.asar replacement only exists for the Windows build */
+  const fastOk = () => !!(window.MOBIN_DESKTOP && !window.MOBIN_ANDROID);
   /* the menu row keeps its icon, so only the label is swapped */
   function label(text) {
     const b = byId('bCheckUpdate'); if (!b) return;
@@ -49,10 +58,15 @@
         if (manual) alert('نسخهٔ شما به‌روز است (' + VERSION + ')');
         return;
       }
-      latest = { version: v, asset: assetFor(release, platform()) };
-      say('نسخهٔ ' + v + ' آماده است.' + (latest.asset
-        ? ' با زدن «دانلود و نصب» فایل روی همین دستگاه دریافت می‌شود؛ خودِ سیستم‌عامل هم تأیید نصب را می‌پرسد.'
-        : ' فایل نصب این دستگاه در انتشار عمومی نیست.'), !!latest.asset);
+      const fastener = fastOk() ? findAsset(release, ASAR) : null;
+      const manifest = fastener ? findAsset(release, MANIFEST) : null;
+      const fast = !!(fastener && manifest);
+      latest = { version: v, asset: assetFor(release, platform()), asar: fast ? fastener : null, manifest: fast ? manifest : null };
+      say('نسخهٔ ' + v + ' آماده است.' + (fast
+        ? ' به‌روزرسانی سریع: فقط بخش برنامه (حدود ۲ مگابایت) دانلود و جایگزین می‌شود و برنامه خودش دوباره باز می‌شود.'
+        : latest.asset
+          ? ' با زدن «دانلود و نصب» فایل روی همین دستگاه دریافت می‌شود؛ خودِ سیستم‌عامل هم تأیید نصب را می‌پرسد.'
+          : ' فایل نصب این دستگاه در انتشار عمومی نیست.'), !!(latest.asset || fast));
     } catch (e) {
       if (manual) alert('بررسی به‌روزرسانی انجام نشد؛ اتصال اینترنت و انتشار عمومی را بررسی کنید.');
       console.warn('Update check failed', e);
@@ -62,18 +76,27 @@
     }
   }
   async function install() {
-    if (!latest || !latest.asset) return;
-    const url = latest.asset.browser_download_url;
-    if (!/^https:\/\/github\.com\/[^/]+\/[^/]+\/releases\/download\//.test(url)) return;
+    if (!latest) return;
+    const setupUrl = latest.asset && OK_URL.test(latest.asset.browser_download_url) ? latest.asset.browser_download_url : '';
+    const asarUrl = latest.asar && OK_URL.test(latest.asar.browser_download_url) ? latest.asar.browser_download_url : '';
+    const manUrl = latest.manifest && OK_URL.test(latest.manifest.browser_download_url) ? latest.manifest.browser_download_url : '';
+    const fast = !!(asarUrl && manUrl && window.msDesktop);
+    if (!fast && !setupUrl) return;
     const go = byId('bInstallUpdate');
-    if (go) { go.disabled = true; go.textContent = 'در حال دانلود…'; }
+    if (go) { go.disabled = true; go.textContent = fast ? 'در حال دانلود (۲ مگابایت)…' : 'در حال دانلود…'; }
     try {
       if (window.msDesktop) {
-        const res = await window.msDesktop.cmd('installUpdate', url);
+        const res = await window.msDesktop.cmd('installUpdate', fast
+          ? { asar: asarUrl, manifest: manUrl, setup: setupUrl || null }
+          : setupUrl);
         if (!res || !res.ok) {
           const why = (res && res.error) || 'خطای نامشخص';
           say('دانلود یا اجرای نصب انجام نشد: ' + why, true);
           alert('دانلود یا اجرای نصب انجام نشد: ' + why);
+          return;
+        }
+        if (res.fast) {
+          say('نسخهٔ ' + (res.version || latest.version) + ' دانلود و بررسی شد؛ برنامه بسته و با نسخهٔ تازه باز می‌شود.', false);
           return;
         }
         if (window.MOBIN_ANDROID) {
@@ -84,11 +107,11 @@
         }
         return;
       }
-      window.open(url, '_blank', 'noopener');
+      window.open(setupUrl || asarUrl, '_blank', 'noopener');
     } catch (e) {
       say('دانلود یا اجرای نصب انجام نشد: ' + String((e && e.message) || e), true);
     } finally {
-      if (go) { go.disabled = !latest || !latest.asset; go.textContent = 'دانلود و نصب'; }
+      if (go) { go.disabled = !latest || (!latest.asset && !latest.asar); go.textContent = 'دانلود و نصب'; }
     }
   }
   /* The automatic startup check talks to api.github.com, so it is a setting

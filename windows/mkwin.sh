@@ -26,6 +26,30 @@ fi
 [ -n "$EL_ZIP" ] && [ -e "$EL_ZIP" ] || { echo "missing the Electron zip — set EL_ZIP=/path/electron-v<ver>-win32-x64.zip (github.com/electron/electron/releases)" >&2; exit 1; }
 [ -e "$ASAR" ] || { echo "missing @electron/asar — run: cd \"$HERE\" && npm ci" >&2; exit 1; }
 [ -n "$MAKENSIS" ] && [ -e "$MAKENSIS" ] || { echo "missing makensis — install NSIS 3 or set MAKENSIS=/path/to/makensis" >&2; exit 1; }
+
+# ---- optional Authenticode signing ---------------------------------------------
+# SIGN_PFX=/path/cert.pfx SIGN_PASS=secret  -> both executables get signed and verified.
+# Without it the build still works, but Windows SmartScreen will warn on the installer.
+SIGNTOOL=${SIGNTOOL:-}
+if [ -n "${SIGN_PFX:-}" ]; then
+  [ -n "${SIGN_PASS:-}" ] || { echo "SIGN_PFX is set but SIGN_PASS is empty" >&2; exit 1; }
+  if [ -z "$SIGNTOOL" ]; then SIGNTOOL=$(command -v signtool 2>/dev/null || true); fi
+  if [ -z "$SIGNTOOL" ]; then
+    for c in "/c/Program Files (x86)/Windows Kits/10/bin"/*/x64/signtool.exe \
+             "/c/Program Files/Windows Kits/10/bin"/*/x64/signtool.exe; do
+      if [ -e "$c" ]; then SIGNTOOL="$c"; break; fi
+    done
+  fi
+  [ -n "$SIGNTOOL" ] && [ -e "$SIGNTOOL" ] || { echo "SIGN_PFX is set but signtool was not found (install the Windows SDK or set SIGNTOOL)" >&2; exit 1; }
+  sign() {
+    "$SIGNTOOL" sign /f "$SIGN_PFX" /p "$SIGN_PASS" /fd SHA256 /td SHA256 /tr "${SIGN_TS:-http://timestamp.digicert.com}" "$1"
+    "$SIGNTOOL" verify /pa "$1"
+    echo "signed $1"
+  }
+else
+  sign() { :; }
+fi
+
 W=${WORK:-/tmp/winbuild}
 bash "$ROOT/app/build.sh"
 rm -rf "$W"; mkdir -p "$W/app" "$W/win-unpacked" "$ROOT/dist"
@@ -39,6 +63,19 @@ node "$ASAR" pack "$W/app" resources/app.asar
 cp "$ROOT/app/assets/FONT-LICENSES.txt" .
 cp "$HERE/build/mobin-doc.ico" .
 (cd "$HERE" && node --max-old-space-size=3000 "$HERE/patch-exe.cjs" "$W/win-unpacked/MobinStudio.exe" "$VER" "$HERE/build/icon.ico")
+# sign after the icon/version are stamped in, so the signature covers the final exe
+sign "$W/win-unpacked/MobinStudio.exe"
+
+# ---- fast-update assets: resources/app.asar alone (~2 MB) + a manifest with its hash
+# the in-app updater downloads just these when the release has them
+ASAR_NAME="MobinStudio-$VER-app.asar"
+ASAR_SIZE=$(wc -c < resources/app.asar | tr -d ' ')
+ASAR_SHA=$(sha256sum resources/app.asar | cut -d' ' -f1)
+rm -f "$ROOT/dist/$ASAR_NAME" "$ROOT/dist/MobinStudio-$VER-update.json"
+cp resources/app.asar "$ROOT/dist/$ASAR_NAME"
+printf '{"version":"%s","asar":{"name":"%s","size":%s,"sha256":"%s"}}\n' \
+  "$VER" "$ASAR_NAME" "$ASAR_SIZE" "$ASAR_SHA" > "$ROOT/dist/MobinStudio-$VER-update.json"
+echo "fast update: $ASAR_NAME ($ASAR_SIZE bytes, sha256 $ASAR_SHA)"
 cd "$HERE/nsis"
 sed -i "s/^!define APPVER .*/!define APPVER        \"$VER\"/; s/^VIProductVersion .*/VIProductVersion \"$VER.0\"/" setup.nsi
 OUT="$ROOT/dist/MobinStudio-Setup-$VER.exe"
@@ -69,3 +106,5 @@ case "$N" in
     ;;
 esac
 ls -la "$OUT"
+sign "$OUT"
+echo "setup sha256: $(sha256sum "$OUT" | cut -d' ' -f1)"

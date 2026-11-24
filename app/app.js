@@ -3655,27 +3655,34 @@ async function remotePush() {
     const { u8, z } = await compressString(json);
     const InlineToken = (z ? 'MS8Z_' : 'MS8R_') + u8ToB64Url(u8);
     let finalCode = InlineToken;
-    /* کد کوتاه یعنی آپلود کل پروژه روی یک سرویس عمومی ثالث.
-       بدون اجازهٔ صریح کاربر هیچ بایتی بیرون نمی‌رود؛ در صورت رد کردن،
-       همان بستهٔ مستقیم (که آفلاین هم کار می‌کند) داده می‌شود. */
+    /* کد کوتاه یعنی آپلود روی یک سرویس عمومی ثالث — و آپلود فقط با اجازهٔ صریح.
+       پیش از فرستادن، خودِ پروژه روی همین دستگاه با AES-GCM رمز می‌شود و کلید
+       فقط داخل خود کد می‌ماند؛ یعنی سرویس ابری محتوا را نمی‌بیند. */
     if (S.cloudAsked !== true) {
       S.cloudAsked = true;
       S.cloudOk = (await ask('ارسال به سرور ابری؟',
-        'برای ساختن کد کوتاه، کل پروژه (فشرده‌شده) روی سرویس همگانی bytebin.lucko.me آپلود می‌شود و هر کسی که این کد را داشته باشد می‌تواند آن را باز کند. اگر نمی‌خواهی پروژه جایی آپلود شود، «کد مستقیم» را بزن: یک بستهٔ طولانی که فقط در پیام خودت جابه‌جا می‌شود.',
-        'آپلود کن', 'کد مستقیم بده')) === true;
+        'برای ساختن کد کوتاه، پروژه با AES-GCM روی همین دستگاه رمز می‌شود و فقط نسخهٔ رمزشده روی سرویس همگانی bytebin.lucko.me آپلود می‌شود؛ کلید رمز داخل خود کد است و جای دیگری نمی‌رود. اگر نمی‌خواهی چیزی آپلود شود، «کد مستقیم» را بزن: یک بستهٔ طولانی که فقط در پیام خودت جابه‌جا می‌شود.',
+        'آپلود کن (رمزگذاری‌شده)', 'کد مستقیم بده')) === true;
     }
     if (S.cloudOk) try {
-      const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 4500);
+      if (!(window.crypto && crypto.subtle)) throw new Error('no crypto');
+      const ck = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, ck, new TextEncoder().encode(InlineToken)));
+      const rawK = new Uint8Array(await crypto.subtle.exportKey('raw', ck));
+      const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 8000);
+      /* JSON envelope, same request shape this service already accepted:
+         {"v":9,"enc":"AES-GCM","iv":…,"data":…} — the server only ever sees ciphertext. */
       const res = await fetch('https://bytebin.lucko.me/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ v: 8, token: InlineToken }),
+        body: JSON.stringify({ v: 9, enc: 'AES-GCM', iv: u8ToB64Url(iv), data: u8ToB64Url(ct) }),
         signal: ctrl.signal
       });
       clearTimeout(t);
       if (res.ok) {
         const d = await res.json();
-        if (d && d.key) finalCode = 'CLOUD-' + d.key;
+        if (d && d.key) finalCode = 'CLOUD-' + u8ToB64Url(rawK) + '~' + d.key;
       }
     } catch (e) { }
     S.remCode = finalCode;
@@ -3691,7 +3698,7 @@ async function remotePush() {
     }
     if (pill) { pill.textContent = finalCode.startsWith('CLOUD-') ? 'ابری (کد کوتاه)' : 'بستهٔ مستقیم (کپی شد)'; pill.className = 'pill ok'; }
     toast(finalCode.startsWith('CLOUD-')
-      ? `کد ابری «${finalCode}» ساخته و کپی شد! در موبایل واردش کنید.`
+      ? `کد ابری رمزگذاری‌شده «${finalCode}» ساخته و کپی شد! در دستگاه دیگر واردش کنید.`
       : 'کد کامل پیشرفت پروژه در کلیپ‌بورد کپی شد! آن را در تلگرام/یادداشت بفرستید و در موبایل بچسبانید.', 'ok', 6000);
   } catch (e) {
     if (pill) { pill.textContent = 'خطا'; pill.className = 'pill wn'; }
@@ -3708,12 +3715,28 @@ async function remotePull() {
   const pill = $('#remStatusPill'); if (pill) { pill.textContent = 'در حال دریافت…'; pill.className = 'pill inf'; }
   try {
     let token = code;
-    if (/^CLOUD-[A-Za-z0-9_-]+$/i.test(code)) {
-      const key = code.replace(/^CLOUD-/i, '');
-      const res = await fetch('https://bytebin.lucko.me/' + encodeURIComponent(key));
+    if (/^CLOUD-[A-Za-z0-9_~-]+$/i.test(code)) {
+      const rest = code.replace(/^CLOUD-/i, '');
+      const cut = rest.indexOf('~');
+      const keyStr = cut > 0 ? rest.slice(0, cut) : '';
+      const id = cut > 0 ? rest.slice(cut + 1) : rest;
+      const res = await fetch('https://bytebin.lucko.me/' + encodeURIComponent(id));
       if (!res.ok) throw new Error('کد ابری منقضی شده یا اینترنت وصل نیست');
-      const d = await res.json();
-      token = d.token || '';
+      if (keyStr) {
+        /* کد رمزگذاری‌شده: کلید داخل خودِ کد است، سرویس ابری محتوا را ندیده */
+        if (!(window.crypto && crypto.subtle)) throw new Error('این دستگاه رمزگشایی امن (WebCrypto) ندارد');
+        const d = await res.json();
+        if (!d || typeof d.data !== 'string' || typeof d.iv !== 'string') throw new Error('این کد ابری رمزگذاری‌شده نیست یا خراب است');
+        const ck = await crypto.subtle.importKey('raw', b64UrlToU8(keyStr), { name: 'AES-GCM' }, false, ['decrypt']);
+        let plain;
+        try { plain = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64UrlToU8(d.iv) }, ck, b64UrlToU8(d.data))); }
+        catch (e) { throw new Error('رمزگشایی نشد — کلید این کد درست نیست'); }
+        token = new TextDecoder().decode(plain);
+      } else {
+        /* کدهای قدیمی (بدون رمزگذاری) */
+        const d = await res.json();
+        token = d.token || '';
+      }
     }
     if (token.startsWith('MS8Z_') || token.startsWith('MS8R_')) {
       const z = token.startsWith('MS8Z_') ? 1 : 0;
