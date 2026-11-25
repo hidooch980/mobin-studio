@@ -40,6 +40,12 @@
   </div>
   <div class="tb-m"><div class="doc" id="tbDoc"><i class="ddot" id="tbDot"></i><b id="tbTitle">پروژهٔ تازه</b><span class="dsub" id="tbSub"></span></div></div>
   <div class="tb-e">
+  <div id="mobPage" class="mob-page mOnly" role="group" aria-label="صفحه">
+    <button type="button" id="mpPrev" aria-label="صفحهٔ قبل">‹</button>
+    <b id="mpNow">—</b>
+    <button type="button" id="mpNext" aria-label="صفحهٔ بعد">›</button>
+  </div>
+  <button type="button" class="btn gho ico mOnly" id="mobMoreBtn" title="بیشتر" aria-label="بیشتر"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="4" cy="10" r="1.2"/><circle cx="10" cy="10" r="1.2"/><circle cx="16" cy="10" r="1.2"/></svg></button>
   <div class="dd" id="ddFile">
     <button class="btn" data-dd><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v9m0-9L6.8 7.2M10 4l3.2 3.2M4 14.5v1A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5v-1"/></svg><span class="ht">بارگذاری</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cv"><path d="m6 9 6 6 6-6"/></svg></button>
     <div class="pop">
@@ -233,11 +239,17 @@
         </div>
 
         <div id="selBody" style="display:none">
-          <div class="grp">
-            <span class="lbl">متن</span>
+          <div class="grp mc-first">
+            <div class="mc-head mOnly"><span id="mcPage">صفحهٔ —</span><span class="mc-tag" id="mcTag">بالن</span></div>
+            <div class="mc-src mOnly" id="mcSource"><b>متن مبدأ</b><p id="mcSourceT">—</p></div>
+            <span class="lbl mc-lbl">ترجمه</span>
             <textarea id="iText" rows="3" spellcheck="false"></textarea>
-            <div class="row" style="margin-top:6px">
+            <div class="row mc-tools" style="margin-top:6px">
               <button class="btn sm gho" type="button" id="iFix" title="نیم‌فاصله، ی/ک فارسی، فاصله‌های اضافه و علائم">✨ اصلاح سریع</button>
+              <button class="btn sm gho mOnly" type="button" id="mcAll">همهٔ متن‌ها</button>
+            </div>
+            <div class="mc-actions mOnly">
+              <button class="btn pri" type="button" id="mcNext">ثبت و بعدی <span aria-hidden="true">←</span></button>
             </div>
           </div>
           <div class="grp">
@@ -302,6 +314,58 @@
     </div>
   </aside>
 </main>
+
+<nav id="mobTabs" aria-label="ناوبری اصلی موبایل">
+  <button type="button" class="mobtab on" data-mtab="work" aria-current="page"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.3 3.6a1.8 1.8 0 0 1 2.6 2.6L7.4 14.7 4 15.9l1.2-3.4 8.1-8.9Z"/></svg><i>کار</i></button>
+  <button type="button" class="mobtab" data-mtab="style"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h7M14 5h3M3 10h2M9 10h8M3 15h8M15 15h2"/><circle cx="12" cy="5" r="2"/><circle cx="7" cy="10" r="2"/><circle cx="13" cy="15" r="2"/></svg><i>استایل</i></button>
+  <button type="button" class="mobtab" data-mtab="pages"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="3" width="5.5" height="5.5" rx="1"/><rect x="3" y="11.5" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="11.5" width="5.5" height="5.5" rx="1"/></svg><i>صفحه‌ها</i></button>
+  <button type="button" class="mobtab" data-mtab="more"><svg viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.35"/><circle cx="10" cy="10" r="1.35"/><circle cx="16" cy="10" r="1.35"/></svg><i>بیشتر</i></button>
+</nav>
+
+<section id="mobMore" aria-label="بیشتر" aria-hidden="true">
+  <div class="mm-head">
+    <div><h2>بیشتر</h2><small>پروژه، ورودی/خروجی و ابزارها</small></div>
+    <button type="button" class="btn gho ico" id="mobMoreClose" aria-label="بستن"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+  </div>
+  <div class="mm-body">
+    <label class="mm-search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="5.3"/><path d="m13 13 3.5 3.5"/></svg><input type="search" id="mobMoreSearch" placeholder="جست‌وجوی کارها…" aria-label="جست‌وجو"></label>
+
+    <div class="mm-group" data-mgroup>
+      <h3>پروژه</h3>
+      <div class="mm-grid">
+        <button type="button" class="mm-tile" data-mcmd="newProj"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.8h6.5L15 6.3v10a1.2 1.2 0 0 1-1.2 1.2H5a1.2 1.2 0 0 1-1.2-1.2V4A1.2 1.2 0 0 1 5 2.8Z"/><path d="M9.5 8.5v5M7 11h5"/></svg><b>پروژهٔ جدید</b><small>شروع از صفر</small></button>
+        <button type="button" class="mm-tile" data-mcmd="openProj"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6a2 2 0 0 1 2-2h3l1.6 2h6.4a2 2 0 0 1 2 2v6.5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2V6Z"/></svg><b>باز کردن پروژه</b><small>فایل ‎.mobin</small></button>
+        <button type="button" class="mm-tile" data-mcmd="saveProj"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5A2 2 0 0 1 5.5 3.5h7.3L16.5 7v7.5a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-9Z"/><path d="M6.5 3.5v4h6M6.5 16.5v-4h7"/></svg><b>ذخیره</b><small>Ctrl+S</small></button>
+        <button type="button" class="mm-tile" data-mcmd="saveAs"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16.5H5.5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h7.3L16.5 7v2"/><path d="m15.6 11.4 1.5 1.5-4.4 4.4-2 .5.5-2 4.4-4.4Z"/></svg><b>ذخیره با نام</b><small>نسخهٔ تازه</small></button>
+      </div>
+    </div>
+
+    <div class="mm-group" data-mgroup>
+      <h3>ورودی و خروجی</h3>
+      <div class="mm-grid">
+        <button type="button" class="mm-tile" data-mcmd="imgs"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="2.2"/><circle cx="7" cy="8" r="1.4"/><path d="m3 13.5 4-3.6 4 3.3 3-2.4 3 2.7"/></svg><b>افزودن عکس</b><small>PNG / JPG / ZIP</small></button>
+        <button type="button" class="mm-tile" data-mcmd="txt"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h7l5 5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 17V4.5A1.5 1.5 0 0 1 5.5 3Z"/><path d="M11 3v5h5M7 12h6M7 15h4"/></svg><b>متن مترجم</b><small>فایل TXT</small></button>
+        <button type="button" class="mm-tile" data-mcmd="paste"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5h-2A1.5 1.5 0 0 0 4 6v10a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 16 16V6a1.5 1.5 0 0 0-1.5-1.5h-2"/><rect x="7" y="2.8" width="6" height="3.6" rx="1.2"/><path d="M7.5 10h5M7.5 13h3.5"/></svg><b>چسباندن متن</b><small>از حافظه</small></button>
+        <button type="button" class="mm-tile" data-mcmd="remote"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 15.5h9a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 5.2 7.5 3.8 3.8 0 0 0 5.5 15.5Z"/></svg><b>ریموت</b><small>ادامه در دستگاه دیگر</small></button>
+        <button type="button" class="mm-tile" data-mcmd="expAll"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13V4m0 9-3.2-3.2M10 13l3.2-3.2M4 14.5v1A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5v-1"/></svg><b>خروجی همه</b><small>ZIP صفحه‌ها</small></button>
+        <button type="button" class="mm-tile" data-mcmd="expOne"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="2.2"/><circle cx="7" cy="8" r="1.4"/><path d="m3 13.5 4-3.6 4 3.3 3-2.4 3 2.7"/></svg><b>خروجی همین صفحه</b><small>PNG / JPG</small></button>
+      </div>
+    </div>
+
+    <div class="mm-group" data-mgroup>
+      <h3>ابزارها</h3>
+      <div class="mm-grid">
+        <button type="button" class="mm-tile" data-mcmd="clean"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.6 15.5 3.9 10.8a1.5 1.5 0 0 1 0-2.1l5.3-5.3a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-5.3 5.3H17"/><path d="m6.6 7.6 5.8 5.8"/></svg><b>پاک‌کن داخل بالن</b><small>حذف متن اصلی</small></button>
+        <button type="button" class="mm-tile" data-mcmd="ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6 11.5 7l4.4 1.5-4.4 1.5L10 14.4 8.5 10 4.1 8.5 8.5 7 10 2.6Z"/><path d="M15.4 13.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg><b>دستیار</b><small>فقط با درخواست خودت</small></button>
+        <button type="button" class="mm-tile" data-mcmd="settings"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h7"/><circle cx="13.5" cy="14" r="2.1"/></svg><b>تنظیمات</b><small>رفتار برنامه</small></button>
+        <button type="button" class="mm-tile" data-mcmd="help"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M8 7.8a2.1 2.1 0 1 1 2.6 2.05c-.4.12-.6.45-.6.85v.6"/><path d="M10 14.3v.05"/></svg><b>راهنما</b><small>آموزش و میان‌بر</small></button>
+      </div>
+    </div>
+
+    <div class="mm-note"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M10 9v4M10 6.5v.05"/></svg><span>همهٔ کارها بدون اینترنت انجام می‌شود؛ فقط ریموت و دستیار (وقتی خودت بخواهی) به شبکه وصل می‌شوند.</span></div>
+    <div class="mm-foot"><span>Mobin Studio</span><b>۸.۸.۱</b></div>
+  </div>
+</section>
 
 <footer>
   <span>صفحه <b id="fPage">—</b></span><span class="dot"></span>

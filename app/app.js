@@ -844,7 +844,15 @@ function sharpen() {
     if (W !== (p.bw || p.w) || H !== (p.bh || p.h)) { p.bw = W; p.bh = H; render(i); }
   });
 }
-const renderAll = () => S.pages.forEach((_, i) => render(i));
+const renderAll = () => {
+  /* on a phone only the visible page has a real bitmap; rendering all of them
+     would immediately re-allocate every hidden canvas and bring the lag back */
+  if (typeof isSinglePageMob === 'function' && isSinglePageMob()) {
+    if (S.pages.length) render(S.cur);
+    return;
+  }
+  S.pages.forEach((_, i) => render(i));
+};
 
 /* ============================================================
    ZOOM
@@ -2035,6 +2043,13 @@ function updateStatus() {
     $('#bPgPrev').disabled = !S.pages.length || S.cur <= 0;
     $('#bPgNext').disabled = !S.pages.length || S.cur >= S.pages.length - 1;
   }
+  const mp = $('#mpNow');
+  if (mp) {
+    mp.textContent = S.pages.length ? faNum(S.cur + 1) + ' / ' + faNum(S.pages.length) : '—';
+    const pv = $('#mpPrev'), nx = $('#mpNext');
+    if (pv) pv.disabled = !S.pages.length || S.cur <= 0;
+    if (nx) nx.disabled = !S.pages.length || S.cur >= S.pages.length - 1;
+  }
   const st = pageStat(S.cur);
   $('#fBub').textContent = st.n ? faNum(st.done) + ' از ' + faNum(st.n) : '—';
   const p = S.pages[S.cur];
@@ -2046,6 +2061,13 @@ function syncInspector() {
   if (mq) mq.classList.toggle('on', !!(L && S.tool === 'text'));
   $('#noSel').style.display = L ? 'none' : '';
   $('#selBody').style.display = L ? '' : 'none';
+  const mcP = $('#mcPage'), mcT = $('#mcTag'), mcS = $('#mcSourceT');
+  if (mcP) mcP.textContent = S.pages.length ? 'صفحهٔ ' + faNum(S.cur + 1) : 'بدون صفحه';
+  if (mcT) mcT.textContent = L && L.tag ? L.tag : 'بالن';
+  if (mcS) {
+    const b = L ? bubbles(S.cur).find(x => x.id === L.bid) : null;
+    mcS.textContent = b && b.text ? b.text : '—';
+  }
   if (!L) return;
   if (document.activeElement !== $('#iText')) $('#iText').value = L.t;
   buildFontSelect(L.font);
@@ -2086,7 +2108,7 @@ function syncAll() {
     const first = S.wasBlank === undefined; S.wasBlank = blank;
     if (blank) closePanels();
     else if (!NARROW()) { $('#script').classList.remove('hide'); $('#inspect').classList.remove('hide'); syncPanelMode(); if (!first) refitSoon(); }
-    else if (!first) togglePanel('script', true);
+    else if (!first && !isMob()) togglePanel('script', true);
   }
   syncSinglePageMode();
   syncCards(); syncStrip(); syncPagesPanel(); syncInspector(); updateStatus();
@@ -2144,6 +2166,35 @@ function afterEdit(light) {
   if (!light) { syncCards(); syncStrip(); updateStatus(); }
   autosave();
 }
+/* Typing used to redraw the page, rebuild every card and save on every key.
+   Draw at most ~9 times a second, rebuild cards far less, and save once the
+   typist pauses; the text itself (S.sel.t / bubble.text) is updated at once. */
+let txtDrawAt = 0, txtDrawTimer = 0, txtCardsTimer = 0, txtSaveTimer = 0;
+function queueTextEdits() {
+  const now = performance.now();
+  if (now - txtDrawAt > 110) { txtDrawAt = now; render(S.cur); }
+  else if (!txtDrawTimer) {
+    txtDrawTimer = setTimeout(() => {
+      txtDrawTimer = 0; txtDrawAt = performance.now();
+      if (S.sel) render(S.cur);
+    }, 110);
+  }
+  /* card list stays untouched while typing; it is rebuilt once on commit */
+  clearTimeout(txtCardsTimer); txtCardsTimer = 0;
+  clearTimeout(txtSaveTimer);
+  txtSaveTimer = setTimeout(() => { txtSaveTimer = 0; autosave(); }, 900);
+}
+function flushTextEdits() {
+  if (txtDrawTimer) { clearTimeout(txtDrawTimer); txtDrawTimer = 0; }
+  if (txtCardsTimer) { clearTimeout(txtCardsTimer); txtCardsTimer = 0; }
+  if (txtSaveTimer) { clearTimeout(txtSaveTimer); txtSaveTimer = 0; }
+  if (!S.sel) return;
+  txtDrawAt = performance.now();
+  render(S.cur); syncCards(); autosave();
+}
+/* never lose the last few typed words when the app is hidden or closed */
+addEventListener('pagehide', () => { try { if (S.sel) flushTextEdits(); } catch (e) { } });
+document.addEventListener('visibilitychange', () => { try { if (document.hidden && S.sel) flushTextEdits(); } catch (e) { } });
 function selectLayer(L, scroll) {
   S.sel = L;
   if (L && L.bid) {
@@ -2152,6 +2203,10 @@ function selectLayer(L, scroll) {
   }
   syncInspector(); render(S.cur); syncCards();
   if (L && scroll) setPanel('layer');
+  if (typeof isMob === 'function' && isMob()) {
+    if (L && typeof mobComposerOpen === 'function') mobComposerOpen();
+    else if (!L && document.body.classList.contains('composerMode') && typeof mobComposerClose === 'function') mobComposerClose(true);
+  }
 }
 /* lines the user does not want on the page: out of the list, never picked automatically */
 function skipLine(id, on) {
@@ -2290,7 +2345,11 @@ function buildCanvases() {
   S.pages.forEach((p, i) => {
     const wrap = el('div', { class: 'pw', 'data-pg': i });
     const cv = document.createElement('canvas');
-    cv.width = p.w; cv.height = p.h; p.bw = p.w; p.bh = p.h;
+    /* phones only keep the visible page as a real bitmap; hidden pages get a 1×1
+       placeholder until they are shown (syncSinglePageMode/sharpen restore them) */
+    const lazy = typeof isSinglePageMob === 'function' && isSinglePageMob() && i !== S.cur;
+    cv.width = lazy ? 1 : p.w; cv.height = lazy ? 1 : p.h;
+    p.bw = lazy ? 1 : p.w; p.bh = lazy ? 1 : p.h;
     cv.style.width = Math.round(p.w * S.zoom) + 'px'; cv.style.height = Math.round(p.h * S.zoom) + 'px';
     p.cv = cv; p.cx = cv.getContext('2d');
     p.wrap = wrap;
@@ -2304,6 +2363,7 @@ function buildCanvases() {
 async function makeThumbs() {
   for (let i = 0; i < S.pages.length; i++) {
     const p = S.pages[i];
+    if (p.thumb) continue;
     try {
       const tw = 150, th = Math.max(1, Math.round(tw * Math.min(p.h / p.w, 1.9)));
       const c = document.createElement('canvas'); c.width = tw; c.height = th;
@@ -2313,7 +2373,12 @@ async function makeThumbs() {
       p.thumb = c.toDataURL('image/jpeg', .6);
       c.width = c.height = 0;
     } catch (e) { }
-    if (i % 3 === 2) await nextFrame();
+    /* one thumbnail per idle slice: opening an 18-page project no longer
+       stalls the first paint while a row of canvases is encoded */
+    await new Promise(res => {
+      if (window.requestIdleCallback) requestIdleCallback(res, { timeout: 260 });
+      else setTimeout(res, 16);
+    });
   }
   syncPagesPanel();
 }
@@ -3795,6 +3860,8 @@ function syncSinglePageMode() {
     S.pages.forEach((p, i) => {
       if (i !== S.cur && p.cv && (p.cv.width > 1 || p.cv.height > 1)) {
         p.cv.width = 1; p.cv.height = 1; p.bw = 1; p.bh = 1;
+      } else if (i === S.cur && (p.bw === 1 || p.bh === 1)) {
+        p.bw = p.w; p.bh = p.h;
       }
     });
     sharpenSoon(20);
@@ -4225,7 +4292,7 @@ function syncPanelMode() {
   document.body.classList.toggle('sheetTall', (sc && $('#script').classList.contains('tall')) || (ins && $('#inspect').classList.contains('tall')));
   $('#tScript').classList.toggle('on', sc); $('#tScript').setAttribute('aria-pressed', sc);
   $('#tInspect').classList.toggle('on', ins); $('#tInspect').setAttribute('aria-pressed', ins);
- 
+  try { if (typeof mobPanelSync === 'function') mobPanelSync(); } catch (e) { }
 }
 function togglePanel(id, on) {
   const n = $('#' + id), show = on === undefined ? n.classList.contains('hide') : !!on;
@@ -4565,7 +4632,11 @@ function wire() {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); }
   });
   $('#strip').addEventListener('click', e => { const c = e.target.closest('.pchip'); if (c) gotoPage(+c.dataset.pg); });
-  $('#pgrid').addEventListener('click', e => { const c = e.target.closest('.pcard'); if (c) gotoPage(+c.dataset.pg); });
+  $('#pgrid').addEventListener('click', e => {
+    const c = e.target.closest('.pcard'); if (!c) return;
+    gotoPage(+c.dataset.pg);
+    if (isMob() && document.body.classList.contains('panelOpen')) closePanels();
+  });
 
   /* inspector inputs */
   const bind = (id, rid, get, set, lo, hi) => {
@@ -4604,9 +4675,9 @@ function wire() {
     if (!S.sel) return; pushHistSoon();
     S.sel.t = $('#iText').value;
     const b = bubbles(S.cur).find(x => x.id === S.sel.bid); if (b) b.text = S.sel.t;
-    render(S.cur); syncCards(); autosave();
+    queueTextEdits();
   });
-  $('#iText').addEventListener('change', () => { if (S.sel) learnFromSelection(); });
+  $('#iText').addEventListener('change', () => { if (S.sel) { flushTextEdits(); learnFromSelection(); } });
   $('#iFont').addEventListener('change', () => { if (!S.sel) return; pushHist(); S.sel.font = $('#iFont').value; afterEdit(true); });
   $('#iBold').addEventListener('change', () => { if (!S.sel) return; pushHist(); S.sel.bold = $('#iBold').checked; afterEdit(true); });
   $('#iItalic').addEventListener('change', () => { if (!S.sel) return; pushHist(); S.sel.italic = $('#iItalic').checked; afterEdit(true); });

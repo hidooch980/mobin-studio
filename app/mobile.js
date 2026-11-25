@@ -12,7 +12,10 @@ function isMobLayout() {
   try { const t = screen.orientation && screen.orientation.type; if (t) portrait = t.indexOf('portrait') === 0; } catch (e) { }
   let coarse = false;
   try { coarse = matchMedia('(pointer: coarse)').matches || (navigator.maxTouchPoints || 0) > 0; } catch (e) { }
-  return innerWidth <= 560 || (coarse && portrait && innerWidth <= 760);
+  /* big phones in landscape: still the thumb layout, with the composer moved
+     to the side instead of eating the few available pixels of height */
+  const landscape = coarse && !portrait && innerWidth <= 960 && innerHeight <= 560;
+  return innerWidth <= 560 || (coarse && portrait && innerWidth <= 760) || landscape;
 }
 /* -> true when the layout changed */
 function syncMob() {
@@ -78,6 +81,161 @@ async function exportGallery() {
   finally { busy.hide(); }
 }
 
+/* ============================================================
+   MOBILE 2.0 — چهار مقصد پایین + ورودی همیشه در دسترس
+   ============================================================ */
+function syncMobTabs(mode) {
+  const tabs = $$('#mobTabs .mobtab');
+  if (!tabs.length) return;
+  let cur = mode;
+  if (!cur) {
+    if (document.body.classList.contains('moreOpen')) cur = 'more';
+    else if (document.body.classList.contains('composerMode')) cur = 'work';
+    else if (!$('#inspect').classList.contains('hide')) cur = $('#pPages').classList.contains('on') ? 'pages' : 'style';
+    else cur = 'work';
+  }
+  tabs.forEach(b => {
+    const on = b.dataset.mtab === cur;
+    b.classList.toggle('on', on);
+    if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+}
+
+/* keep the tab state honest whenever a sheet opens/closes */
+function mobPanelSync() {
+  if (!isMob()) return;
+  if ($('#inspect').classList.contains('hide') && document.body.classList.contains('composerMode')) {
+    document.body.classList.remove('composerMode');
+    mobComposerRestore();
+  }
+  syncMobTabs();
+}
+
+let mobComposerZoom = false;
+/* while the composer is open, shrink a page that only just overflows so the
+   whole page sits above the keyboard instead of hiding its lower balloons */
+function mobFitStage() {
+  if (!isMob() || !S.pages.length) return;
+  const st = $('#stage'), p = S.pages[S.cur];
+  if (!st || !p || !p.h) return;
+  /* in landscape the side composer leaves plenty of height but little width:
+     fitting the height would make the page a narrow strip, so fit the width
+     and let the selected balloon scroll into view instead */
+  if (innerWidth > innerHeight) { fitZoom(); return; }
+  const fitH = (st.clientHeight - 24) / p.h;
+  if (fitH < S.zoom && fitH > S.zoom * .55) {
+    setZoom(fitH); mobComposerZoom = true;
+    st.style.scrollBehavior = 'auto'; st.scrollTop = 0; st.scrollLeft = 0; st.style.scrollBehavior = '';
+  }
+}
+function mobComposerRestore() {
+  if (!mobComposerZoom) return;
+  mobComposerZoom = false;
+  requestAnimationFrame(() => { if (!document.body.classList.contains('composerMode') && S.pages.length) fitZoom(); });
+}
+/* the canvas can be shorter than the page while typing: keep the balloon
+   being translated above the composer instead of hiding it below the fold */
+function mobRevealSel() {
+  if (!isMob() || !S.sel || !S.pages[S.cur]) return;
+  try {
+    const L = S.sel, m = layout(L);
+    revealRect(S.cur, { x0: L.x - L.w / 2, x1: L.x + L.w / 2, y0: L.y - m.h / 2, y1: L.y + m.h / 2 }, false);
+  } catch (e) { }
+}
+function mobComposerOpen() {
+  if (!isMob() || !S.sel) return;
+  document.body.classList.remove('moreOpen');
+  document.body.classList.add('composerMode');
+  setPanel('layer');
+  syncMobTabs('work');
+  requestAnimationFrame(() => { mobFitStage(); mobRevealSel(); });
+}
+
+function mobComposerClose(closeSheet) {
+  if (document.body.classList.contains('composerMode') && typeof flushTextEdits === 'function') flushTextEdits();
+  document.body.classList.remove('composerMode');
+  mobComposerRestore();
+  if (closeSheet) closePanels();
+  else syncMobTabs();
+}
+
+let mobMoreResume = false;
+function mobMoreOpen(on) {
+  if (!isMob()) return;
+  const open = !!on;
+  if (open) mobMoreResume = document.body.classList.contains('composerMode');
+  document.body.classList.toggle('moreOpen', open);
+  $('#mobMore').setAttribute('aria-hidden', open ? 'false' : 'true');
+  if (open) {
+    if (document.body.classList.contains('composerMode') && typeof flushTextEdits === 'function') flushTextEdits();
+    document.body.classList.remove('composerMode');
+    mobComposerRestore();
+    closePanels();
+    const body = $('#mobMore .mm-body'); if (body) body.scrollTop = 0;
+    syncMobTabs('more');
+  } else {
+    syncMobTabs('work');
+  }
+}
+
+function mobMoreClose() {
+  document.body.classList.remove('moreOpen');
+  $('#mobMore').setAttribute('aria-hidden', 'true');
+  const q = $('#mobMoreSearch'); if (q) q.value = '';
+  $$('#mobMore .mm-tile').forEach(t => { t.hidden = false; });
+  $$('#mobMore .mm-group').forEach(g => { g.hidden = false; });
+  const resume = mobMoreResume; mobMoreResume = false;
+  if (resume && S.sel) mobComposerOpen(); else { closePanels(); syncMobTabs('work'); }
+}
+
+function mobTab(kind) {
+  if (!isMob()) return;
+  if (document.body.classList.contains('composerMode') && typeof flushTextEdits === 'function') flushTextEdits();
+  if (kind === 'work') {
+    document.body.classList.remove('moreOpen');
+    $('#mobMore').setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('composerMode');
+    mobComposerRestore();
+    closePanels();
+    syncMobTabs('work');
+    return;
+  }
+  if (kind === 'style') {
+    document.body.classList.remove('moreOpen');
+    $('#mobMore').setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('composerMode');
+    mobComposerRestore();
+    setPanel('layer');
+    syncMobTabs('style');
+    return;
+  }
+  if (kind === 'pages') {
+    document.body.classList.remove('moreOpen');
+    $('#mobMore').setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('composerMode');
+    mobComposerRestore();
+    setPanel('pages');
+    syncMobTabs('pages');
+    return;
+  }
+  if (document.body.classList.contains('moreOpen')) mobMoreClose();
+  else mobMoreOpen(true);
+}
+
+function mobRunCommand(name) {
+  const map = {
+    newProj: '#bNewProj', openProj: '#bOpenProj', saveProj: '#bSaveProj', saveAs: '#bSaveAs',
+    imgs: '#fImgs', txt: '#fTxt', paste: '#bPaste', remote: '#bRemoteRail',
+    expAll: '#bExpAll', expOne: '#bExpOne', clean: '#tClean',
+    ai: '#bAi', settings: '#bSettings', help: '#bHelp'
+  };
+  const n = $(map[name]);
+  if (!n) { toast('این کار در این نسخه در دسترس نیست', 'wn'); return; }
+  mobMoreOpen(false);
+  closeMenus();
+  setTimeout(() => { try { n.click(); } catch (e) { toast('اجرای این کار ممکن نشد', 'wn'); } }, 20);
+}
+
 function initMobile() {
   const body = document.body;
   if (window.MOBIN_ANDROID) body.classList.add('android');
@@ -87,13 +245,31 @@ function initMobile() {
   syncMob();
 
   /* soft keyboard open = the window got much shorter while a text field has focus */
-  let baseH = innerHeight;
+  let baseH = innerHeight, wasMob = isMob();
   const typing = () => {
     const a = document.activeElement;
     return !!a && (a.tagName === 'TEXTAREA' || a.isContentEditable || (a.tagName === 'INPUT' && /^(text|search|number|email|url|tel|password)$/i.test(a.type || 'text')));
   };
-  const syncKbd = () => { const t = typing(); if (!t) baseH = innerHeight; body.classList.toggle('kbd', t && innerHeight < baseH - 120); };
-  addEventListener('resize', () => { if (syncMob()) { closePanels(); refitSoon(); } syncKbd(); });
+  const syncKbd = () => {
+    const t = typing(); if (!t) baseH = innerHeight;
+    const was = body.classList.contains('kbd');
+    body.classList.toggle('kbd', t && innerHeight < baseH - 120);
+    if (body.classList.contains('kbd') && !was && body.classList.contains('composerMode')) setTimeout(mobRevealSel, 80);
+  };
+  addEventListener('resize', () => {
+    const changed = syncMob();
+    const mobNow = isMob();
+    if (changed && mobNow && !wasMob) { closePanels(); refitSoon(); }
+    /* only leaving the phone layout clears these; a soft-keyboard resize must
+       keep the composer (and the selected layer) exactly where it was */
+    if (!mobNow) {
+      body.classList.remove('composerMode', 'moreOpen');
+      if ($('#mobMore')) $('#mobMore').setAttribute('aria-hidden', 'true');
+      syncMobTabs();
+    }
+    wasMob = mobNow;
+    syncKbd();
+  });
   document.addEventListener('focusin', () => setTimeout(syncKbd, 320));
   document.addEventListener('focusout', () => setTimeout(syncKbd, 320));
 
@@ -138,6 +314,25 @@ function initMobile() {
   }
 
   $('#bNextM').onclick = placeNextLine;
+
+  /* four destinations + page pill + more screen */
+  $$('#mobTabs .mobtab').forEach(b => { b.onclick = () => mobTab(b.dataset.mtab); });
+  if ($('#mobMoreBtn')) $('#mobMoreBtn').onclick = () => { if (body.classList.contains('moreOpen')) mobMoreClose(); else mobMoreOpen(true); };
+  if ($('#mobMoreClose')) $('#mobMoreClose').onclick = mobMoreClose;
+  if ($('#mpPrev')) $('#mpPrev').onclick = () => { const b = $('#bPgPrev'); if (b && !b.disabled) b.click(); };
+  if ($('#mpNext')) $('#mpNext').onclick = () => { const b = $('#bPgNext'); if (b && !b.disabled) b.click(); };
+  if ($('#mcNext')) $('#mcNext').onclick = () => { if (typeof flushTextEdits === 'function') flushTextEdits(); placeNextLine(); setTimeout(mobRevealSel, 80); };
+  if ($('#mcAll')) $('#mcAll').onclick = () => { mobComposerClose(true); togglePanel('script', true); syncMobTabs('work'); };
+  $$('#mobMore .mm-tile').forEach(t => { t.onclick = () => mobRunCommand(t.dataset.mcmd); });
+  if ($('#mobMoreSearch')) $('#mobMoreSearch').addEventListener('input', e => {
+    const q = e.target.value.trim();
+    $$('#mobMore .mm-group').forEach(g => {
+      let any = false;
+      [...g.querySelectorAll('.mm-tile')].forEach(t => { const hit = !q || t.textContent.includes(q); t.hidden = !hit; if (hit) any = true; });
+      g.hidden = !any;
+    });
+  });
+  syncMobTabs();
   const gal = $('#bExpGal'); if (gal) gal.onclick = () => { closeMenus(); exportGallery(); };
   /* Android's file box selects several pictures only after a long press on the first one */
   if (window.MOBIN_ANDROID) ['#fImgs', '#fImgs2'].forEach(q => { const n = $(q); if (n) n.addEventListener('click', () =>
@@ -158,6 +353,8 @@ function initMobile() {
       const ov = $$('.ov.on'); if (ov.length) { ov[ov.length - 1].classList.remove('on'); return 1; }
       const a = document.activeElement;
       if (a && a !== body && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) { a.blur(); return 1; }
+      if (body.classList.contains('moreOpen')) { mobMoreClose(); return 1; }
+      if (body.classList.contains('composerMode')) { mobComposerClose(true); return 1; }
       if (NARROW() && (!$('#script').classList.contains('hide') || !$('#inspect').classList.contains('hide'))) { closePanels(); return 1; }
       if (S.tool === 'clean') { setTool('text'); return 1; }
       if (S.sel) { S.sel = null; selectLayer(null); render(S.cur); return 1; }
@@ -322,7 +519,8 @@ function initMobile() {
         onDown(fake(s.tgt, s.pid, s.sx, s.sy), s.i);
         onUp();
       } else if (s.k === 'drag' && s.L && s.L.x === s.ox && s.L.y === s.oy && s.L.w === s.ow && e.timeStamp - s.t < 450) {
-        setPanel('layer');           // a tap on the selected text: open its settings
+        if (isMob() && typeof mobComposerOpen === 'function') mobComposerOpen();
+        else setPanel('layer');      // a tap on the selected text: open its settings
       } else if (s.k === 'pan' && e.timeStamp - s.lt < 70 && Math.hypot(s.vx, s.vy) > .2) fling(s.vx, s.vy);
     };
     addEventListener('pointerup', up);
