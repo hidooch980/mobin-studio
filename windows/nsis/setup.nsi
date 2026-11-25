@@ -70,13 +70,12 @@ Function ${UN}CloseRunning
     ${If} ${Silent}
       Goto force
     ${EndIf}
-    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "${APPNAME} الان باز است.$\r$\n$\r$\nاگر کار ذخیره‌نشده دارید، اول آن را ذخیره کنید، بعد برنامه را ببندید و «Retry» را بزنید." /SD IDCANCEL IDRETRY check
-    MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "${APPNAME} به‌اجبار بسته شود؟$\r$\n$\r$\nکار ذخیره‌نشده از بین می‌رود." /SD IDYES IDYES force
+    MessageBox MB_YESNOCANCEL|MB_ICONEXCLAMATION "${APPNAME} الان باز است.$\r$\n$\r$\nبرای نصب باید بسته شود. اگر کار ذخیره‌نشده دارید، اول آن را ذخیره کنید.$\r$\n$\r$\n«بله» = بستن خودکار (کار ذخیره‌نشده از بین می‌رود)$\r$\n«خیر» = دوباره بررسی کن$\r$\n«لغو» = توقف نصب" /SD IDNO IDYES force IDNO check
     Abort
   force:
-    nsExec::Exec '"$SYSDIR\taskkill.exe" /IM "${APPEXE}" /F'
+    nsExec::Exec '"$SYSDIR\taskkill.exe" /IM "${APPEXE}" /F /T'
     Pop $0
-    Sleep 1200
+    Sleep 1500
   done:
 FunctionEnd
 !macroend
@@ -96,14 +95,42 @@ Function un.onInit
   Call un.CloseRunning
 FunctionEnd
 
+!macro INSTALL_FAIL MSG
+  ${If} ${Silent}
+    SetErrorLevel 2
+    Abort
+  ${Else}
+    MessageBox MB_OK|MB_ICONSTOP "${MSG}"
+    Abort
+  ${EndIf}
+!macroend
+
 Section "Install"
+  ; preflight: never delete a working copy before we know the new one can be written
+  CreateDirectory "$INSTDIR"
+  ClearErrors
+  FileOpen $0 "$INSTDIR\.mobin-write-test" w
+  ${If} ${Errors}
+    !insertmacro INSTALL_FAIL "پوشهٔ نصب قابل نوشتن نیست. اگر برنامه در Program Files است، پوشهٔ دیگری انتخاب کنید یا دسترسی را بررسی کنید."
+  ${EndIf}
+  FileClose $0
+  Delete "$INSTDIR\.mobin-write-test"
+  ; if the running app still holds app.asar, stop before touching any file
+  IfFileExists "$INSTDIR\resources\app.asar" 0 asar_ok
+    ClearErrors
+    FileOpen $0 "$INSTDIR\resources\app.asar" a
+    IfErrors asar_locked
+    FileClose $0
+    Goto asar_ok
+  asar_locked:
+    !insertmacro INSTALL_FAIL "${APPNAME} هنوز باز است. برنامه را کامل ببندید و دوباره نصب کنید."
+  asar_ok:
+
   SetOutPath "$INSTDIR"
   SetOverwrite on
 
-  ; remove files of a previous version so nothing stale is left behind
-  RMDir /r "$INSTDIR\locales"
-  RMDir /r "$INSTDIR\resources"
-
+  ; copy over the old install without deleting it first: if the copy fails,
+  ; the previous app.asar and exe are still there and the app remains usable.
   File /r "payload\*.*"
 
   WriteRegStr HKCU "${APPREG}" "InstallDir" "$INSTDIR"
