@@ -257,10 +257,20 @@ function aiBuildContext(pi) {
 }
 
 /* ---------- فراخوانی API ---------- */
+/* a bare address with no scheme: local servers almost always speak plain http,
+   the public ones https — so pick the scheme from the host, not blindly https */
+function aiLanHost(u) {
+  const host = String(u).replace(/^\/\//, '').split('/')[0].replace(/:\d+$/, '').toLowerCase();
+  if (!host) return false;
+  if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host.endsWith('.local')) return true;
+  if (/^(10\.|192\.168\.|169\.254\.)/.test(host)) return true;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return true;
+  return /^[a-z0-9][a-z0-9_-]*$/.test(host);   // a bare machine name, e.g. nas:11434
+}
 function aiEndpoint(url) {
   let u = String(url || '').trim().replace(/\/+$/, '');
   if (!u) return '';
-  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  if (!/^https?:\/\//i.test(u)) u = (aiLanHost(u) ? 'http://' : 'https://') + u;
   if (/\/chat\/completions$/i.test(u)) return u;
   if (/\/v\d+$/i.test(u)) return u + '/chat/completions';
   return u + '/v1/chat/completions';
