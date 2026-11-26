@@ -1,0 +1,45 @@
+name: mobin_studio
+description: Persian manhwa & webtoon typesetting studio (Flutter shell)
+publish_to: 'none'
+# synced from app/package.json by tool/sync_version.dart (build number = major*10000+minor*100+patch)
+version: 8.9.3+80903
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+  flutter: '>=3.22.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_inappwebview: ^6.1.5
+  file_picker: ^8.1.2
+  path_provider: ^2.1.4
+  shared_preferences: ^2.3.2
+  http: ^1.2.2
+  crypto: ^3.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    # copied from app/build/index.html by tool/sync_version.dart before each build
+    - assets/web/index.html
+  # Flutter cannot load .woff2; tool/sync_version.dart fetches the TTF builds of
+  # Vazirmatn (OFL, same family the web editor embeds) into assets/fonts/.
+  fonts:
+    - family: Vazirmatn
+      fonts:
+        - asset: assets/fonts/Vazirmatn-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Vazirmatn-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Vazirmatn-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Vazirmatn-Bold.ttf
+          weight: 700
