@@ -117,6 +117,8 @@ const S = {
   dir: null, dirPending: null, dirSavedAt: 0, snapTimer: 0, lastSnapSig: '',
   tour: null
 };
+/* auto-resumed unsaved work from the last session (not typed/loaded in this one) */
+let resumedWork = false;
 
 /* ---------- IndexedDB (uploaded fonts) ---------- */
 const idb = (mode, key, val) => new Promise((ok, no) => {
@@ -2281,12 +2283,33 @@ function releasePages() {
   }
   PIXCACHE.clear(); BLKCACHE.clear(); BALCACHE.clear();
 }
+/* the user chose a clean chapter: forget text/layers restored from the last session */
+function discardResumedWork() {
+  S.doc = []; S.rawDoc = []; S.raw = ''; S.shift = 0;
+  S.pending = null; S.pendingCleans = null; S.imgNames = [];
+  S.cur = 0; S.sel = null; S.selB = null;
+}
 async function loadImages(fileList, keepWork, ordered) {
   let src = [...fileList];
   if (src.some(f => /\.zip$/i.test(f.name) || /zip/i.test(f.type || ''))) src = await expandZips(src);
   const files = src.filter(f => /^image\//.test(f.type) || /\.(png|jpe?g|webp|gif|bmp|avif)$/i.test(f.name));
   if (!ordered) files.sort((a, b) => natSort(a.name, b.name));
   if (!files.length) { if (!src.some(f => /\.zip$/i.test(f.name))) toast('فایل عکسی پیدا نشد', 'wn'); return; }
+
+  /* auto-resumed text/layers must never silently land on a new clean chapter */
+  if (!keepWork && resumedWork) {
+    const oldLines = S.doc.reduce((n, g) => n + g.length, 0);
+    const oldLayers = Array.isArray(S.pending)
+      ? S.pending.reduce((n, g) => n + (Array.isArray(g) ? g.length : 0), 0) : 0;
+    if (oldLines || oldLayers) {
+      const msg = `متن یا لایه‌های ذخیره‌شده از جلسهٔ قبل پیدا شد (${faNum(oldLines)} خط، ${faNum(oldLayers)} لایه). روی این عکس‌های تازه گذاشته شود؟`;
+      const choice = await ask('متن کار قبلی', msg,
+        'شروع تازه', 'انصراف', 'ادامه');
+      if (choice === true) { discardResumedWork(); toast('متن کار قبلی کنار گذاشته شد', 'ok'); }
+      else if (choice !== 'alt') return;   // closing the prompt / «انصراف» must not apply old work
+    }
+    resumedWork = false;
+  }
 
   const hasWork = !keepWork && S.pages.some(p => p.layers.length);
   if (hasWork && !await ask('عکس‌های تازه بارگذاری شود؟',
@@ -2407,6 +2430,10 @@ async function readTextFile(file) {
    ============================================================ */
 function applyScript(raw, quiet) {
   if (!raw || !raw.trim()) return toast('متن خالی است', 'wn');
+  const wasResumed = resumedWork;   // only a new script (not a re-parse of the same one) drops old session layers
+  resumedWork = false;      // a real script was loaded in this session
+  /* a fresh script has no pages yet: old session layers must not be replayed onto its images */
+  if (wasResumed && !S.pages.length && raw !== S.raw) { S.pending = null; S.pendingCleans = null; S.imgNames = []; }
   const keepLayers = S.pages.map(p => p.layers.slice());
   const wasSkip = new Map(); for (const b of S.doc.flat()) if (b.skip) wasSkip.set(b.id, b.raw);
   const r = parseScript(raw, S.settings);
@@ -2945,6 +2972,7 @@ function applyLayers(arr) {
 }
 /* one entry point used by file / bundle / folder / snapshot */
 async function loadProjectObject(o, from) {
+  resumedWork = false;      // opening a project replaces any auto-resumed text
   if (!o || typeof o !== 'object') return toast('پروژه خوانده نشد', 'er');
   if (o.app !== 'mobin-studio' && o.app !== 'manhwa-studio' && from === 'file') {
     if (!await ask('فایل ناشناس', 'این فایل با این برنامه ساخته نشده. باز شود؟', 'باز کن')) return;
@@ -3514,6 +3542,7 @@ async function newProject() {
   S.doc = []; S.rawDoc = []; S.raw = ''; S.shift = 0; S.cur = 0; S.sel = null; S.selB = null;
   S.meta = { title: '', created: Date.now() }; S.file = null; S.many = []; S.gloss = [];
   S.pending = null; S.pendingCleans = null; S.imgNames = [];
+  resumedWork = false;
   clearHist(); readSettingsToUI();
   ['#parseReport', '#pasteReport'].forEach(q => { const n = $(q); if (n) n.textContent = ''; });
   syncAll(); autosave(); savedSeq = editSeq; syncTitle();
@@ -4995,6 +5024,7 @@ addEventListener('keyup', e => {
       S.pending = Array.isArray(auto.L) ? auto.L : [];
       S.pendingCleans = Array.isArray(auto.C) ? auto.C : [];
       S.imgNames = Array.isArray(auto.names) ? auto.names : [];
+      resumedWork = true;
       pickNextBubble();
       toast('متن کار قبلی باز شد — حالا عکس‌ها را بارگذاری کنید', 'ok', 5500);
     }
