@@ -5018,15 +5018,33 @@ addEventListener('keyup', e => {
     if (S.settings.autoResume === false) {
       /* deliberately kept in localStorage: turning the option back on brings it home */
     } else if (!(autoFile && await reopenAuto(auto))) {
-      S.raw = str(auto.raw, '', 2e6);
-      S.doc = cleanDoc(auto.doc);
-      if (auto.styles) S.styles = Object.assign(cleanStyles(auto.styles), S.styles);
-      S.pending = Array.isArray(auto.L) ? auto.L : [];
-      S.pendingCleans = Array.isArray(auto.C) ? auto.C : [];
-      S.imgNames = Array.isArray(auto.names) ? auto.names : [];
-      resumedWork = true;
-      pickNextBubble();
-      toast('متن کار قبلی باز شد — حالا عکس‌ها را بارگذاری کنید', 'ok', 5500);
+      const oldLines = auto.doc.reduce((n, g) => n + (Array.isArray(g) ? g.length : 0), 0);
+      const oldLayers = Array.isArray(auto.L)
+        ? auto.L.reduce((n, g) => n + (Array.isArray(g) ? g.length : 0), 0) : 0;
+      let keepOld = true;
+      if (oldLines || oldLayers) {
+        const choice = await ask('کار جلسهٔ قبل',
+          `متن یا لایه‌های جلسهٔ قبل پیدا شد (${faNum(oldLines)} خط، ${faNum(oldLayers)} لایه). ادامه بده یا تازه شروع کنم؟`,
+          'شروع تازه', 'انصراف', 'ادامه');
+        keepOld = choice === 'alt';
+        if (choice === true) {
+          LS.del('ms6.auto');       // chosen clean: stop bringing this old work back
+          toast('شروع تازه — کار قبلی باز نشد', 'ok', 4500);
+        } else if (!keepOld) {
+          toast('کار قبلی باز نشد — دفعهٔ بعد دوباره می‌پرسم', 'ok', 4500);
+        }
+      }
+      if (keepOld) {
+        S.raw = str(auto.raw, '', 2e6);
+        S.doc = cleanDoc(auto.doc);
+        if (auto.styles) S.styles = Object.assign(cleanStyles(auto.styles), S.styles);
+        S.pending = Array.isArray(auto.L) ? auto.L : [];
+        S.pendingCleans = Array.isArray(auto.C) ? auto.C : [];
+        S.imgNames = Array.isArray(auto.names) ? auto.names : [];
+        resumedWork = true;
+        pickNextBubble();
+        toast('متن کار قبلی باز شد — حالا عکس‌ها را بارگذاری کنید', 'ok', 5500);
+      }
     }
   }
   readSettingsToUI();
