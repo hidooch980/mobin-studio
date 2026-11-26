@@ -34,12 +34,14 @@ function placeNextLine() {
   if (!S.pages.length) return toast('اول عکس‌ها را بارگذاری کنید', 'wn');
   if (!S.doc.length) return toast('اول متن مترجم را بدهید — از منوی «بارگذاری»', 'wn', 4000);
   if (S.tool !== 'text') setTool('text');
-  const ps = placedSet(S.cur), left = live(S.cur).filter(b => !ps.has(b.id));
+  /* SFX / manual lines never go into a balloon by themselves — skip them here */
+  const auto = b => lineKind(b) !== 'manual';
+  const ps = placedSet(S.cur), left = live(S.cur).filter(b => !ps.has(b.id) && auto(b));
   if (!left.length) {
     const n = S.pages.length;
     for (let k = 1; k < n; k++) {
       const i = (S.cur + k) % n, q = placedSet(i);
-      if (!live(i).some(b => !q.has(b.id))) continue;
+      if (!live(i).some(b => !q.has(b.id) && auto(b))) continue;
       gotoPage(i, false);
       if (!goTarget(true) && S.pages[i].wrap) { S.navLock = Date.now(); S.pages[i].wrap.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
       toast('صفحهٔ ' + faNum(i + 1) + ' — دوباره «بعدی» را بزنید', 'i', 2200);
@@ -48,7 +50,7 @@ function placeNextLine() {
     return toast('همهٔ متن‌ها گذاشته شده', 'ok');
   }
   let b = currentBubble();
-  if (!b || b.skip || ps.has(b.id)) { b = left[0]; S.selB = b.id; syncCards(); }
+  if (!b || b.skip || ps.has(b.id) || !auto(b)) { b = left[0]; S.selB = b.id; syncCards(); }
   if (!placeAuto(b)) {
     render(S.cur); goTarget(true);
     toast('برای این متن بالن خالی پیدا نشد — روی صفحه بزنید تا همان‌جا برود', 'wn', 3800);
@@ -223,9 +225,14 @@ function mobTab(kind) {
 }
 
 function mobRunCommand(name) {
+  if (name === 'ghost') {
+    mobMoreOpen(false);
+    setTimeout(() => { if (typeof toggleGhost === 'function') toggleGhost(); }, 20);
+    return;
+  }
   const map = {
     newProj: '#bNewProj', openProj: '#bOpenProj', saveProj: '#bSaveProj', saveAs: '#bSaveAs',
-    imgs: '#fImgs', txt: '#fTxt', paste: '#bPaste', remote: '#bRemoteRail',
+    imgs: '#fImgs', raw: '#fRawImgs', txt: '#fTxt', paste: '#bPaste', remote: '#bRemoteRail',
     expAll: '#bExpAll', expOne: '#bExpOne', clean: '#tClean',
     ai: '#bAi', settings: '#bSettings', help: '#bHelp'
   };
@@ -239,6 +246,8 @@ function mobRunCommand(name) {
 function initMobile() {
   const body = document.body;
   if (window.MOBIN_ANDROID) body.classList.add('android');
+  const mv = document.querySelector('meta[name="ms-version"]');
+  if (mv && $('#mmVer')) $('#mmVer').textContent = typeof faNum === 'function' ? faNum(mv.content) : mv.content;
   let touch = false;
   try { touch = (navigator.maxTouchPoints || 0) > 0 || matchMedia('(pointer: coarse)').matches; } catch (e) { }
   if (touch) body.classList.add('touchUI');
@@ -323,6 +332,8 @@ function initMobile() {
   if ($('#mpNext')) $('#mpNext').onclick = () => { const b = $('#bPgNext'); if (b && !b.disabled) b.click(); };
   if ($('#mcNext')) $('#mcNext').onclick = () => { if (typeof flushTextEdits === 'function') flushTextEdits(); placeNextLine(); setTimeout(mobRevealSel, 80); };
   if ($('#mcAll')) $('#mcAll').onclick = () => { mobComposerClose(true); togglePanel('script', true); syncMobTabs('work'); };
+  if ($('#mcClose')) $('#mcClose').onclick = () => mobComposerClose(true);
+  if ($('#mobGhostFab')) $('#mobGhostFab').onclick = () => { if (typeof toggleGhost === 'function') toggleGhost(); };
   $$('#mobMore .mm-tile').forEach(t => { t.onclick = () => mobRunCommand(t.dataset.mcmd); });
   if ($('#mobMoreSearch')) $('#mobMoreSearch').addEventListener('input', e => {
     const q = e.target.value.trim();
@@ -340,6 +351,7 @@ function initMobile() {
   $('#tClean').addEventListener('click', () => {
     if (touch && S.tool === 'clean') toast('روی فضای خالیِ داخل بالن بزنید — برای برداشتن رنگ، انگشت را نگه دارید', 'i', 4500);
   });
+  if (typeof syncGhostUI === 'function') syncGhostUI();
   if (touch) initTouch();
 
   /* Android back button: close whatever is open, one thing at a time.

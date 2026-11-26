@@ -17,6 +17,7 @@ assert js.count(PH)==1, 'placeholder missing'
 js=js.replace(PH, json.dumps(letter,ensure_ascii=False,separators=(',',':')))
 meta = '<meta name="ms-version" content="' + json.loads(R('package.json'))['version'] + '">'
 assert R('head.html').count('</head>')==1 and meta not in R('head.html')
+assert R('head.html').count('Content-Security-Policy')==1, 'head.html must contain exactly one CSP meta tag'
 out = R('head.html').replace('</head>', meta + '</head>') + '<style>' + R('app.css') + '</style>' + R('mid.html') + '<body class="noPages">' + R('app.body.html') + '<script>' + js + '</script>' + R('tail.html')
 open('build/index.html','w',encoding='utf-8').write(out)
 print('built', os.path.getsize('build/index.html'))

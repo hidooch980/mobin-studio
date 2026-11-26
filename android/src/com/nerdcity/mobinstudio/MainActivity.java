@@ -209,7 +209,9 @@ public class MainActivity extends Activity {
     @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
       Uri u = r.getUrl();
       if (u != null && HOST.equals(u.getHost())) return false;
-      try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception e) { }
+      String sc = u == null ? null : u.getScheme();
+      if ("https".equals(sc) || "http".equals(sc) || "mailto".equals(sc))
+        try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception e) { }
       return true;
     }
 

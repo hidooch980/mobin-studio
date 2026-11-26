@@ -30,6 +30,7 @@ fi
 # ---- optional Authenticode signing ---------------------------------------------
 # SIGN_PFX=/path/cert.pfx SIGN_PASS=secret  -> both executables get signed and verified.
 # Without it the build still works, but Windows SmartScreen will warn on the installer.
+set +x  # never trace: the signing password is passed to signtool
 SIGNTOOL=${SIGNTOOL:-}
 if [ -n "${SIGN_PFX:-}" ]; then
   [ -n "${SIGN_PASS:-}" ] || { echo "SIGN_PFX is set but SIGN_PASS is empty" >&2; exit 1; }
@@ -42,7 +43,7 @@ if [ -n "${SIGN_PFX:-}" ]; then
   fi
   [ -n "$SIGNTOOL" ] && [ -e "$SIGNTOOL" ] || { echo "SIGN_PFX is set but signtool was not found (install the Windows SDK or set SIGNTOOL)" >&2; exit 1; }
   sign() {
-    "$SIGNTOOL" sign /f "$SIGN_PFX" /p "$SIGN_PASS" /fd SHA256 /td SHA256 /tr "${SIGN_TS:-http://timestamp.digicert.com}" "$1"
+    "$SIGNTOOL" sign /f "$SIGN_PFX" /p "$SIGN_PASS" /fd SHA256 /td SHA256 /tr "${SIGN_TS:-https://timestamp.digicert.com}" "$1"
     "$SIGNTOOL" verify /pa "$1"
     echo "signed $1"
   }
@@ -50,9 +51,10 @@ else
   sign() { :; }
 fi
 
-W=${WORK:-/tmp/winbuild}
+W=$(mktemp -d "${TMPDIR:-/tmp}/winbuild.XXXXXX")
 bash "$ROOT/app/build.sh"
-rm -rf "$W"; mkdir -p "$W/app" "$W/win-unpacked" "$ROOT/dist"
+[ -s "$ROOT/app/build/index.html" ] || { echo "web build missing: app/build/index.html" >&2; exit 1; }
+mkdir -p "$W/app" "$W/win-unpacked" "$ROOT/dist"
 cp "$ROOT/app/build/index.html" "$ROOT/app/main.js" "$ROOT/app/preload.js" "$ROOT/app/package.json" "$W/app/"
 cd "$W/win-unpacked"
 unzip -q "$EL_ZIP"

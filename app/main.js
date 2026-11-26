@@ -123,7 +123,7 @@ function writeError(err) {
 ipcMain.handle('ms:save', async (e, name, data, direct) => {
   if (!win || win.isDestroyed() || e.sender !== win.webContents) return { ok: false, error: 'پنجره پیدا نشد' };
   if (typeof name !== 'string' || (typeof data !== 'string' && !Buffer.isBuffer(data) && !(data instanceof Uint8Array))) return { ok: false, error: 'دادهٔ فایل نامعتبر است' };
-  if (data.byteLength > OPEN_LIMIT) return { ok: false, error: 'فایل بیش از حد بزرگ است' };
+  if ((typeof data === 'string' ? Buffer.byteLength(data) : data.byteLength) > OPEN_LIMIT) return { ok: false, error: 'فایل بیش از حد بزرگ است' };
   name = cleanName(name);
   let target;
   const customDir = readPref('customSaveDir');
@@ -206,7 +206,7 @@ async function writeAtomic(target, buf) {
 ipcMain.handle('ms:saveProject', async (e, p, name, data, asNew) => {
   if (!win || win.isDestroyed() || e.sender !== win.webContents) return { ok: false, error: 'پنجره پیدا نشد' };
   if (typeof name !== 'string' || (typeof data !== 'string' && !Buffer.isBuffer(data) && !(data instanceof Uint8Array))) return { ok: false, error: 'دادهٔ پروژه نامعتبر است' };
-  if (data.byteLength > OPEN_LIMIT) return { ok: false, error: 'فایل بیش از حد بزرگ است' };
+  if ((typeof data === 'string' ? Buffer.byteLength(data) : data.byteLength) > OPEN_LIMIT) return { ok: false, error: 'فایل بیش از حد بزرگ است' };
   name = cleanName(/\.mobin$/i.test(name) ? name : (name || 'پروژه') + '.mobin');
   let target = null;
   const authorizedPath = resolveKnownPath(p);
@@ -296,6 +296,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
+      sandbox: true,
       spellcheck: false,
       backgroundThrottling: false
     }
@@ -678,8 +679,11 @@ ipcMain.handle('ms:cmd', async (e, name, arg) => {
       return false;
     case 'getSaveDir': return { dir: saveFolder(), custom: readPref('customSaveDir') || '' };
     case 'setSaveDir': {
-      const p = String(arg || '').trim();
-      if (!p) { writePref('customSaveDir', ''); return { ok: true, dir: saveFolder(), custom: '' }; }
+      const rawDir = String(arg || '').trim();
+      if (!rawDir) { writePref('customSaveDir', ''); return { ok: true, dir: saveFolder(), custom: '' }; }
+      // reject relative paths, UNC/device paths (two leading slashes or backslashes) and NUL bytes
+      if (!path.isAbsolute(rawDir) || /^[\\/]{2}/.test(rawDir) || rawDir.includes('\0')) return { ok: false, error: 'مسیر پوشه معتبر نیست' };
+      const p = path.resolve(rawDir);
       try {
         fs.mkdirSync(p, { recursive: true });
         if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
@@ -704,7 +708,16 @@ ipcMain.handle('ms:cmd', async (e, name, arg) => {
       return { ok: true, dir: chosen, custom: chosen };
     }
     case 'openSaveDir': {
-      const d = (arg && fs.existsSync(String(arg))) ? String(arg) : saveFolder();
+      // only ever open a directory inside the save folder; never launch a file
+      const base = path.resolve(saveFolder());
+      let d = base;
+      try {
+        if (arg) {
+          const c = path.resolve(String(arg));
+          const rel = path.relative(base, c);
+          if (!rel.startsWith('..') && !path.isAbsolute(rel) && fs.statSync(c).isDirectory()) d = c;
+        }
+      } catch (err) { }
       shell.openPath(d);
       return true;
     }

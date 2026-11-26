@@ -211,6 +211,16 @@ body.mob.noPages .mob-page{display:none!important}
    belongs to the bare canvas, where it must not sit on top of the artwork */
 body.mob.panelOpen #mobQuick{display:none!important}
 
+/* ghost chip: only on phones, only after a raw reference exists */
+#mobGhostFab{display:none}
+body.mob #mobGhostFab:not([hidden]){position:fixed;inset-inline-start:10px;bottom:calc(var(--bar) + 10px);z-index:46;
+  display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 12px;border:1px solid var(--bd2);border-radius:999px;
+  background:var(--surface);color:var(--tx2);font:700 11.5px/1 var(--ui);box-shadow:0 8px 20px -12px rgba(0,0,0,.8)}
+body.mob #mobGhostFab svg{width:18px;height:18px;flex:none}
+body.mob #mobGhostFab.on{color:#7dd3fc;border-color:#38bdf8;background:rgba(56,189,248,.12)}
+body.mob #mobGhostFab:active{transform:scale(.96)}
+body.mob.composerMode #mobGhostFab,body.mob.panelOpen #mobGhostFab,body.mob.moreOpen #mobGhostFab,body.mob.kbd #mobGhostFab{display:none!important}
+
 /* bottom destinations */
 #mobTabs{display:none}
 body.mob #mobTabs{position:fixed;left:0;right:0;bottom:0;z-index:52;height:var(--bar);padding:0 5px var(--safeB);
@@ -240,6 +250,8 @@ body.mob.composerMode .mc-first{display:flex;flex-direction:column;gap:5px;margi
 body.mob.composerMode .mc-lbl{display:none}
 .mc-head,.mc-src,.mc-actions{display:none}
 body.mob.composerMode .mc-head{display:flex;align-items:center;gap:6px;font-size:10px;line-height:1;color:var(--tx3);min-height:14px}
+body.mob.composerMode .mc-head .mc-x{flex:none;width:24px;height:24px;margin-inline-start:2px;border:1px solid var(--bd2);border-radius:8px;background:var(--surface2);color:var(--tx2);font:400 18px/1 var(--ui);padding:0;display:grid;place-items:center}
+body.mob.composerMode .mc-head .mc-x:active{background:var(--hov)}
 body.mob.composerMode .mc-head #mcPage{font-weight:600;color:var(--tx2)}
 body.mob.composerMode .mc-tag{margin-inline-start:auto;color:var(--ac2);background:var(--acs);border:1px solid var(--acb);border-radius:5px;padding:3px 6px;font-size:9px;font-weight:700;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 body.mob.composerMode .mc-src{display:block;background:var(--surface2);border:1px solid var(--bd);border-radius:9px;padding:5px 8px 6px;min-height:40px;max-height:42px;overflow:hidden}
@@ -279,6 +291,7 @@ body.mob.moreOpen #stage{visibility:hidden}
 .mm-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .mm-tile{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:86px;padding:10px;border:1px solid var(--bd);border-radius:12px;background:var(--surface2);color:var(--tx);text-align:start;min-width:0}
 .mm-tile:active{background:var(--raised)}
+.mm-tile[aria-pressed="true"],.mm-tile.on{border-color:#38bdf8;background:rgba(56,189,248,.1);color:#7dd3fc}
 .mm-tile svg{width:22px;height:22px;color:var(--ac2);flex:none;margin-bottom:2px}
 .mm-tile b{font-size:12.5px;font-weight:700;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .mm-tile small{font-size:9.5px;line-height:1.4;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}

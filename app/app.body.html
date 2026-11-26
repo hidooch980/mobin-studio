@@ -106,7 +106,7 @@
     <button type="button" class="rb mOnly" id="bNextM" title="متن بعدی در بالن بعدی" aria-label="متن بعدی"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 10H4.8"/><path d="m9.3 5.2-4.8 4.8 4.8 4.8"/></svg><i>بعدی</i></button>
     <div class="rsep"></div>
     <button type="button" class="rb" id="tClean" title="پاک‌کردن داخل بالن (E)" aria-label="ابزار پاک‌کردن بالن" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.6 15.5 3.9 10.8a1.5 1.5 0 0 1 0-2.1l5.3-5.3a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-5.3 5.3H17"/><path d="m6.6 7.6 5.8 5.8"/></svg><i>پاک‌کن</i></button>
-    <button type="button" class="rb" id="bGhost" title="نمایش روح نسخهٔ خام برای پیدا کردن جای متن‌های بدون بالن (نگه‌داشتن Space یا کلید G)" aria-label="نسخهٔ خام" aria-pressed="false" style="display:none"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><i>روح خام</i></button>
+    <button type="button" class="rb" id="bGhost" title="گوست — نمایش نسخهٔ خام برای پیدا کردن جای متن‌های بدون بالن (نگه‌داشتن Space یا کلید G)" aria-label="نسخهٔ خام" aria-pressed="false" style="display:none"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><i>روح خام</i></button>
     <button type="button" class="rb" id="bRemoteRail" title="ادامه در موبایل / لپ‌تاپ (همگام‌سازی ابری)" aria-label="ادامه در موبایل"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 15.5h9a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 5.2 7.5 3.8 3.8 0 0 0 5.5 15.5Z"/></svg><i>ریموت</i></button>
     <button type="button" class="rb" id="bFit" title="اندازهٔ پنجره (Ctrl+0)" aria-label="اندازهٔ پنجره"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V4.5A1.5 1.5 0 0 1 4.5 3H8M12 3h3.5A1.5 1.5 0 0 1 17 4.5V8M17 12v3.5a1.5 1.5 0 0 1-1.5 1.5H12M8 17H4.5A1.5 1.5 0 0 1 3 15.5V12"/><rect x="7" y="7" width="6" height="6" rx="1.3"/></svg><i>جا دادن</i></button>
     <span class="grow"></span>
@@ -178,7 +178,7 @@
       <span class="mq-sep"></span>
       <button class="btn sm dgr" type="button" id="mqDel" title="حذف لایه">✕</button>
     </div>
-
+    <button type="button" id="mobGhostFab" class="mOnly mob-ghost" hidden aria-pressed="false" title="گوست — نمایش نسخهٔ خام" aria-label="حالت گوست"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><span>گوست</span></button>
 
     <div id="stage">
       <div id="pages"></div>
@@ -240,7 +240,7 @@
 
         <div id="selBody" style="display:none">
           <div class="grp mc-first">
-            <div class="mc-head mOnly"><span id="mcPage">صفحهٔ —</span><span class="mc-tag" id="mcTag">بالن</span></div>
+            <div class="mc-head mOnly"><span id="mcPage">صفحهٔ —</span><span class="mc-tag" id="mcTag">بالن</span><button type="button" class="mc-x" id="mcClose" aria-label="بستن و برگشت به صفحه" title="بستن">×</button></div>
             <div class="mc-src mOnly" id="mcSource"><b>متن مبدأ</b><p id="mcSourceT">—</p></div>
             <span class="lbl mc-lbl">ترجمه</span>
             <textarea id="iText" rows="3" spellcheck="false"></textarea>
@@ -344,6 +344,7 @@
       <h3>ورودی و خروجی</h3>
       <div class="mm-grid">
         <button type="button" class="mm-tile" data-mcmd="imgs"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="2.2"/><circle cx="7" cy="8" r="1.4"/><path d="m3 13.5 4-3.6 4 3.3 3-2.4 3 2.7"/></svg><b>افزودن عکس</b><small>PNG / JPG / ZIP</small></button>
+        <button type="button" class="mm-tile" data-mcmd="raw"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><b>نسخهٔ خام</b><small>برای حالت گوست</small></button>
         <button type="button" class="mm-tile" data-mcmd="txt"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h7l5 5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 17V4.5A1.5 1.5 0 0 1 5.5 3Z"/><path d="M11 3v5h5M7 12h6M7 15h4"/></svg><b>متن مترجم</b><small>فایل TXT</small></button>
         <button type="button" class="mm-tile" data-mcmd="paste"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5h-2A1.5 1.5 0 0 0 4 6v10a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 16 16V6a1.5 1.5 0 0 0-1.5-1.5h-2"/><rect x="7" y="2.8" width="6" height="3.6" rx="1.2"/><path d="M7.5 10h5M7.5 13h3.5"/></svg><b>چسباندن متن</b><small>از حافظه</small></button>
         <button type="button" class="mm-tile" data-mcmd="remote"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 15.5h9a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 5.2 7.5 3.8 3.8 0 0 0 5.5 15.5Z"/></svg><b>ریموت</b><small>ادامه در دستگاه دیگر</small></button>
@@ -356,6 +357,7 @@
       <h3>ابزارها</h3>
       <div class="mm-grid">
         <button type="button" class="mm-tile" data-mcmd="clean"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.6 15.5 3.9 10.8a1.5 1.5 0 0 1 0-2.1l5.3-5.3a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-5.3 5.3H17"/><path d="m6.6 7.6 5.8 5.8"/></svg><b>پاک‌کن داخل بالن</b><small>حذف متن اصلی</small></button>
+        <button type="button" class="mm-tile" data-mcmd="ghost" id="mobGhostTile" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10Z"/><circle cx="10" cy="10" r="2.6"/></svg><b>حالت گوست</b><small>نمایش نسخهٔ خام</small></button>
         <button type="button" class="mm-tile" data-mcmd="ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6 11.5 7l4.4 1.5-4.4 1.5L10 14.4 8.5 10 4.1 8.5 8.5 7 10 2.6Z"/><path d="M15.4 13.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg><b>دستیار</b><small>فقط با درخواست خودت</small></button>
         <button type="button" class="mm-tile" data-mcmd="settings"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h7"/><circle cx="13.5" cy="14" r="2.1"/></svg><b>تنظیمات</b><small>رفتار برنامه</small></button>
         <button type="button" class="mm-tile" data-mcmd="help"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M8 7.8a2.1 2.1 0 1 1 2.6 2.05c-.4.12-.6.45-.6.85v.6"/><path d="M10 14.3v.05"/></svg><b>راهنما</b><small>آموزش و میان‌بر</small></button>
@@ -363,7 +365,7 @@
     </div>
 
     <div class="mm-note"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M10 9v4M10 6.5v.05"/></svg><span>همهٔ کارها بدون اینترنت انجام می‌شود؛ فقط ریموت و دستیار (وقتی خودت بخواهی) به شبکه وصل می‌شوند.</span></div>
-    <div class="mm-foot"><span>Mobin Studio</span><b>۸.۸.۱</b></div>
+    <div class="mm-foot"><span>Mobin Studio</span><b id="mmVer">—</b></div>
   </div>
 </section>
 

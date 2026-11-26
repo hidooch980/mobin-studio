@@ -90,7 +90,7 @@ const DEFAULTS = {
   dragBox: true, openSpace: true, singlePageMob: true, directSave: false, saveDirPath: '',
   arabic: true, zwnj: true, zwnjTar: false, punct: true, ellip: false, digits: false,
   fmt: 'png', quality: 92, scale: 1,
-  autoClean: false, cleanTol: 58, cleanGrow: 0, cleanAuto: true, cleanColor: '#FFFFFF',
+  autoClean: true, cleanTol: 58, cleanGrow: 0, cleanAuto: true, cleanColor: '#FFFFFF',
   smartGuides: true, autoResume: true, autoUpdate: true
 };
 const S = {
@@ -1797,8 +1797,20 @@ function placeBubble(b, x, y, g) {
     }
   }
   if (det && S.settings.autoClean) {
-    const s = g ? (g.seed || brightSeed(S.cur, det.cx, det.cy)) : { x, y };
-    try { addClean(S.cur, s.x, s.y); render(S.cur); } catch (e) { }
+    /* the old lettering sits in the middle, so a single seed often lands on a letter:
+       try the finder's seed, then light pixels around the centre, silently */
+    const i = S.cur, pg = S.pages[i], cx = det.cx, cy = det.cy, rx = (det.cw || 80) * .3, ry = (det.ch || 50) * .3;
+    const cand = [];
+    if (g && g.seed) cand.push(g.seed);
+    if (!g) cand.push({ x, y });
+    for (const [dx, dy] of [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1], [-.7, -.7], [.7, .7], [-.7, .7], [.7, -.7]])
+      cand.push(brightSeed(i, cx + dx * rx, cy + dy * ry, 8));
+    try {
+      if (pg && pg.w * pg.h <= CLEAN_MAXPX) for (const c of cand) {
+        const seed = { x: Math.round(c.x), y: Math.round(c.y), tol: S.settings.cleanTol, grow: S.settings.cleanGrow, color: S.settings.cleanAuto ? '' : S.settings.cleanColor };
+        if (cleanPatch(i, seed)) { pageCleans(i).push(seed); markClean(i); render(i); break; }
+      }
+    } catch (e) { }
   }
   p.layers.push(L);
   /* 8.5.0 — متن واقعی جای پیش‌نویس دستیار را می‌گیرد */
@@ -1815,7 +1827,7 @@ function refit(L) {
 /* after a line was placed: select it, move on to the next line, show where that one goes */
 function afterPlace(i, L) {
   selectLayer(L, false);
-  if (S.settings.next) { const ps = placedSet(i), nx = live(i).find(x => !ps.has(x.id)); if (nx) S.selB = nx.id; }
+  if (S.settings.next) { const ps = placedSet(i), nx = live(i).find(x => !ps.has(x.id) && lineKind(x) !== 'manual'); if (nx) S.selB = nx.id; }
   syncLight(); syncPagesPanel(); render(i); autosave(); syncCards();
   if (S.settings.autoGo) setTimeout(() => goTarget(false), 40);
 }
@@ -2339,7 +2351,10 @@ async function loadImages(fileList, keepWork, ordered) {
   if (!keepWork && S.pages.length) S.file = null;   // other pictures = another document
   releasePages();
   S.pages = loaded;
+  S.rawGhost = false;
+  document.body.classList.remove('rawGhost');
   buildCanvases();
+  syncGhostUI();
   clearHist();
   S.cur = 0; S.sel = null; S.many = []; pickNextBubble();
   fitZoom(); syncAll(); makeThumbs();
@@ -2973,6 +2988,11 @@ function applyLayers(arr) {
 /* one entry point used by file / bundle / folder / snapshot */
 async function loadProjectObject(o, from) {
   resumedWork = false;      // opening a project replaces any auto-resumed text
+  /* A raw reference belongs to the clean images it was diffed against; never
+     carry an old ghost overlay into a different project. */
+  S.rawGhost = false;
+  document.body.classList.remove('rawGhost');
+  if (S.pages.length) S.pages.forEach(p => { p.rawBoxes = []; });
   if (!o || typeof o !== 'object') return toast('پروژه خوانده نشد', 'er');
   if (o.app !== 'mobin-studio' && o.app !== 'manhwa-studio' && from === 'file') {
     if (!await ask('فایل ناشناس', 'این فایل با این برنامه ساخته نشده. باز شود؟', 'باز کن')) return;
@@ -3001,6 +3021,7 @@ async function loadProjectObject(o, from) {
   } else { S.pending = layers; S.pendingCleans = cleans; S.imgNames = names; }
   clearHist(); S.cur = 0; S.sel = null; S.many = []; pickNextBubble();
   readSettingsToUI(); buildFontList(); saveStyles(); renderAll(); syncAll(); autosave();
+  syncGhostUI();
   S.lastSnapSig = typeof snapSig === 'function' ? snapSig() : '';
   if (from !== 'bundle' && from !== 'folder')
     toast(S.pages.length ? 'پروژه باز شد' : 'پروژه باز شد — حالا عکس‌ها را بارگذاری کنید', 'ok', 5000);
@@ -3599,14 +3620,40 @@ function openSettings(tab) {
 /* ============================================================
    RAW REFERENCE DIFF & GHOST OVERLAY (NON-BALLOON DETECTOR)
    ============================================================ */
+function hasRawRef() {
+  return S.pages.some(p => !!(p && (p.rawImg || (p.rawBoxes && p.rawBoxes.length))));
+}
+/* Keep the desktop rail button, the phone chip and the «بیشتر» tile in sync.
+   The phone has no tool rail, so without this the ghost mode existed only on desktop. */
+function syncGhostUI() {
+  const has = hasRawRef(), on = !!S.rawGhost;
+  const b = $('#bGhost');
+  if (b) {
+    b.style.display = has ? '' : 'none';
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  const f = $('#mobGhostFab');
+  if (f) {
+    f.hidden = !has;
+    f.classList.toggle('on', on);
+    f.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  const t = $('#mobGhostTile');
+  if (t) {
+    t.classList.toggle('on', on);
+    t.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+}
 function toggleGhost(on) {
-  if (!S.pages.some(p => p.rawImg || (p.rawBoxes && p.rawBoxes.length))) {
-    return toast('اول فایل ZIP یا عکس‌های «نسخهٔ خام» را از منوی بارگذاری بدهید', 'wn', 4200);
+  if (!hasRawRef()) {
+    return toast(typeof isMob === 'function' && isMob()
+      ? 'اول در «بیشتر ← نسخهٔ خام» فایل خام را بدهید؛ بعد گوست روشن می‌شود'
+      : 'اول فایل ZIP یا عکس‌های «نسخهٔ خام» را از منوی بارگذاری بدهید', 'wn', 4500);
   }
   S.rawGhost = on === undefined ? !S.rawGhost : !!on;
   document.body.classList.toggle('rawGhost', S.rawGhost);
-  const b = $('#bGhost');
-  if (b) { b.classList.toggle('on', S.rawGhost); b.setAttribute('aria-pressed', S.rawGhost); }
+  syncGhostUI();
   render(S.cur);
 }
 
@@ -3701,10 +3748,13 @@ async function loadRawImages(fileList) {
       if (i % 3 === 2) await nextFrame();
     }
     BALCACHE.clear();
-    const bg = $('#bGhost'); if (bg) bg.style.display = '';
+    syncGhostUI();
     pageBalloons(S.cur, true);
     render(S.cur); autosave();
-    toast(`نسخهٔ خام بررسی شد: ${faNum(totalFound)} جای متن در ${faNum(matchedPages)} صفحه پیدا شد! (نگه‌داشتن Space = نمایش روح خام)`, 'ok', 6500);
+    const hint = typeof isMob === 'function' && isMob()
+      ? 'دکمهٔ «گوست» پایین صفحه را بزنید'
+      : 'نگه‌داشتن Space = نمایش روح خام';
+    toast(`نسخهٔ خام بررسی شد: ${faNum(totalFound)} جای متن در ${faNum(matchedPages)} صفحه پیدا شد! — ${hint}`, 'ok', 6500);
   } finally { busy.hide(); }
 }
 
