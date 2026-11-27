@@ -172,6 +172,10 @@ Future<void> checkForUpdate(BuildContext context, {bool silent = true}) async {
                     progress.value = 0;
                     try {
                       await Updater.install(release, (v) => progress.value = v);
+                    } on PlatformException catch (e) {
+                      messenger?.showSnackBar(SnackBar(
+                          duration: const Duration(seconds: 6),
+                          content: Text(e.message ?? 'نصب ناموفق بود')));
                     } catch (e) {
                       messenger?.showSnackBar(SnackBar(content: Text('خطا: $e')));
                     }

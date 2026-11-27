@@ -48,6 +48,11 @@ flutter {
     source = "../.."
 }
 
+dependencies {
+    // FileProvider for the in-app updater (MainActivity.installApk)
+    implementation("androidx.core:core:1.13.1")
+}
+
 // mobin-studio: signing+id
 // Keystore lives outside this project in ../../android/signing (gitignored).
 val mobinSignDir = rootProject.file("../../android/signing")
